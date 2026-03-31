@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Google Sheets — M.A.T.</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #f2f2f7; min-height: 100vh; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 20px 16px 0; color: #fff;
+  }
+  .header-tag   { font-size: 10px; font-weight: 700; color: #34c759; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .header-title { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+  .header-sub   { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 14px; }
+
+  /* Tabs */
+  .tabs { display: flex; }
+  .tab  { flex: 1; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.5); border-bottom: 3px solid transparent; cursor: pointer; transition: all .2s; }
+  .tab.active { color: #fff; border-bottom-color: #34c759; }
+
+  /* Status */
+  .status-bar { background: #fff; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid #e5e5ea; font-size: 12px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; flex-shrink: 0; }
+  .status-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
+  .status-dot.ok      { background: #34c759; }
+  .status-dot.error   { background: #ff3b30; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .status-text { color: #3c3c43; flex: 1; font-size: 12px; }
+
+  /* Screens */
+  .screen { display: none; padding: 16px; padding-bottom: 40px; }
+  .screen.active { display: block; }
+  .section-title { font-size: 11px; font-weight: 700; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; margin-top: 4px; }
+
+  /* Cards de partido */
+  .partido-card { background: #fff; border-radius: 14px; padding: 12px 16px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .partido-meta { font-size: 10px; color: #8e8e93; margin-bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .partido-meta span { background: #f2f2f7; padding: 2px 6px; border-radius: 5px; }
+  .partido-meta .grp { background: #e8f4fd; color: #007aff; font-weight: 700; }
+  .partido-equipos { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .equipo { text-align: center; flex: 1; }
+  .equipo-nombre { font-size: 13px; font-weight: 700; color: #1c1c1e; }
+  .marcador { font-size: 26px; font-weight: 900; color: #1c1c1e; min-width: 55px; text-align: center; letter-spacing: 2px; }
+  .marcador.pendiente { font-size: 16px; color: #c7c7cc; }
+  .btn-editar { width: 100%; padding: 7px; background: #f2f2f7; color: #007aff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+  /* Editor */
+  .editor { border-top: 0.5px solid #f2f2f7; padding-top: 10px; margin-top: 8px; display: none; }
+  .editor.open { display: block; }
+  .editor-inputs { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .score-group { flex: 1; }
+  .score-lbl { font-size: 10px; color: #8e8e93; text-align: center; margin-bottom: 4px; }
+  .score-input { width: 100%; text-align: center; font-size: 22px; font-weight: 800; color: #1c1c1e; border: 2px solid #e5e5ea; border-radius: 8px; padding: 6px; background: #f9f9f9; -moz-appearance: textfield; }
+  .score-input:focus { outline: none; border-color: #007aff; background: #fff; }
+  .score-input::-webkit-inner-spin-button, .score-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .score-sep { font-size: 18px; color: #c7c7cc; font-weight: 700; }
+  .btn-row { display: flex; gap: 6px; }
+  .btn-guardar { flex: 1; padding: 9px; background: #34c759; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .btn-guardar:disabled { background: #c7c7cc; }
+  .btn-cancelar { padding: 9px 14px; background: #f2f2f7; color: #3c3c43; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+  /* Filtro grupos */
+  .grupo-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .grp-btn { padding: 5px 12px; background: #fff; border: 1.5px solid #e5e5ea; border-radius: 20px; font-size: 12px; font-weight: 600; color: #3c3c43; cursor: pointer; }
+  .grp-btn.active { background: #0f3460; color: #fff; border-color: #0f3460; }
+
+  /* Tabla de posiciones */
+  .grupo-card { background: #fff; border-radius: 14px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .grupo-header { background: #0f3460; color: #fff; padding: 10px 14px; font-size: 13px; font-weight: 800; letter-spacing: 0.5px; }
+  .tabla-pos { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tabla-pos th { padding: 8px 4px; text-align: center; color: #8e8e93; font-weight: 600; font-size: 10px; text-transform: uppercase; border-bottom: 0.5px solid #f2f2f7; }
+  .tabla-pos th:first-child { text-align: left; padding-left: 14px; }
+  .tabla-pos td { padding: 9px 4px; text-align: center; border-bottom: 0.5px solid #f2f2f7; color: #1c1c1e; }
+  .tabla-pos td:first-child { text-align: left; padding-left: 14px; font-weight: 700; font-size: 11px; }
+  .tabla-pos tr:last-child td { border-bottom: none; }
+  .tabla-pos tr:nth-child(1) td:first-child { color: #34c759; }
+  .tabla-pos tr:nth-child(2) td:first-child { color: #30b0c7; }
+  .pts-col { font-weight: 800; color: #007aff !important; }
+
+  /* Badge de hoja */
+  .hoja-badge { display: inline-block; background: #e8f4fd; color: #007aff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 8px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c1c1e; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+
+  .empty { text-align: center; padding: 40px 20px; color: #8e8e93; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .footer { text-align: center; padding: 20px; font-size: 11px; color: #c7c7cc; }
+  .footer a { color: #007aff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">🧪 Demo M.A.T. — Google Sheets como Backend</div>
+  <div class="header-title">Sheets + Cloudflare + HTML</div>
+  <div class="header-sub">Sin servidor · Sin base de datos · Costo $0</div>
+  <div class="tabs">
+    <div class="tab active" id="tab-hoja1" onclick="switchTab('hoja1', this)">📋 Hoja 1</div>
+    <div class="tab" id="tab-partidos" onclick="switchTab('partidos', this)">⚽ Partidos</div>
+    <div class="tab" id="tab-tabla" onclick="switchTab('tabla', this)">🏆 Tabla</div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-dot loading" id="status-dot"></div>
+  <div class="status-text" id="status-text">Conectando...</div>
+</div>
+
+<!-- ══ HOJA 1 ══════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-hoja1">
+  <div class="hoja-badge">Hoja 1 — Prueba básica lectura y escritura</div>
+  <div class="section-title">Partidos — toca para editar</div>
+  <div id="lista-hoja1">
+    <div class="empty"><div class="empty-icon">⏳</div><div>Cargando...</div></div>
+  </div>
+</div>
+
+<!-- ══ PARTIDOS ════════════════════════════════════════════════ -->
+<div class="screen" id="screen-partidos">
+  <div class="hoja-badge">Hoja 2 — 72 partidos fase de grupos</div>
+  <div class="section-title">Filtrar por grupo</div>
+  <div class="grupo-filter" id="filtro-grupos"></div>
+  <div id="lista-partidos">
+    <div class="empty"><div class="empty-icon">⏳</div><div>Cargando...</div></div>
+  </div>
+</div>
+
+<!-- ══ TABLA ═══════════════════════════════════════════════════ -->
+<div class="screen" id="screen-tabla">
+  <div class="hoja-badge">Hoja 2 — Tabla calculada automáticamente</div>
+  <div class="section-title">Posiciones por grupo</div>
+  <div id="lista-tablas">
+    <div class="empty"><div class="empty-icon">⏳</div><div>Cargando...</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="https://docs.google.com/spreadsheets/d/1Hqyl6FU8hTcTuOsZK0r1uHV7G0uTwa29ycmMfAZQX_Q" target="_blank">Ver Google Sheet</a>
+  · Cloudflare Worker · M.A.T.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURACIÓN
+// ══════════════════════════════════════════
+var WORKER = 'https://sheet-be.hfhoyos.workers.dev';
+
+// Estado
+var hoja1Data     = [];
+var partidosData  = [];
+var tablasData    = {};
+var editorAbierto = null;
+var grupoActivo   = 'TODOS';
+var tabActiva     = 'hoja1';
+
+// ══════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════
+function switchTab(tab, el) {
+  tabActiva = tab;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('screen-' + tab).classList.add('active');
+  if (tab === 'partidos' && !partidosData.length) cargarHoja2();
+  if (tab === 'tabla')    renderTablas();
+}
+
+// ══════════════════════════════════════════
+// CARGA
+// ══════════════════════════════════════════
+function cargarHoja1() {
+  setStatus('loading', 'Cargando Hoja 1...');
+  fetch(WORKER + '?hoja=1')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.ok) throw new Error(d.error);
+      hoja1Data = d.partidos;
+      renderHoja1();
+      setStatus('ok', 'Hoja 1 · ' + hoja1Data.length + ' registros');
+    })
+    .catch(function(e) { setStatus('error', e.message); });
+}
+
+function cargarHoja2() {
+  setStatus('loading', 'Cargando Hoja 2...');
+  Promise.all([
+    fetch(WORKER + '?hoja=2').then(function(r) { return r.json(); }),
+    fetch(WORKER + '?hoja=2&tabla=1').then(function(r) { return r.json(); })
+  ])
+  .then(function(res) {
+    if (!res[0].ok) throw new Error(res[0].error);
+    if (!res[1].ok) throw new Error(res[1].error);
+    partidosData = res[0].partidos;
+    tablasData   = res[1].tablas;
+    renderFiltros();
+    renderPartidos();
+    if (tabActiva === 'tabla') renderTablas();
+    var jugados = partidosData.filter(function(p) {
+      return p.gol_loc !== null && p.gol_loc !== '';
+    }).length;
+    setStatus('ok', 'Hoja 2 · ' + jugados + '/' + partidosData.length + ' con resultado');
+  })
+  .catch(function(e) { setStatus('error', e.message); });
+}
+
+// ══════════════════════════════════════════
+// RENDER HOJA 1
+// ══════════════════════════════════════════
+function renderHoja1() {
+  renderLista(hoja1Data, 'lista-hoja1', 'h1', false);
+}
+
+// ══════════════════════════════════════════
+// RENDER PARTIDOS (Hoja 2)
+// ══════════════════════════════════════════
+function renderFiltros() {
+  var grupos = ['TODOS'].concat(Object.keys(tablasData).sort());
+  var html   = '';
+  grupos.forEach(function(g) {
+    html += '<button class="grp-btn' + (g === grupoActivo ? ' active' : '') + '" onclick="filtrarGrupo(\'' + g + '\')">' +
+      (g === 'TODOS' ? 'Todos' : 'Grupo ' + g) + '</button>';
+  });
+  document.getElementById('filtro-grupos').innerHTML = html;
+}
+
+function filtrarGrupo(g) {
+  grupoActivo = g;
+  renderFiltros();
+  renderPartidos();
+}
+
+function renderPartidos() {
+  var lista = grupoActivo === 'TODOS'
+    ? partidosData
+    : partidosData.filter(function(p) { return p.grupo === grupoActivo; });
+  renderLista(lista, 'lista-partidos', 'p2', true);
+}
+
+// ══════════════════════════════════════════
+// RENDER GENÉRICO DE LISTA
+// ══════════════════════════════════════════
+function renderLista(datos, contenedorId, prefijo, mostrarGrupo) {
+  if (!datos.length) {
+    document.getElementById(contenedorId).innerHTML =
+      '<div class="empty"><div class="empty-icon">📋</div><div>Sin datos.</div></div>';
+    return;
+  }
+
+  // Mapear al índice real en el array original
+  var esHoja2 = (prefijo === 'p2');
+  var fuente  = esHoja2 ? partidosData : hoja1Data;
+
+  var html = '';
+  datos.forEach(function(p) {
+    var idx     = fuente.indexOf(p);
+    var tieneR  = p.gol_loc !== null && p.gol_loc !== '' &&
+                  p.gol_vis !== null && p.gol_vis !== '';
+    var marcador = tieneR
+      ? '<span class="marcador">' + p.gol_loc + ' - ' + p.gol_vis + '</span>'
+      : '<span class="marcador pendiente">vs</span>';
+
+    var meta = '<span>📅 ' + (p.fecha || '—') + '</span><span>🕐 ' + (p.hora || '—') + '</span>';
+    if (mostrarGrupo && p.grupo) meta = '<span class="grp">Grupo ' + p.grupo + '</span>' + meta;
+
+    html +=
+      '<div class="partido-card">' +
+        '<div class="partido-meta">' + meta + '</div>' +
+        '<div class="partido-equipos">' +
+          '<div class="equipo"><div class="equipo-nombre">' + (p.local || '—') + '</div></div>' +
+          marcador +
+          '<div class="equipo"><div class="equipo-nombre">' + (p.visita || '—') + '</div></div>' +
+        '</div>' +
+        '<button class="btn-editar" onclick="abrirEditor(\'' + prefijo + '-' + idx + '\')">✏️ Editar marcador</button>' +
+        '<div class="editor" id="editor-' + prefijo + '-' + idx + '">' +
+          '<div class="editor-inputs">' +
+            '<div class="score-group"><div class="score-lbl">' + (p.local || '') + '</div>' +
+              '<input type="number" min="0" max="20" class="score-input" id="gl-' + prefijo + '-' + idx + '" value="' + (tieneR ? p.gol_loc : 0) + '"></div>' +
+            '<div class="score-sep">-</div>' +
+            '<div class="score-group"><div class="score-lbl">' + (p.visita || '') + '</div>' +
+              '<input type="number" min="0" max="20" class="score-input" id="gv-' + prefijo + '-' + idx + '" value="' + (tieneR ? p.gol_vis : 0) + '"></div>' +
+          '</div>' +
+          '<div class="btn-row">' +
+            '<button class="btn-cancelar" onclick="cerrarEditor(\'' + prefijo + '-' + idx + '\')">Cancelar</button>' +
+            '<button class="btn-guardar" id="btn-' + prefijo + '-' + idx + '" ' +
+              'onclick="guardar(\'' + prefijo + '\', ' + idx + ')">Guardar</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+
+  document.getElementById(contenedorId).innerHTML = html;
+  if (editorAbierto) {
+    var ed = document.getElementById('editor-' + editorAbierto);
+    if (ed) ed.classList.add('open');
+  }
+}
+
+// ══════════════════════════════════════════
+// RENDER TABLA
+// ══════════════════════════════════════════
+function renderTablas() {
+  var grupos = Object.keys(tablasData).sort();
+  if (!grupos.length) {
+    document.getElementById('lista-tablas').innerHTML =
+      '<div class="empty"><div class="empty-icon">📊</div><div>Ingresa resultados para ver la tabla.</div></div>';
+    return;
+  }
+  var html = '';
+  grupos.forEach(function(grp) {
+    html +=
+      '<div class="grupo-card">' +
+        '<div class="grupo-header">GRUPO ' + grp + '</div>' +
+        '<table class="tabla-pos"><thead><tr>' +
+          '<th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DIF</th><th>PTS</th>' +
+        '</tr></thead><tbody>';
+    tablasData[grp].forEach(function(e) {
+      html += '<tr><td>' + e.eq + '</td><td>' + e.pj + '</td><td>' + e.pg + '</td><td>' + e.pe + '</td><td>' + e.pp +
+        '</td><td>' + e.gf + '</td><td>' + e.gc + '</td><td>' + (e.dif > 0 ? '+' : '') + e.dif +
+        '</td><td class="pts-col">' + e.pts + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  });
+  document.getElementById('lista-tablas').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// EDITOR
+// ══════════════════════════════════════════
+function abrirEditor(key) {
+  if (editorAbierto && editorAbierto !== key) cerrarEditor(editorAbierto);
+  editorAbierto = key;
+  document.getElementById('editor-' + key).classList.add('open');
+}
+
+function cerrarEditor(key) {
+  editorAbierto = null;
+  var ed = document.getElementById('editor-' + key);
+  if (ed) ed.classList.remove('open');
+}
+
+function guardar(prefijo, idx) {
+  var gl  = parseInt(document.getElementById('gl-' + prefijo + '-' + idx).value) || 0;
+  var gv  = parseInt(document.getElementById('gv-' + prefijo + '-' + idx).value) || 0;
+  var btn = document.getElementById('btn-' + prefijo + '-' + idx);
+  var hoja = (prefijo === 'p2') ? '2' : '1';
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  setStatus('loading', 'Guardando en Google Sheets...');
+
+  fetch(WORKER + '?hoja=' + hoja, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ fila: idx + 1, gol_loc: gl, gol_vis: gv })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (!d.ok) throw new Error(d.error);
+    toast('✅ Guardado en Google Sheets');
+    cerrarEditor(prefijo + '-' + idx);
+
+    // Actualizar datos locales
+    if (prefijo === 'p2') {
+      partidosData[idx].gol_loc = gl;
+      partidosData[idx].gol_vis = gv;
+      tablasData = calcularTablasLocal(partidosData);
+      renderPartidos();
+      if (tabActiva === 'tabla') renderTablas();
+    } else {
+      hoja1Data[idx].gol_loc = gl;
+      hoja1Data[idx].gol_vis = gv;
+      renderHoja1();
+    }
+    setStatus('ok', 'Guardado correctamente');
+  })
+  .catch(function(e) {
+    toast('❌ ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Guardar';
+    setStatus('error', 'Error al guardar');
+  });
+}
+
+// ══════════════════════════════════════════
+// CÁLCULO LOCAL DE TABLAS
+// ══════════════════════════════════════════
+function calcularTablasLocal(pts) {
+  var grupos = {};
+  pts.forEach(function(p) {
+    var grp    = p.grupo;
+    var gl     = (p.gol_loc !== null && p.gol_loc !== '') ? Number(p.gol_loc) : null;
+    var gv     = (p.gol_vis !== null && p.gol_vis !== '') ? Number(p.gol_vis) : null;
+    if (!grupos[grp]) grupos[grp] = {};
+    [p.local, p.visita].forEach(function(eq) {
+      if (!grupos[grp][eq]) grupos[grp][eq] = { eq:eq, pj:0, pg:0, pe:0, pp:0, gf:0, gc:0, dif:0, pts:0 };
+    });
+    if (p.jugado !== 'X' && p.jugado !== 'x') return;
+    var loc = grupos[grp][p.local];
+    var vis = grupos[grp][p.visita];
+    loc.pj++; vis.pj++;
+    loc.gf += gl; loc.gc += gv;
+    vis.gf += gv; vis.gc += gl;
+    if (gl > gv)      { loc.pg++; loc.pts += 3; vis.pp++; }
+    else if (gl < gv) { vis.pg++; vis.pts += 3; loc.pp++; }
+    else              { loc.pe++; loc.pts++;     vis.pe++; vis.pts++; }
+    loc.dif = loc.gf - loc.gc;
+    vis.dif = vis.gf - vis.gc;
+  });
+  var result = {};
+  Object.keys(grupos).sort().forEach(function(grp) {
+    result[grp] = Object.values(grupos[grp]).sort(function(a,b) {
+      return b.pts - a.pts || b.dif - a.dif || b.gf - a.gf;
+    });
+  });
+  return result;
+}
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function setStatus(type, text) {
+  document.getElementById('status-dot').className = 'status-dot ' + type;
+  document.getElementById('status-text').textContent = text;
+}
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// Arrancar con Hoja 1
+cargarHoja1();
+
+// Refrescar cada 10 segundos segun la tab activa
+setInterval(function() {
+  if (tabActiva === 'hoja1')    cargarHoja1();
+  if (tabActiva === 'partidos') cargarHoja2();
+  if (tabActiva === 'tabla')    cargarHoja2();
+}, 10000);
+</script>
+</body>
+</html>

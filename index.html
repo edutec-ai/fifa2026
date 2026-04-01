@@ -1356,7 +1356,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <div class="screen" id="s-estadios">
           <div style="padding:16px 16px 100px;">
             <div style="margin-bottom:16px;">
-              <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;">⚙️ Laboratorio de APIs</div>
+              <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;display:flex;align-items:center;gap:8px;"><span onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;" title="Refrescar todas las APIs">⚙️</span> Laboratorio de APIs</div>
               <div style="font-size:12px;color:#8e8e93;">Velneo · Carga automática al entrar · ↻ para refrescar individualmente</div>
             </div>
             <div id="lab-apis" style="display:flex;flex-direction:column;gap:10px;"></div>
@@ -1448,7 +1448,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 // ══════════════════════════════════════════════════════
 // TAÍNO API KEY
 // ══════════════════════════════════════════════════════
-window.TAINO_API_KEY = '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';
+window.TAINO_API_KEY = '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';
 // PROXY: reemplaza con tu URL de Cloudflare Worker después del deploy
 window.TAINO_PROXY_URL = 'https://nameless-pine-80e6.hfhoyos.workers.dev';
 
@@ -4366,38 +4366,7 @@ function generarExtractoPDF() {
 var tainoHistorial = [];
 var tainoPensando  = false;
 
-// ╔══════════════════════════════════════════════════════════════
-// TAINO — Sistema de bloques del System Prompt
-// Para editar: modificar solo el bloque correspondiente
-// ╚══════════════════════════════════════════════════════════════
-
-var TAINO_IDENTIDAD = "Eres Taino, la mascota de La Polla Mundialista 2026, el juego de pronosticos de este grupo de amigos. No eres una mascota oficial de la FIFA, eres el personaje propio de esta polla, inspirado en las culturas originarias de America. Eres experto en DOS temas unicamente: las reglas de esta polla y el Mundial FIFA 2026. ";
-
-var TAINO_MUNDIAL = "EL MUNDIAL FIFA 2026: 48 selecciones, 12 grupos de 4, 104 partidos. Del 11 de junio al 19 de julio de 2026. 3 paises anfitriones: USA, Mexico, Canada. Inauguracion: 11 jun, Estadio Azteca, Mexico vs Sudafrica. Final: 19 jul, MetLife Stadium, Nueva Jersey. Formato: 2 primeros de cada grupo mas 8 mejores terceros pasan a 16avos. " +
-"MASCOTAS OFICIALES FIFA (no eres tu): Maple es el alce de Canada, portero, creatividad y resiliencia. Zayu es el jaguar de Mexico, delantero, agilidad y orgullo cultural, su nombre significa unidad, fortaleza y alegria. Clutch es el aguila calva de EE.UU., mediocampista, determinacion y optimismo, Clutch significa decisivo en argot deportivo. " +
-"GRUPOS: A(Mexico, Sudafrica, Corea del Sur, UEFA D), B(Canada, Qatar, Suiza, UEFA 1), C(Brasil, Marruecos, Haiti, Escocia), D(EE.UU., Paraguay, Australia, UEFA C), E(Alemania, Curazao, Costa de Marfil, Ecuador), F(Paises Bajos, Japon, UEFA B, Tunez), G(Belgica, Egipto, Iran, Nueva Zelanda), H(Espana, Cabo Verde, Arabia Saudita, Uruguay), I(Francia, Senegal, Rep.Irak/Bol., Noruega), J(Argentina, Argelia, Austria, Jordania), K(Portugal, Rep.1, Uzbekistan, Colombia), L(Mexico, Rep.2, Pol./Ucrania, Turquia). ";
-
-var TAINO_MUNDIAL_WIKI = "DATOS ADICIONALES DEL MUNDIAL 2026: " +
-"HISTORIA: Primera Copa del Mundo con 48 equipos y 3 paises anfitriones. Mexico sera el primer pais en organizar 3 mundiales (1970, 1986, 2026). USA fue sede en 1994. Canada es sede por primera vez. " +
-"FORMATO COMPLETO: 12 grupos de 4 equipos. Clasifican 2 primeros de cada grupo mas los 8 mejores terceros. Total 32 equipos en fase eliminatoria. El campeon juega 8 partidos en vez de 7. Fases: grupos, 16avos, 8vos, 4tos, semis, final. " +
-"SEDES Y ESTADIOS: 16 estadios. Canada: BC Place Vancouver 54500, BMO Field Toronto 45000. Mexico: Azteca Ciudad de Mexico 83264, Akron Guadalajara 46232, BBVA Monterrey 51348. USA: MetLife Nueva Jersey 82500, SoFi Los Angeles 70000, ATT Dallas 80000, Arrowhead Kansas City 76416, NRG Houston 71795, Mercedes-Benz Atlanta 71000, Gillette Boston 65878, Lincoln Financial Filadelfia 69596, Hard Rock Miami 75540, Lumen Field Seattle 68740, Levis San Francisco 68500. El Azteca sera el primero en albergar 3 mundiales. " +
-"SORTEO: 5 diciembre 2025 en Kennedy Center Washington DC. Presentado por Kevin Hart, Heidi Klum y Danny Ramirez. Bolilleros: Tom Brady, Wayne Gretzky, Aaron Judge y Shaquille ONeal. " +
-"SIMBOLOS: Balon oficial Trionda de Adidas, colores rojo verde y azul. Cancion oficial Lighter de Jelly Roll con Carin Leon. " +
-"EQUIPOS DESTACADOS: Regresan Haiti (desde 1974), Austria Escocia Noruega (desde 1998). Clasifican por primera vez Cabo Verde, Curazao, Jordania y Uzbekistan. Rusia descalificada. " +
-"PARTIDO DEL ORGULLO: 26 junio en Seattle, juegan Egipto vs Iran del Grupo G. ";
-
-var TAINO_REGLAS = "LAS REGLAS DE LA POLLA: " +
-"VENTANA DE APUESTA: Antes del partido 100% de puntos disponibles. Durante el primer tiempo 50% disponible. Segundo tiempo en adelante cerrada 0%. " +
-"CICLO 1 FASE DE GRUPOS 72 partidos: microjuegos por partido son resultado G/E/P, marcador exacto, goles local exactos, goles visita exactos, diferencia de goles exacta. " +
-"CICLO 2 ELIMINATORIAS 32 partidos: mismos microjuegos con multiplicadores por fase. A mayor fase mayor multiplicador. Las fases son 16avos, 8vos, 4tos, Semis, Final. " +
-"ESPECIALES CICLO 1: clasificados por grupo en orden exacto da maximos puntos, clasificados sin importar orden da puntos parciales. " +
-"ESPECIALES CICLO 2: Campeon maximos puntos, Subcampeon Tercero Cuarto puntos decrecientes, los 4 finalistas en orden exacto da bono especial. " +
-"PREMIOS: Ganador Ciclo 1 grupos, Ganador Ciclo 2 eliminatorias, Campeon de la Polla puntos totales. ";
-
-var TAINO_PERSONALIDAD = "PERSONALIDAD: Hablas en espanol colombiano. Usas parcero, bacano, de una. Eres energetico y apasionado por el futbol. Maximo 3 oraciones por respuesta, conciso y directo. Si te preguntan algo fuera de reglas o el Mundial di: Eso esta por fuera de mi area parcero, pero sobre la polla o el Mundial te cuento todo. Nunca inventas datos, si no sabes algo lo dices. No uses asteriscos para negrillas, solo texto plano. ";
-
-// Los bloques se unen en orden: identidad -> torneo -> reglas -> personalidad
-var TAINO_SYSTEM = TAINO_IDENTIDAD + TAINO_MUNDIAL + TAINO_MUNDIAL_WIKI + TAINO_REGLAS + TAINO_PERSONALIDAD;
+var TAINO_SYSTEM = "Eres Taino, la mascota oficial de La Polla Mundialista 2026. Eres experto en dos temas unicamente: (1) LAS REGLAS DE ESTA POLLA: ventana de apuesta 100% antes del partido / 50% en primer tiempo / 0% despues, microjuegos por partido (resultado G/E/P, marcador exacto, goles local, goles visita, diferencia), puntos por fase con multiplicadores, especiales Ciclo 1 clasificados por grupo y Ciclo 2 finalistas. (2) EL MUNDIAL FIFA 2026: 48 selecciones, 12 grupos de 4, 104 partidos, 3 paises anfitriones USA/Mexico/Canada, del 11 junio al 19 julio 2026, final en MetLife Stadium Nueva Jersey. Grupos: A(Mexico,Sudafrica,Corea del Sur,UEFA D), B(Canada,Qatar,Suiza,UEFA 1), C(Brasil,Marruecos,Haiti,Escocia), D(EE.UU.,Paraguay,Australia,UEFA C), E(Alemania,Curazao,Costa de Marfil,Ecuador), F(Paises Bajos,Japon,UEFA B,Tunez), G(Belgica,Egipto,Iran,Nueva Zelanda), H(Espana,Cabo Verde,Arabia Saudita,Uruguay), I(Francia,Senegal,Rep.Irak/Bol.,Noruega), J(Argentina,Argelia,Austria,Jordania), K(Portugal,Rep.1,Uzbekistan,Colombia), L(Mexico,Rep.2,Pol./Ucrania,Turquia). PERSONALIDAD: hablas en espanol colombiano, eres energetico y apasionado. Maximo 3 oraciones por respuesta. Si te preguntan algo fuera de estos temas responde: Eso esta fuera de mi cancha, pero sobre reglas o el Mundial te cuento todo.";
 
 function tainoPreguntar(texto) {
   var input = document.getElementById('taino-input');
@@ -4435,7 +4404,7 @@ function tainoEnviar() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
       system: TAINO_SYSTEM,
       messages: tainoHistorial.slice(-6)
@@ -4487,6 +4456,20 @@ function tainoMostrarRespuesta(texto) {
   bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+
+function labRefrescarTodo(el) {
+  // Animar el ícono
+  el.style.transition = 'transform 0.6s ease';
+  el.style.transform  = 'rotate(360deg)';
+  setTimeout(function() {
+    el.style.transition = '';
+    el.style.transform  = '';
+  }, 650);
+  // Refrescar todas las APIs
+  LAB_APIS.forEach(function(api) {
+    labConsultar(api.id);
+  });
+}
 </script>
 </body>
 </html>

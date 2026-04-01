@@ -4716,12 +4716,18 @@ function simGetFecha() {
 
 function simGetFechaStr() {
   var d = simGetFecha();
-  return d.toISOString().substring(0, 10); // YYYY-MM-DD
+  // Usar fecha LOCAL — toISOString() convierte a UTC y desafasa la fecha
+  var y = d.getFullYear();
+  var m = d.getMonth() + 1;
+  var day = d.getDate();
+  return y + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
 }
 
 function simGetHoraStr() {
-  var d = simGetFecha();
-  return d.toTimeString().substring(0, 5); // HH:MM
+  var d   = simGetFecha();
+  var h   = d.getHours();
+  var m   = d.getMinutes();
+  return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
 }
 
 // ── Reset al momento actual ───────────────────────────────────
@@ -4826,12 +4832,18 @@ function renderResumen(partidos, fechaSim, horaSim) {
     hoyCards.innerHTML = '';
     hoy.forEach(function(p) {
       var hora    = fmtHora(p.hor);
-      var enVivo  = hora <= horaSim && horaSim <= sumarHoras(hora, 2);
+      // Estado del partido según hora simulada
+  var minSim    = horaAMinutos(horaSim);
+  var minInicio = horaAMinutos(hora);
+  var enVivo    = minSim >= minInicio && minSim <= minInicio + 105; // 0 a 1h45m
+  var finalizado = minSim > minInicio + 105;
       var flagLoc = bandera(p.nom_loc);
       var flagVis = bandera(p.nom_vis);
-      var badge   = enVivo
+      var badge = enVivo
         ? '<span class="match-badge badge-live">● EN VIVO</span>'
-        : '<span class="match-badge badge-open">' + hora + '</span>';
+        : finalizado
+          ? '<span class="match-badge" style="background:#f2f2f7;color:#8e8e93;">✓ Finalizado</span>'
+          : '<span class="match-badge badge-open">' + hora + '</span>';
 
       var card = document.createElement('div');
       card.className = 'match-card';
@@ -4845,7 +4857,7 @@ function renderResumen(partidos, fechaSim, horaSim) {
             '<div class="team-flag">' + flagLoc + '</div>' +
             '<div class="team-name">' + capitalizar(p.nom_loc) + '</div>' +
           '</div>' +
-          '<div class="match-' + (enVivo ? 'score">? - ?' : 'vs">vs') + '</div>' +
+          '<div class="match-' + (enVivo ? 'score">? - ?' : finalizado ? 'score" style="color:#8e8e93;">- - -' : 'vs">vs') + '</div>' +
           '<div class="team">' +
             '<div class="team-flag">' + flagVis + '</div>' +
             '<div class="team-name">' + capitalizar(p.nom_vis) + '</div>' +
@@ -4902,10 +4914,16 @@ function renderResumenVacio(msg) {
 
 // ── Utilidades ────────────────────────────────────────────────
 function sumarHoras(hora, n) {
-  // "14:00" + 2 → "16:00"
   var partes = hora.split(':');
   var h = (parseInt(partes[0]) + n) % 24;
   return (h < 10 ? '0' : '') + h + ':' + (partes[1] || '00');
+}
+
+function horaAMinutos(hora) {
+  // "14:15" → 855
+  if (!hora) return 0;
+  var partes = hora.split(':');
+  return parseInt(partes[0]) * 60 + parseInt(partes[1] || 0);
 }
 
 function capitalizar(str) {
@@ -4915,7 +4933,15 @@ function capitalizar(str) {
 
 // ── Inicializar simulador al cargar ───────────────────────────
 function initSimulador() {
-  simReset(); // poner la hora actual por defecto
+  var el = document.getElementById('sim-datetime');
+  if (!el) return;
+  // Solo inicializar si el campo está vacío — preservar valor elegido
+  if (!el.value) {
+    simReset();
+  } else {
+    // Solo actualizar el status sin resetear
+    simActualizar();
+  }
 }
 
 </script>

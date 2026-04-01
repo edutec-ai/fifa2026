@@ -4146,7 +4146,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fetch(urlAuth, {
       method : 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body   : JSON.stringify({ USR_NOM: usuario, HASH: hash50 })
     })
     .then(function(r) { return r.json(); })
@@ -4155,7 +4155,7 @@ document.addEventListener('DOMContentLoaded', function() {
       btnEntrar.textContent = 'Entrar';
 
       // Velneo retorna el usr si es válido
-      var usrId = data.usr || data.USR || data.id || null;
+      var usrId = data.ID || data.usr || data.USR || data.id || null;
 
       if (!usrId) {
         errEl.style.display = 'block';

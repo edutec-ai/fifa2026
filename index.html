@@ -631,6 +631,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
   border-color: #34c759;
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha3/0.9.3/sha3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -4121,45 +4122,77 @@ document.addEventListener('DOMContentLoaded', function() {
     var pass    = (document.getElementById('login-pass').value || '').trim();
     var errEl   = document.getElementById('login-error');
 
-    // ── Usuarios registrados (mockup — en producción valida con Velneo) ──
-    var USUARIOS = {
-      'hfhoyos' : { pass: '1234', usr: 3, nombre: 'Héctor' },
-      'villegas' : { pass: '1234', usr: 1, nombre: 'Henry'  },
-    };
-
     // Ocultar error previo
     errEl.style.display = 'none';
 
-    // Validar usuario
-    if (!USUARIOS[usuario] || USUARIOS[usuario].pass !== pass) {
+    // Validar que no estén vacíos
+    if (!usuario || !pass) {
       errEl.style.display = 'block';
+      errEl.textContent   = '⚠️ Ingresa usuario y contraseña';
       return;
     }
 
-    var perfil = USUARIOS[usuario];
+    // Deshabilitar botón mientras valida
+    var btnEntrar = document.getElementById('btn-entrar');
+    btnEntrar.disabled    = true;
+    btnEntrar.textContent = 'Verificando...';
 
-    // Actualizar saludo inmediato
-    // Guardar nombre del usuario para usarlo en toda la app
-    window.SIRIIN_USUARIO_NOMBRE = perfil.nombre;
+    // ── Calcular Hash3 (SHA3-256, primeros 50 chars) ──────────
+    var hashCompleto = sha3_256(pass);
+    var hash50       = hashCompleto.substring(0, 50);
 
-    // Recordar usuario si el checkbox está activo
-    if (document.getElementById('chk-recordar').checked) {
-      localStorage.setItem('siriin_usuario', usuario);
-      localStorage.setItem('siriin_recordar', '1');
-    } else {
-      localStorage.removeItem('siriin_usuario');
-      localStorage.removeItem('siriin_recordar');
-    }
-    document.getElementById('cuenta-saludo').textContent = '¡Hola, ' + perfil.nombre + '!';
-    document.getElementById('cuenta-sub').textContent    = 'Cargando tus cuentas desde Velneo...';
-    document.getElementById('cuenta-list').innerHTML     = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando...</div>';
+    // ── POST a Velneo para validar credenciales ───────────────
+    var urlAuth = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2/_process/API_VLD_USR?api_key=' + KEY;
 
-    // Ir a pantalla de cuentas
-    goTo('s-cuentas');
+    fetch(urlAuth, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ USR_NOM: usuario, HASH: hash50 })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btnEntrar.disabled    = false;
+      btnEntrar.textContent = 'Entrar';
 
-    // ── Fetch api jugadores (centralizado en fetchJugadores) ──
-    sessionPerfil = perfil;
-    fetchJugadores(perfil);
+      // Velneo retorna el usr si es válido
+      var usrId = data.usr || data.USR || data.id || null;
+
+      if (!usrId) {
+        errEl.style.display = 'block';
+        errEl.textContent   = '⚠️ El usuario no está registrado';
+        return;
+      }
+
+      // ── Nombres por usr (temporal hasta que Velneo los incluya) ──
+      var NOMBRES = { '1': 'Henry', '3': 'Héctor' };
+      var nombre  = NOMBRES[String(usrId)] || usuario;
+      var perfil  = { usr: Number(usrId), nombre: nombre };
+
+      window.SIRIIN_USUARIO_NOMBRE = nombre;
+
+      // Recordar usuario si el checkbox está activo
+      if (document.getElementById('chk-recordar').checked) {
+        localStorage.setItem('siriin_usuario', usuario);
+        localStorage.setItem('siriin_recordar', '1');
+      } else {
+        localStorage.removeItem('siriin_usuario');
+        localStorage.removeItem('siriin_recordar');
+      }
+
+      document.getElementById('cuenta-saludo').textContent = '¡Hola, ' + nombre + '!';
+      document.getElementById('cuenta-sub').textContent    = 'Cargando tus cuentas desde Velneo...';
+      document.getElementById('cuenta-list').innerHTML     = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando...</div>';
+
+      goTo('s-cuentas');
+      sessionPerfil = perfil;
+      fetchJugadores(perfil);
+    })
+    .catch(function() {
+      btnEntrar.disabled    = false;
+      btnEntrar.textContent = 'Entrar';
+      errEl.style.display   = 'block';
+      errEl.textContent     = '⚠️ Error de conexión con Velneo';
+    });
   });
 
   document.getElementById('tab-home').addEventListener('click', function(){ goTo('s-home'); });

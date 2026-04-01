@@ -580,6 +580,56 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .audit-esp-lbl { font-size: 13px; color: #8e8e93; width: 120px; flex-shrink: 0; }
 .audit-esp-val { font-size: 13px; font-weight: 600; flex: 1; }
 .audit-esp-pts { font-size: 12px; font-weight: 700; color: #ff9500; }
+
+/* ── TOGGLE APPLE STYLE ─────────────────────────────────── */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-wrap input[type="checkbox"] {
+  display: none;
+}
+.toggle-track {
+  width: 51px;
+  height: 31px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 31px;
+  position: relative;
+  transition: background 0.3s cubic-bezier(0.4,0,0.2,1);
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 23px;
+  height: 23px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.toggle-wrap input:checked + .toggle-track {
+  background: #34c759;
+  border-color: #34c759;
+}
+.toggle-wrap input:checked + .toggle-track::after {
+  transform: translateX(20px);
+}
+/* Variante oscura — para usar fuera del login */
+.toggle-track.dark {
+  background: #e5e5ea;
+  border-color: #e5e5ea;
+}
+.toggle-wrap input:checked + .toggle-track.dark {
+  background: #34c759;
+  border-color: #34c759;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -657,10 +707,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Usuario</div>
             <input class="login-field" type="text" id="login-usuario" placeholder="" autocomplete="off" style="margin-bottom:16px;" />
             <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Contraseña</div>
-            <input class="login-field" type="password" id="login-pass" placeholder="••••••••" style="margin-bottom:12px;" />
+            <input class="login-field" type="password" id="login-pass" placeholder="" style="margin-bottom:12px;" />
             <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
-                <input type="checkbox" id="chk-recordar" style="width:16px;height:16px;accent-color:#fff;cursor:pointer;">
+              <label class="toggle-wrap">
+                <input type="checkbox" id="chk-recordar">
+                <div class="toggle-track"></div>
                 <span style="font-size:13px;color:rgba(255,255,255,0.8);">Recordar mi usuario</span>
               </label>
             </div>
@@ -727,41 +778,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
           <!-- TAB: MI RESUMEN -->
           <div id="htab-content-resumen">
-            <div class="section-title">En vivo ahora</div>
-            <div class="match-cards-grid">
-            <div class="match-card">
-              <div class="match-header"><span class="match-phase">Grupo A · Jornada 1</span><span class="match-badge badge-live">● EN VIVO 34'</span></div>
-              <div class="match-teams">
-                <div class="team"><div class="team-flag">🇧🇷</div><div class="team-name">Brasil</div></div>
-                <div class="match-score">2 - 1</div>
-                <div class="team"><div class="team-flag">🇲🇽</div><div class="team-name">México</div></div>
-              </div>
-              <div class="my-pick"><span class="pick-label">Mi pronóstico</span><span class="pick-val">Brasil 2 - México 0</span></div>
+            <div class="section-title" id="resumen-hoy-title">Partidos de hoy</div>
+            <div class="match-cards-grid" id="resumen-hoy-cards">
+              <div style="padding:20px;text-align:center;color:#8e8e93;font-size:13px;">⟳ Cargando...</div>
             </div>
-            </div>
-            <div class="section-title">Próximos partidos</div>
-            <div class="match-cards-grid">
-            <div class="match-card">
-              <div class="match-header"><span class="match-phase">Grupo K · Jornada 1</span><span class="match-badge badge-open">Abierta · 100%</span></div>
-              <div class="match-teams">
-                <div class="team"><div class="team-flag">🇨🇴</div><div class="team-name">Colombia</div></div>
-                <div class="match-vs">vs</div>
-                <div class="team"><div class="team-flag">🇵🇹</div><div class="team-name">Portugal</div></div>
-              </div>
-              <div class="match-time">Hoy · 18:00 · Estadio Azteca</div>
-              <div class="my-pick"><span class="pick-label">Sin pronóstico aún</span><span class="pick-val nav-partido">Apostar →</span></div>
-            </div>
-            <div class="match-card">
-              <div class="match-header"><span class="match-phase">Grupo C · Jornada 1</span><span class="match-badge badge-pending">Cierra en 2h</span></div>
-              <div class="match-teams">
-                <div class="team"><div class="team-flag">🇦🇷</div><div class="team-name">Argentina</div></div>
-                <div class="match-vs">vs</div>
-                <div class="team"><div class="team-flag">🇫🇷</div><div class="team-name">Francia</div></div>
-              </div>
-              <div class="match-time">Hoy · 21:00 · MetLife Stadium</div>
-              <div class="my-pick"><span class="pick-label">Mi pronóstico</span><span class="pick-val">Argentina 1 - Francia 1</span></div>
-            </div>
-            </div>
+            <div class="section-title" id="resumen-proximos-title" style="display:none;">Próximos partidos</div>
+            <div class="match-cards-grid" id="resumen-proximos-cards"></div>
           </div>
 
           <!-- TAB: FASE DE GRUPOS -->
@@ -1343,6 +1365,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;display:flex;align-items:center;gap:8px;"><span id="lab-gear" onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;display:inline-block;" title="Refrescar todas las APIs">⚙️</span> Laboratorio de APIs</div>
               <div style="font-size:12px;color:#8e8e93;">Velneo · Carga automática al entrar · ↻ para refrescar individualmente</div>
             </div>
+            <!-- ╔═══════════════════════════════════════════
+                 ║ SIMULADOR DE FECHA/HORA
+                 ╚═══════════════════════════════════════════ -->
+            <div style="background:#fff;border:1px solid #e5e5ea;border-radius:14px;padding:14px 16px;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:16px;">🕐</span>
+                <span style="font-size:13px;font-weight:700;color:#000;">Simulador de fecha y hora</span>
+                <span style="font-size:11px;color:#8e8e93;margin-left:auto;">Afecta la pantalla de Partidos</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <input type="datetime-local" id="sim-datetime"
+                  style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid #e5e5ea;border-radius:10px;font-size:14px;color:#000;background:#f9f9f9;outline:none;"
+                  onchange="simActualizar()">
+                <button onclick="simReset()"
+                  style="padding:8px 14px;background:#f2f2f7;border:none;border-radius:10px;font-size:12px;font-weight:600;color:#3c3c43;cursor:pointer;white-space:nowrap;">
+                  ↺ Ahora
+                </button>
+                <button onclick="simActualizar()"
+                  style="padding:8px 14px;background:#007aff;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                  ▶ Aplicar
+                </button>
+              </div>
+              <div id="sim-status" style="margin-top:8px;font-size:11px;color:#8e8e93;"></div>
+            </div>
+            <div style="display:none;">
+            </div>
             <div id="lab-apis" style="display:flex;flex-direction:column;gap:10px;"></div>
             <div id="lab-resultado" style="margin-top:20px;display:none;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
@@ -1659,6 +1707,8 @@ var LAB_APIS = [
 var labInited = false;
 
 function initLab() {
+  // Inicializar simulador cuando se carga el Lab
+  initSimulador();
   var container = document.getElementById('lab-apis');
   if (!container) return;
 
@@ -3881,6 +3931,15 @@ function goTo(screenId) {
 
   var isAuth = (screenId === 's-login' || screenId === 's-cuentas');
 
+  // Acciones específicas por pantalla
+  if (screenId === 's-home') {
+    cargarPartidosYResumen();
+  }
+  if (screenId === 's-estadios') {
+    initLab();
+    initSimulador();
+  }
+
   // Tab bar (móvil)
   var tb = document.getElementById('tab-bar');
   tb.style.display = isAuth ? 'none' : 'flex';
@@ -4603,6 +4662,260 @@ function volverAlLogin() {
   if (errEl) errEl.style.display = 'none';
 
   goTo('s-login');
+}
+
+// ╔══════════════════════════════════════════════════════════════
+// SIMULADOR DE FECHA/HORA + PARTIDOS DINÁMICOS
+// ╚══════════════════════════════════════════════════════════════
+
+// Fecha del Mundial
+var MUNDIAL_INICIO = '2026-06-11';
+var MUNDIAL_FIN    = '2026-07-19';
+
+// Caché de partidos de Velneo
+var partidosCache = [];
+
+// Banderas por nombre de país
+var BANDERAS = {
+  'MEXICO':'🇲🇽','SUDAFRICA':'🇿🇦','COREA DEL SUR':'🇰🇷','CANADA':'🇨🇦',
+  'QATAR':'🇶🇦','SUIZA':'🇨🇭','BRASIL':'🇧🇷','MARRUECOS':'🇲🇦','HAITI':'🇭🇹',
+  'ESCOCIA':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','ESTADOS UNIDOS':'🇺🇸','PARAGUAY':'🇵🇾','AUSTRALIA':'🇦🇺',
+  'ALEMANIA':'🇩🇪','CURAZAO':'🇨🇼','COSTA DE MARFIL':'🇨🇮','ECUADOR':'🇪🇨',
+  'PAISES BAJOS':'🇳🇱','JAPON':'🇯🇵','TUNEZ':'🇹🇳','BELGICA':'🇧🇪',
+  'EGIPTO':'🇪🇬','IRAN':'🇮🇷','NUEVA ZELANDA':'🇳🇿','ESPANA':'🇪🇸',
+  'CABO VERDE':'🇨🇻','ARABIA SAUDITA':'🇸🇦','URUGUAY':'🇺🇾','FRANCIA':'🇫🇷',
+  'SENEGAL':'🇸🇳','NORUEGA':'🇳🇴','ARGENTINA':'🇦🇷','ARGELIA':'🇩🇿',
+  'AUSTRIA':'🇦🇹','JORDANIA':'🇯🇴','PORTUGAL':'🇵🇹','UZBEKISTAN':'🇺🇿',
+  'COLOMBIA':'🇨🇴','INGLATERRA':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','CROACIA':'🇭🇷','GHANA':'🇬🇭',
+  'PANAMA':'🇵🇦',
+};
+
+function bandera(nombre) {
+  var n = (nombre || '').toUpperCase().trim();
+  return BANDERAS[n] || '🏳️';
+}
+
+// ── Formatear fecha ISO a YYYY-MM-DD ──────────────────────────
+function fmtFecha(iso) {
+  if (!iso) return '';
+  return iso.substring(0, 10); // "2026-06-11T00:00:00.000Z" → "2026-06-11"
+}
+
+// ── Formatear hora a HH:MM ────────────────────────────────────
+function fmtHora(h) {
+  if (!h) return '';
+  return h.substring(0, 5); // "14:00:00.000" → "14:00"
+}
+
+// ── Simulador: valor actual ───────────────────────────────────
+function simGetFecha() {
+  var el = document.getElementById('sim-datetime');
+  if (!el || !el.value) return new Date();
+  return new Date(el.value);
+}
+
+function simGetFechaStr() {
+  var d = simGetFecha();
+  return d.toISOString().substring(0, 10); // YYYY-MM-DD
+}
+
+function simGetHoraStr() {
+  var d = simGetFecha();
+  return d.toTimeString().substring(0, 5); // HH:MM
+}
+
+// ── Reset al momento actual ───────────────────────────────────
+function simReset() {
+  var el = document.getElementById('sim-datetime');
+  if (!el) return;
+  var now = new Date();
+  // datetime-local necesita formato YYYY-MM-DDTHH:MM
+  var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString().substring(0, 16);
+  el.value = local;
+  simActualizar();
+}
+
+// ── Aplicar simulador → refrescar resumen ────────────────────
+function simActualizar() {
+  var fechaSim = simGetFechaStr();
+  var horaSim  = simGetHoraStr();
+  var status   = document.getElementById('sim-status');
+
+  if (status) {
+    status.textContent = '📅 Simulando: ' + fechaSim + ' · ' + horaSim;
+  }
+
+  // Refrescar resumen con la fecha simulada
+  if (partidosCache.length) {
+    renderResumen(partidosCache, fechaSim, horaSim);
+  } else {
+    cargarPartidosYResumen();
+  }
+}
+
+// ── Cargar fifa_ptd y renderizar ─────────────────────────────
+function cargarPartidosYResumen() {
+  var url = BASE + '/fifa_ptd?api_key=' + KEY;
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      partidosCache = data.fifa_ptd || [];
+      renderResumen(partidosCache, simGetFechaStr(), simGetHoraStr());
+    })
+    .catch(function() {
+      renderResumenVacio('Error al cargar partidos de Velneo');
+    });
+}
+
+// ── Lógica principal del resumen ─────────────────────────────
+function renderResumen(partidos, fechaSim, horaSim) {
+  var hoyCards     = document.getElementById('resumen-hoy-cards');
+  var hoyTitle     = document.getElementById('resumen-hoy-title');
+  var proxCards    = document.getElementById('resumen-proximos-cards');
+  var proxTitle    = document.getElementById('resumen-proximos-title');
+
+  if (!hoyCards) return;
+
+  // ── Casos especiales de fecha ─────────────────────────────
+  // Antes de la inauguración
+  if (fechaSim < MUNDIAL_INICIO) {
+    hoyTitle.textContent = 'Cuenta regresiva';
+    hoyCards.innerHTML =
+      '<div class="match-card" style="text-align:center;padding:24px 16px;">' +
+        '<div style="font-size:32px;margin-bottom:8px;">🏟️</div>' +
+        '<div style="font-size:15px;font-weight:700;color:#000;margin-bottom:4px;">Partido de Inauguración</div>' +
+        '<div style="font-size:13px;color:#8e8e93;">México 🇲🇽 vs 🇿🇦 Sudáfrica</div>' +
+        '<div style="font-size:12px;color:#007aff;margin-top:8px;font-weight:600;">11 de junio · 14:00 · Estadio Azteca</div>' +
+      '</div>';
+    if (proxTitle) proxTitle.style.display = 'none';
+    if (proxCards) proxCards.innerHTML = '';
+    return;
+  }
+
+  // Después del Mundial
+  if (fechaSim > MUNDIAL_FIN) {
+    hoyTitle.textContent = 'El Mundial terminó';
+    hoyCards.innerHTML =
+      '<div class="match-card" style="text-align:center;padding:28px 16px;">' +
+        '<div style="font-size:40px;margin-bottom:10px;">🏆</div>' +
+        '<div style="font-size:16px;font-weight:700;color:#000;margin-bottom:6px;">¡Gracias por participar!</div>' +
+        '<div style="font-size:13px;color:#8e8e93;line-height:1.5;">Gracias por participar en<br>La Polla Mundialista 2026</div>' +
+      '</div>';
+    if (proxTitle) proxTitle.style.display = 'none';
+    if (proxCards) proxCards.innerHTML = '';
+    return;
+  }
+
+  // ── Partidos de hoy ───────────────────────────────────────
+  var hoy = partidos.filter(function(p) {
+    return fmtFecha(p.fch) === fechaSim;
+  });
+
+  if (!hoy.length) {
+    // Día de descanso
+    hoyTitle.textContent = 'Hoy · ' + fechaSim;
+    hoyCards.innerHTML =
+      '<div class="match-card" style="text-align:center;padding:24px 16px;">' +
+        '<div style="font-size:32px;margin-bottom:8px;">😴</div>' +
+        '<div style="font-size:15px;font-weight:700;color:#000;margin-bottom:4px;">Jornada de Descanso</div>' +
+        '<div style="font-size:13px;color:#8e8e93;">No hay partidos programados para hoy</div>' +
+      '</div>';
+  } else {
+    hoyTitle.textContent = 'Partidos de hoy · ' + fechaSim;
+    hoyCards.innerHTML = '';
+    hoy.forEach(function(p) {
+      var hora    = fmtHora(p.hor);
+      var enVivo  = hora <= horaSim && horaSim <= sumarHoras(hora, 2);
+      var flagLoc = bandera(p.nom_loc);
+      var flagVis = bandera(p.nom_vis);
+      var badge   = enVivo
+        ? '<span class="match-badge badge-live">● EN VIVO</span>'
+        : '<span class="match-badge badge-open">' + hora + '</span>';
+
+      var card = document.createElement('div');
+      card.className = 'match-card';
+      card.innerHTML =
+        '<div class="match-header">' +
+          '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
+          badge +
+        '</div>' +
+        '<div class="match-teams">' +
+          '<div class="team">' +
+            '<div class="team-flag">' + flagLoc + '</div>' +
+            '<div class="team-name">' + capitalizar(p.nom_loc) + '</div>' +
+          '</div>' +
+          '<div class="match-' + (enVivo ? 'score">? - ?' : 'vs">vs') + '</div>' +
+          '<div class="team">' +
+            '<div class="team-flag">' + flagVis + '</div>' +
+            '<div class="team-name">' + capitalizar(p.nom_vis) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="match-time">' + hora + ' hs · ' + (p.nom_est || '') + '</div>';
+      hoyCards.appendChild(card);
+    });
+  }
+
+  // ── Próximos partidos (siguiente día con partidos) ────────
+  var proximos = partidos.filter(function(p) {
+    return fmtFecha(p.fch) > fechaSim;
+  }).slice(0, 4);
+
+  if (proximos.length) {
+    proxTitle.style.display = '';
+    proxTitle.textContent   = 'Próximos partidos';
+    proxCards.innerHTML     = '';
+    proximos.forEach(function(p) {
+      var flagLoc = bandera(p.nom_loc);
+      var flagVis = bandera(p.nom_vis);
+      var card = document.createElement('div');
+      card.className = 'match-card';
+      card.innerHTML =
+        '<div class="match-header">' +
+          '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
+          '<span class="match-badge badge-pending">' + fmtFecha(p.fch) + '</span>' +
+        '</div>' +
+        '<div class="match-teams">' +
+          '<div class="team">' +
+            '<div class="team-flag">' + flagLoc + '</div>' +
+            '<div class="team-name">' + capitalizar(p.nom_loc) + '</div>' +
+          '</div>' +
+          '<div class="match-vs">vs</div>' +
+          '<div class="team">' +
+            '<div class="team-flag">' + flagVis + '</div>' +
+            '<div class="team-name">' + capitalizar(p.nom_vis) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="match-time">' + fmtHora(p.hor) + ' hs · ' + (p.nom_est || '') + '</div>';
+      proxCards.appendChild(card);
+    });
+  } else {
+    if (proxTitle) proxTitle.style.display = 'none';
+    if (proxCards) proxCards.innerHTML = '';
+  }
+}
+
+function renderResumenVacio(msg) {
+  var el = document.getElementById('resumen-hoy-cards');
+  if (el) el.innerHTML = '<div style="padding:20px;text-align:center;color:#8e8e93;font-size:13px;">⚠️ ' + msg + '</div>';
+}
+
+// ── Utilidades ────────────────────────────────────────────────
+function sumarHoras(hora, n) {
+  // "14:00" + 2 → "16:00"
+  var partes = hora.split(':');
+  var h = (parseInt(partes[0]) + n) % 24;
+  return (h < 10 ? '0' : '') + h + ':' + (partes[1] || '00');
+}
+
+function capitalizar(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+// ── Inicializar simulador al cargar ───────────────────────────
+function initSimulador() {
+  simReset(); // poner la hora actual por defecto
 }
 
 </script>

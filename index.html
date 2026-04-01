@@ -210,7 +210,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .login-title { font-size: 26px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
 .login-sub { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 40px; }
 .login-field { width: 100%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 14px; padding: 14px 18px; font-size: 16px; color: #fff; margin-bottom: 12px; outline: none; }
-.login-field::placeholder { color: rgba(255,255,255,0.5); }
+.login-field::placeholder { color: rgba(255,255,255,0.75); }
 .btn-primary { width: 100%; background: #fff; color: #003087; border: none; border-radius: 14px; padding: 15px; font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 8px; }
 .login-divider { color: rgba(255,255,255,0.4); font-size: 13px; margin: 16px 0; }
 .btn-secondary { width: 100%; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 14px; padding: 15px; font-size: 17px; font-weight: 500; cursor: pointer; }
@@ -622,7 +622,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <div class="sidebar-user">
           <div class="sidebar-user-avatar" id="sidebar-avatar">CR</div>
           <div>
-            <div class="sidebar-user-name">Carlos Rodríguez</div>
+            <div class="sidebar-user-name" id="sidebar-user-name">Carlos Rodríguez</div>
             <div class="sidebar-user-pts" id="sidebar-pts">247 pts · #4</div>
           </div>
         </div>
@@ -640,7 +640,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             </div>
             <div class="top-bar-actions">
               <button class="top-bar-btn" onclick="generarExtractoPDF()">⬇️ PDF</button>
-              <button class="top-bar-btn" onclick="goTo('s-cuentas')">🏠</button>
+              <button class="top-bar-btn" onclick="goTo('s-cuentas'); if(sessionPerfil) fetchJugadores(sessionPerfil);">🏠</button>
             </div>
           </div>
 
@@ -654,10 +654,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             <div class="login-logo">⚽</div>
             <div class="login-title">La Polla Mundialista</div>
             <div class="login-sub">Copa Mundial FIFA 2026</div>
-            <input class="login-field" type="text" id="login-usuario" placeholder="Usuario" autocomplete="off" />
-            <input class="login-field" type="password" id="login-pass" placeholder="Contraseña" />
-            <div style="font-size:12px;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:20px;margin-top:-4px;">Las credenciales son asignadas por el organizador</div>
-            <button class="btn-primary" id="btn-entrar">Entrar</button>
+            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Usuario</div>
+            <input class="login-field" type="text" id="login-usuario" placeholder="" autocomplete="off" style="margin-bottom:16px;" />
+            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Contraseña</div>
+            <input class="login-field" type="password" id="login-pass" placeholder="••••••••" style="margin-bottom:12px;" />
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
+                <input type="checkbox" id="chk-recordar" style="width:16px;height:16px;accent-color:#fff;cursor:pointer;">
+                <span style="font-size:13px;color:rgba(255,255,255,0.8);">Recordar mi usuario</span>
+              </label>
+            </div>
+            <div id="login-error" style="display:none;background:rgba(255,59,48,0.25);border:1px solid rgba(255,59,48,0.5);border-radius:10px;padding:10px 14px;font-size:13px;color:#fff;text-align:center;margin-bottom:12px;">
+  ⚠️ El usuario no está registrado
+</div>
+<button class="btn-primary" id="btn-entrar">Entrar</button>
           </div>
         </div>
 
@@ -665,40 +675,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <div class="screen" id="s-cuentas">
           <div class="cuenta-bg">
             <div class="cuenta-logo">⚽</div>
-            <div class="cuenta-title">¡Hola, Carlos!</div>
-            <div class="cuenta-sub">Tienes varias cuentas registradas.<br>¿Con cuál vas a jugar hoy?</div>
-            <div class="cuenta-list">
-              <div class="cuenta-item" onclick="selectCuenta('Cuenta 1', '@carlos1'); goTo('s-home')">
-                <div class="cuenta-avatar" style="background:#f0a500;color:#fff;">CR</div>
-                <div class="cuenta-info">
-                  <div class="cuenta-nombre">Carlos Rodríguez</div>
-                  <div class="cuenta-tag">Cuenta 1 · @carlos1</div>
-                </div>
-                <div class="cuenta-pts">247 pts</div>
-                <div class="cuenta-chevron">›</div>
-              </div>
-              <div class="cuenta-item" onclick="selectCuenta('Cuenta 2', '@carlos2'); goTo('s-home')">
-                <div class="cuenta-avatar" style="background:#34c759;color:#fff;">CR</div>
-                <div class="cuenta-info">
-                  <div class="cuenta-nombre">Carlos Rodríguez</div>
-                  <div class="cuenta-tag">Cuenta 2 · @carlos2</div>
-                </div>
-                <div class="cuenta-pts">183 pts</div>
-                <div class="cuenta-chevron">›</div>
-              </div>
-              <div class="cuenta-item" onclick="selectCuenta('Cuenta 3', '@carlos3'); goTo('s-home')">
-                <div class="cuenta-avatar" style="background:#af52de;color:#fff;">CR</div>
-                <div class="cuenta-info">
-                  <div class="cuenta-nombre">Carlos Rodríguez</div>
-                  <div class="cuenta-tag">Cuenta 3 · @carlos3</div>
-                </div>
-                <div class="cuenta-pts">95 pts</div>
-                <div class="cuenta-chevron">›</div>
-              </div>
+            <div class="cuenta-title" id="cuenta-saludo">¡Hola!</div>
+            <div class="cuenta-sub" id="cuenta-sub">Cargando tus cuentas...</div>
+            <div class="cuenta-list" id="cuenta-list">
+              <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando Velneo...</div>
             </div>
-            <button class="btn-otra-cuenta" onclick="goTo('s-login')">← Volver / Cambiar usuario</button>
+            <button class="btn-otra-cuenta" onclick="volverAlLogin()">← Volver / Cambiar usuario</button>
             <div style="height:1px;background:rgba(255,255,255,0.15);margin:8px 0;"></div>
-            <button class="btn-otra-cuenta" onclick="goTo('s-login')" style="color:rgba(255,100,100,0.85);font-size:13px;">⏻ Salir del App</button>
+            <button class="btn-otra-cuenta" onclick="volverAlLogin()" style="color:rgba(255,100,100,0.85);font-size:13px;">⏻ Salir del App</button>
           </div>
         </div>
 
@@ -708,7 +692,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <div class="screen" id="s-home">
           <div class="home-header">
             <div class="home-greeting">Buenas tardes</div>
-            <div class="home-name">Carlos Rodríguez 👋</div>
+            <div class="home-name" id="home-name">Carlos Rodríguez 👋</div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;" class="home-header-actions-row">
               <div class="home-cuenta-tag" id="home-cuenta-tag" style="margin-bottom:0;">📋 Cuenta 1 · @carlos1</div>
               <div class="home-header-actions" style="display:flex;gap:6px;">
@@ -716,7 +700,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                 <button onclick="generarExtractoPDF()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">
                   <span style="font-size:13px;">⬇️</span> PDF
                 </button>
-                <button onclick="goTo('s-cuentas')" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
+                <button onclick="goTo('s-cuentas'); if(sessionPerfil) fetchJugadores(sessionPerfil);" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
                   <span style="font-size:13px;">🏠</span>
                 </button>
               </div>
@@ -1356,7 +1340,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <div class="screen" id="s-estadios">
           <div style="padding:16px 16px 100px;">
             <div style="margin-bottom:16px;">
-              <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;display:flex;align-items:center;gap:8px;"><span onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;" title="Refrescar todas las APIs">⚙️</span> Laboratorio de APIs</div>
+              <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;display:flex;align-items:center;gap:8px;"><span id="lab-gear" onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;display:inline-block;" title="Refrescar todas las APIs">⚙️</span> Laboratorio de APIs</div>
               <div style="font-size:12px;color:#8e8e93;">Velneo · Carga automática al entrar · ↻ para refrescar individualmente</div>
             </div>
             <div id="lab-apis" style="display:flex;flex-direction:column;gap:10px;"></div>
@@ -3956,11 +3940,29 @@ function changeScore(team, delta) {
 }
 
 // ── SELECCIÓN DE CUENTA ───────────────────────────────────────────────────
-function selectCuenta(nombre, usuario) {
+function selectCuenta(nombre, usuario, pts, color, iniciales) {
+  // Tag en home
   var tag = document.getElementById('home-cuenta-tag');
   if (tag) tag.textContent = '📋 ' + nombre + ' · ' + usuario;
-  var pts = document.getElementById('sidebar-pts');
-  if (pts) pts.textContent = usuario;
+
+  // Sidebar pts
+  var sidebarPts = document.getElementById('sidebar-pts');
+  if (sidebarPts) sidebarPts.textContent = (pts || 0) + ' pts · ' + usuario;
+
+  // Avatar sidebar
+  var sidebarAvatar = document.getElementById('sidebar-avatar');
+  if (sidebarAvatar) {
+    sidebarAvatar.textContent = iniciales || (nombre||'?').substring(0,2).toUpperCase();
+    if (color) sidebarAvatar.style.background = color;
+  }
+
+  // Nombre en home (nombre completo del usuario, no de la cuenta)
+  var homeName = document.getElementById('home-name');
+  if (homeName) homeName.textContent = window.SIRIIN_USUARIO_NOMBRE ? window.SIRIIN_USUARIO_NOMBRE + ' 👋' : nombre + ' 👋';
+
+  // Nombre en sidebar
+  var sidebarName = document.getElementById('sidebar-user-name');
+  if (sidebarName) sidebarName.textContent = window.SIRIIN_USUARIO_NOMBRE || nombre;
 }
 
 // ── TABLA TABS ────────────────────────────────────────────────────────────
@@ -4043,7 +4045,63 @@ function toggleCatAcc(id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('btn-entrar').addEventListener('click', function(){ goTo('s-cuentas'); });
+  // ── Precargar usuario recordado ──────────────────────────────
+  (function() {
+    var recordar = localStorage.getItem('siriin_recordar');
+    var usuario  = localStorage.getItem('siriin_usuario');
+    if (recordar === '1' && usuario) {
+      var inputU = document.getElementById('login-usuario');
+      var chk    = document.getElementById('chk-recordar');
+      if (inputU) inputU.value = usuario;
+      if (chk)    chk.checked  = true;
+    }
+  })();
+
+  document.getElementById('btn-entrar').addEventListener('click', function() {
+    var usuario = (document.getElementById('login-usuario').value || '').trim().toLowerCase();
+    var pass    = (document.getElementById('login-pass').value || '').trim();
+    var errEl   = document.getElementById('login-error');
+
+    // ── Usuarios registrados (mockup — en producción valida con Velneo) ──
+    var USUARIOS = {
+      'hfhoyos' : { pass: '1234', usr: 3, nombre: 'Héctor' },
+      'villegas' : { pass: '1234', usr: 1, nombre: 'Henry'  },
+    };
+
+    // Ocultar error previo
+    errEl.style.display = 'none';
+
+    // Validar usuario
+    if (!USUARIOS[usuario] || USUARIOS[usuario].pass !== pass) {
+      errEl.style.display = 'block';
+      return;
+    }
+
+    var perfil = USUARIOS[usuario];
+
+    // Actualizar saludo inmediato
+    // Guardar nombre del usuario para usarlo en toda la app
+    window.SIRIIN_USUARIO_NOMBRE = perfil.nombre;
+
+    // Recordar usuario si el checkbox está activo
+    if (document.getElementById('chk-recordar').checked) {
+      localStorage.setItem('siriin_usuario', usuario);
+      localStorage.setItem('siriin_recordar', '1');
+    } else {
+      localStorage.removeItem('siriin_usuario');
+      localStorage.removeItem('siriin_recordar');
+    }
+    document.getElementById('cuenta-saludo').textContent = '¡Hola, ' + perfil.nombre + '!';
+    document.getElementById('cuenta-sub').textContent    = 'Cargando tus cuentas desde Velneo...';
+    document.getElementById('cuenta-list').innerHTML     = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando...</div>';
+
+    // Ir a pantalla de cuentas
+    goTo('s-cuentas');
+
+    // ── Fetch api jugadores (centralizado en fetchJugadores) ──
+    sessionPerfil = perfil;
+    fetchJugadores(perfil);
+  });
 
   document.getElementById('tab-home').addEventListener('click', function(){ goTo('s-home'); });
   document.getElementById('tab-tabla').addEventListener('click', function(){ goTo('s-tabla'); });
@@ -4457,19 +4515,96 @@ function tainoMostrarRespuesta(texto) {
 }
 
 
+// ╔══════════════════════════════════════════════════════
+// FETCH JUGADORES — función reutilizable
+// Llama a fifa_jug y renderiza las cuentas del usuario activo
+// ╚══════════════════════════════════════════════════════
+function fetchJugadores(perfil) {
+  if (!perfil) return;
+  var url = BASE + '/fifa_jug?api_key=' + KEY;
+  var list = document.getElementById('cuenta-list');
+  var sub  = document.getElementById('cuenta-sub');
+  if (sub)  sub.textContent = 'Cargando tus cuentas desde Velneo...';
+  if (list) list.innerHTML  = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando...</div>';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var todos   = data.fifa_jug || [];
+      var cuentas = todos.filter(function(j) { return Number(j.usr) === perfil.usr && j.off !== true; });
+      var colores = ['#f0a500','#34c759','#af52de','#007aff','#ff3b30','#ff9500'];
+
+      if (!cuentas.length) {
+        if (sub)  sub.textContent = 'No se encontraron cuentas.';
+        if (list) list.innerHTML  = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.5);">Sin cuentas disponibles</div>';
+        return;
+      }
+
+      if (sub) sub.textContent = 'Tienes ' + cuentas.length + ' cuenta' +
+        (cuentas.length > 1 ? 's' : '') + ' registrada' +
+        (cuentas.length > 1 ? 's' : '') + '. ¿Con cuál vas a jugar hoy?';
+
+      if (list) {
+        list.innerHTML = '';
+        cuentas.forEach(function(c, i) {
+          var iniciales = (c.name || 'X').split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().substring(0,2);
+          var color     = colores[i % colores.length];
+          var pts       = c.ptr || c.pun || 0;
+          var item      = document.createElement('div');
+          item.className = 'cuenta-item';
+          item.innerHTML =
+            '<div class="cuenta-avatar" style="background:'+color+';color:#fff;">'+iniciales+'</div>'+
+            '<div class="cuenta-info">'+
+              '<div class="cuenta-nombre">'+c.name+'</div>'+
+              '<div class="cuenta-tag">Cuenta '+(i+1)+' · id:'+c.id+'</div>'+
+            '</div>'+
+            '<div class="cuenta-pts">'+pts+' pts</div>'+
+            '<div class="cuenta-chevron">›</div>';
+          item.onclick = function() {
+            selectCuenta(c.name, 'id:'+c.id, pts, color, iniciales);
+            goTo('s-home');
+          };
+          list.appendChild(item);
+        });
+      }
+
+      // Actualizar también el Lab si está disponible
+      labConsultar('fifa_jug');
+    })
+    .catch(function(err) {
+      if (sub)  sub.textContent = 'Error al conectar con Velneo';
+      if (list) list.innerHTML  = '<div style="text-align:center;padding:20px;color:rgba(255,59,48,0.8);font-size:13px;">⚠️ ' + err.message + '</div>';
+    });
+}
+
+// Perfil activo en sesión
+var sessionPerfil = null;
+
 function labRefrescarTodo(el) {
-  // Animar el ícono
   el.style.transition = 'transform 0.6s ease';
   el.style.transform  = 'rotate(360deg)';
-  setTimeout(function() {
-    el.style.transition = '';
-    el.style.transform  = '';
-  }, 650);
-  // Refrescar todas las APIs
-  LAB_APIS.forEach(function(api) {
-    labConsultar(api.id);
-  });
+  setTimeout(function() { el.style.transition = ''; el.style.transform = ''; }, 650);
+  LAB_APIS.forEach(function(api) { labConsultar(api.id); });
 }
+
+function volverAlLogin() {
+  var recordar = localStorage.getItem('siriin_recordar') === '1';
+  var passEl   = document.getElementById('login-pass');
+  var userEl   = document.getElementById('login-usuario');
+  var errEl    = document.getElementById('login-error');
+
+  // Siempre borrar contraseña
+  if (passEl) passEl.value = '';
+
+  // Borrar usuario solo si NO está marcado recordar
+  if (!recordar && userEl) userEl.value = '';
+
+  // Ocultar error previo
+  if (errEl) errEl.style.display = 'none';
+
+  goTo('s-login');
+}
+
 </script>
 </body>
 </html>

@@ -1,3 +1,23 @@
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v44            ║
+║                                                                  ║
+║  PLANTA BAJA  ·  Login  ·  Selección de cuenta  ·  goTo()       ║
+║  TORRE PARTIDOS ·  Home  ·  Grupos  ·  Finales/Bracket          ║
+║  TORRE ESPECIALES ·  Finalistas  ·  Tabla de Grupos             ║
+║  TORRE TABLA   ·  General  ·  Categorías  ·  Auditoría          ║
+║  TORRE REGLAS  ·  Acordeón  ·  Taíno (AI)                       ║
+║  BACKOFFICE    ·  Lab APIs  ·  Simulador de fecha               ║
+║                                                                  ║
+║  NOVEDADES v44:                                                  ║
+║  [NEW-1]  sessionJugador → jugador activo con id en sesión      ║
+║  [NEW-2]  fetchJugadores → carga datos existentes de fifa_jug   ║
+║  [NEW-3]  Torre Especiales → botón "Guardar pronóstico"         ║
+║  [NEW-4]  API_PUT_JUG → POST grupos + finalistas a Velneo       ║
+║  [NEW-5]  Toast de confirmación / error sin salir de pantalla   ║
+║  [NEW-6]  Pre-carga de datos del jugador al seleccionar cuenta  ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,27 +25,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Polla Mundialista 2026 — Mockup</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; background: #f2f2f7; min-height: 100vh; display: flex; flex-direction: column; }
+/* ════════════════════════════════════════════════════════════════
+   TOKENS — Design System · FONDOS APP · La Polla Mundialista 2026
+   [RED-5] Variables CSS centralizadas — reemplaza colores hardcoded
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  /* Colores primarios */
+  --color-azul:       #003087;
+  --color-rojo:       #c8102e;
+  --color-verde:      #007f3b;
+  --color-accion:     #007aff;
+  --color-accion-dk:  #0066d6;
+
+  /* Fondos */
+  --fondo-app:        #f2f2f7;
+  --fondo-card:       #ffffff;
+  --fondo-separador:  rgba(0,0,0,0.08);
+
+  /* Textos */
+  --texto-primario:   #000000;
+  --texto-secundario: #3c3c43;
+  --texto-terciario:  #8e8e93;
+
+  /* Bordes */
+  --borde-suave:      0.5px solid rgba(0,0,0,0.08);
+  --borde-medio:      0.5px solid rgba(0,0,0,0.1);
+
+  /* Colores estado */
+  --color-ok:         #34c759;
+  --color-alerta:     #ff9500;
+  --color-error:      #ff3b30;
+  --color-morado:     #af52de;
+
+  /* Gradientes de marca */
+  --grad-marca:       linear-gradient(135deg, var(--color-azul) 0%, var(--color-rojo) 100%);
+  --grad-login:       linear-gradient(160deg, var(--color-azul) 0%, var(--color-rojo) 50%, var(--color-verde) 100%);
+  --grad-admin:       linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+
+  /* Espaciado */
+  --radio-card:       16px;
+  --radio-btn:        14px;
+  --radio-chip:       20px;
+
+  /* Opacidades de glassmorphism */
+  --glass-bg:         rgba(255,255,255,0.95);
+  --glass-blur:       blur(20px);
+}
+
+/* ════ RESET ════ */
+/* ════ PLANTA BAJA — Layout base ════ */
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; background: var(--fondo-app); min-height: 100vh; display: flex; flex-direction: column; }
 .phone-wrap { flex: 1; display: flex; flex-direction: column; }
-.phone { flex: 1; display: flex; flex-direction: column; background: #f2f2f7; position: relative; }
-.phone-screen { flex: 1; display: flex; flex-direction: column; background: #f2f2f7; overflow: hidden; position: relative; }
+.phone { flex: 1; display: flex; flex-direction: column; background: var(--fondo-app); position: relative; }
+.phone-screen { flex: 1; display: flex; flex-direction: column; background: var(--fondo-app); overflow: hidden; position: relative; }
 .notch { display: none; }
 .status-bar { display: none; }
 .screen-content { flex: 1; overflow-y: auto; padding-bottom: 70px; }
 .screen-content::-webkit-scrollbar { display: none; scrollbar-width: none; }
 
-/* ── TAB BAR (móvil) ───────────────────────────────────────────────── */
-.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-top: 0.5px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-around; padding: 0 8px env(safe-area-inset-bottom, 8px); z-index: 999; }
+/* ════ PLANTA BAJA — Tab Bar (móvil) ════ */
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-top: 0.5px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-around; padding: 0 8px env(safe-area-inset-bottom, 8px); z-index: 999; }
 .tab-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 12px; border-radius: 12px; transition: all 0.15s; border: none; background: none; }
 .tab-item.active { background: rgba(0,122,255,0.1); }
 .tab-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-.tab-label { font-size: 10px; font-weight: 500; color: #8e8e93; }
-.tab-item.active .tab-label { color: #007aff; }
+.tab-label { font-size: 10px; font-weight: 500; color: var(--texto-terciario); }
+.tab-item.active .tab-label { color: var(--color-accion); }
 .screen { display: none; }
 .screen.active { display: block; }
 
-/* ── SIDEBAR (tablet/desktop) ──────────────────────────────────────── */
+/* ════ PLANTA BAJA — Sidebar (tablet/desktop) ════ */
 .sidebar { display: none; }
 .top-bar { display: none; }
 .app-layout { display: contents; }
@@ -204,8 +272,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
   .screen-content::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 3px; }
 }
 
-/* LOGIN */
-.login-bg { min-height: 100dvh; background: linear-gradient(160deg, #003087 0%, #c8102e 50%, #007f3b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; }
+/* ════ PLANTA BAJA — Login ════ */
+.login-bg { min-height: 100dvh; background: var(--grad-login); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; }
 .login-logo { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.25); }
 .login-title { font-size: 26px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
 .login-sub { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 40px; }
@@ -215,8 +283,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .login-divider { color: rgba(255,255,255,0.4); font-size: 13px; margin: 16px 0; }
 .btn-secondary { width: 100%; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 14px; padding: 15px; font-size: 17px; font-weight: 500; cursor: pointer; }
 
-/* HOME */
-.home-header { background: linear-gradient(135deg, #003087 0%, #c8102e 100%); padding: 16px 20px 28px; color: #fff; }
+/* ════ TORRE PARTIDOS — Home ════ */
+.home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; }
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
 .home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; }
@@ -292,8 +360,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .ventana-pts { font-size: 12px; color: #8e8e93; }
 .btn-apostar { background: #007aff; color: #fff; border: none; border-radius: 14px; padding: 14px; font-size: 17px; font-weight: 600; width: calc(100% - 32px); margin: 0 16px; cursor: pointer; display: block; }
 
-/* TABLA */
-.tabla-header { background: #fff; padding: 16px 20px 0; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+/* ════ TORRE TABLA — Tabla de posiciones ════ */
+.tabla-header { background: var(--fondo-card); padding: 16px 20px 0; border-bottom: var(--borde-medio); }
 .tabla-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
 .tabla-tabs { display: flex; border-bottom: 1px solid #e5e5ea; }
 .tabla-tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: #8e8e93; cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -312,8 +380,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .tabla-pts { font-size: 17px; font-weight: 700; color: #000; text-align: right; }
 .tabla-pts-lbl { font-size: 10px; color: #8e8e93; text-align: right; }
 
-/* ESPECIALES V2 */
-.esp-header { background: #fff; padding: 16px 20px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+/* ════ TORRE ESPECIALES — Categorías especiales ════ */
+.esp-header { background: var(--fondo-card); padding: 16px 20px 12px; border-bottom: var(--borde-medio); }
 .esp-title { font-size: 20px; font-weight: 700; color: #000; }
 .esp-sub { font-size: 13px; color: #8e8e93; margin-top: 2px; }
 .fin-card { background: #fff; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; border: 0.5px solid rgba(0,0,0,0.08); }
@@ -424,8 +492,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .bm-meta { font-size:10px;color:#8e8e93;margin-top:4px; }
 
 
-/* ACCORDION */
-.acc-btn { width:100%; display:flex; justify-content:space-between; align-items:center; background:#fff; border:0.5px solid rgba(0,0,0,0.08); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; text-align:left; }
+/* ════ TORRE REGLAS — Accordion ════ */
+.acc-btn { width:100%; display:flex; justify-content:space-between; align-items:center; background:var(--fondo-card); border:var(--borde-suave); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; text-align:left; }
 .acc-btn.open { border-radius:14px 14px 0 0; border-bottom-color:transparent; margin-bottom:0; }
 .acc-title { font-size:15px; font-weight:600; color:#000; }
 .acc-arrow { font-size:12px; color:#8e8e93; transition:transform 0.2s; }
@@ -443,7 +511,65 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .acc-note.orange { background:#fff9ec; color:#c05a00; }
 .acc-note.green { background:#eafaf1; color:#1e8449; }
 
-/* CONFIRM MODAL */
+/* ════ GLOBAL — Toast de confirmación ════ */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1c1c1e;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast.ok  { background: #1c4a2a; border: 1px solid #34c759; }
+.toast.err { background: #4a1c1c; border: 1px solid #ff3b30; }
+
+/* ════ TORRE ESPECIALES — Botón guardar (en header) ════ */
+.esp-guardar-btn {
+  flex: 1;
+  background: var(--color-accion);
+  color: #fff;
+  border: none;
+  border-radius: var(--radio-btn);
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.esp-guardar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.esp-guardar-btn:not(:disabled):hover { background: var(--color-accion-dk); }
+.esp-estado-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.esp-estado-badge.pendiente { background: #fff9ec; color: #c05a00; border: 1px solid #ffd080; }
+.esp-estado-badge.guardado  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+
+/* ════ GLOBAL — Spinner inline ════ */
+.btn-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
 .modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.55); z-index:500; align-items:flex-end; justify-content:center; overflow:hidden; }
 .modal-sheet { background:#fff; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:390px; }
 .modal-handle { width:40px; height:4px; background:#e5e5ea; border-radius:2px; margin:0 auto 20px; }
@@ -464,8 +590,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .modal-btn-confirm { width:100%; background:#007aff; color:#fff; border:none; border-radius:14px; padding:15px; font-size:17px; font-weight:600; cursor:pointer; margin-bottom:10px; }
 .modal-btn-cancel { width:100%; background:transparent; color:#8e8e93; border:none; border-radius:14px; padding:12px; font-size:15px; cursor:pointer; }
 
-/* ADMIN */
-.admin-header { background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%); padding: 16px 20px 20px; color: #fff; }
+/* ════ BACKOFFICE — Admin ════ */
+.admin-header { background: var(--grad-admin); padding: 16px 20px 20px; color: #fff; }
 .admin-title { font-size: 20px; font-weight: 700; }
 .admin-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 2px; }
 .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
@@ -635,7 +761,37 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
+<style>
+/* ════ WCAG — Skip link y utilidades de accesibilidad ════ */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-accion);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+  z-index: 9999;
+  transition: top 0.2s;
+  text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>
 <body>
+<a href="#screen-content-main" class="skip-link">Saltar al contenido principal</a>
+<!-- ════ GLOBAL — Toast de notificación ════ -->
+<div id="app-toast" class="toast" role="status" aria-live="polite"></div>
 
 <div class="phone-wrap">
   <div class="phone">
@@ -695,20 +851,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             </div>
           </div>
 
-      <div class="screen-content">
+      <div class="screen-content" id="screen-content-main" tabindex="-1">
 
         <!-- LOGIN -->
 
         <!-- ═══ PLANTA BAJA — Login y autenticación ═══ -->
-        <div class="screen active" id="s-login">
+        <div class="screen active" id="s-login" role="main">
           <div class="login-bg">
-            <div class="login-logo">⚽</div>
-            <div class="login-title">La Polla Mundialista</div>
+            <div class="login-logo" aria-hidden="true">⚽</div>
+            <h1 class="login-title">La Polla Mundialista</h1>
             <div class="login-sub">Copa Mundial FIFA 2026</div>
-            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Usuario</div>
-            <input class="login-field" type="text" id="login-usuario" placeholder="" autocomplete="off" style="margin-bottom:16px;" />
-            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;">Contraseña</div>
-            <input class="login-field" type="password" id="login-pass" placeholder="" style="margin-bottom:12px;" />
+            <label for="login-usuario" style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;display:block;">Usuario</label>
+            <input class="login-field" type="text" id="login-usuario" name="usuario" autocomplete="username" aria-required="true" aria-describedby="login-error" style="margin-bottom:16px;" />
+            <label for="login-pass" style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:5px;letter-spacing:0.3px;display:block;">Contraseña</label>
+            <input class="login-field" type="password" id="login-pass" name="password" autocomplete="current-password" aria-required="true" aria-describedby="login-error" style="margin-bottom:12px;" />
             <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
               <label class="toggle-wrap">
                 <input type="checkbox" id="chk-recordar">
@@ -716,10 +872,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                 <span style="font-size:13px;color:rgba(255,255,255,0.8);">Recordar mi usuario</span>
               </label>
             </div>
-            <div id="login-error" style="display:none;background:rgba(255,59,48,0.25);border:1px solid rgba(255,59,48,0.5);border-radius:10px;padding:10px 14px;font-size:13px;color:#fff;text-align:center;margin-bottom:12px;">
+            <div id="login-error" role="alert" aria-live="polite" style="display:none;background:rgba(255,59,48,0.25);border:1px solid rgba(255,59,48,0.5);border-radius:10px;padding:10px 14px;font-size:13px;color:#fff;text-align:center;margin-bottom:12px;">
   ⚠️ El usuario no está registrado
 </div>
-<button class="btn-primary" id="btn-entrar">Entrar</button>
+<button class="btn-primary" id="btn-entrar" type="button">Entrar</button>
           </div>
         </div>
 
@@ -833,10 +989,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               </div>
               <div style="display:flex;gap:8px;align-items:center;">
                 <input id="taino-input" type="text" placeholder="Preguntale a Taino..."
+                  aria-label="Pregunta para Taíno, el asistente de reglas"
                   style="flex:1;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;"
                   onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
                   maxlength="200">
-                <button id="taino-btn" onclick="tainoEnviar()"
+                <button id="taino-btn" onclick="tainoEnviar()" type="button"
+                  aria-label="Enviar pregunta a Taíno"
                   style="background:#27ae60;color:#fff;border:none;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;">
                   &gt;
                 </button>
@@ -1288,9 +1446,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ TORRE ESPECIALES ═══ -->
         <div class="screen" id="s-especiales">
-          <div class="esp-header">
-            <div class="esp-title">Categorías especiales</div>
-            <div class="esp-sub">Pronósticos del torneo completo</div>
+          <div class="esp-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div>
+              <div class="esp-title">Categorías especiales</div>
+              <div class="esp-sub">Pronósticos del torneo completo</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+              <div id="esp-estado-badge" class="esp-estado-badge pendiente">Sin guardar</div>
+              <button class="esp-guardar-btn" id="btn-guardar-especiales" onclick="guardarEspeciales()" style="padding:10px 16px;font-size:14px;border-radius:12px;white-space:nowrap;">
+                💾 Guardar
+              </button>
+            </div>
           </div>
           <div style="padding:12px 16px 100px;">
 
@@ -1320,7 +1486,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="fin-card-header"><div class="fin-card-title">🥇 Campeón del Mundial</div><div class="pts-badge">720 pts</div></div>
               <div class="ventana-row"><div class="vdot" style="background:#34c759;"></div>Abierta · 100% hasta inicio del torneo</div>
               <div class="custom-select">
-                <button class="sel-btn gold-val" id="btn-campeon"><span id="val-campeon">🇧🇷 Brasil</span><span class="sel-arrow" id="arr-campeon">▼</span></button>
+                <button class="sel-btn" id="btn-campeon"><span id="val-campeon" style="color:#8e8e93;">Seleccionar equipo...</span><span class="sel-arrow" id="arr-campeon">▼</span></button>
                 <div class="esp-drop" id="drop-campeon"></div>
               </div>
             </div>
@@ -1329,7 +1495,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="fin-card-header"><div class="fin-card-title">🥈 Subcampeón</div><div class="pts-badge">360 pts</div></div>
               <div class="ventana-row"><div class="vdot" style="background:#34c759;"></div>Abierta · 100% hasta inicio del torneo</div>
               <div class="custom-select">
-                <button class="sel-btn has-val" id="btn-sub"><span id="val-sub">🇫🇷 Francia</span><span class="sel-arrow" id="arr-sub">▼</span></button>
+                <button class="sel-btn" id="btn-sub"><span id="val-sub" style="color:#8e8e93;">Seleccionar equipo...</span><span class="sel-arrow" id="arr-sub">▼</span></button>
                 <div class="esp-drop" id="drop-sub"></div>
               </div>
             </div>
@@ -1446,9 +1612,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
 
       <!-- CONFIRM MODAL -->
-      <div class="modal-overlay" id="confirm-modal">
+      <div class="modal-overlay" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-subtitle">
         <div class="modal-sheet">
-          <div class="modal-handle"></div>
+          <div class="modal-handle" aria-hidden="true"></div>
           <div class="modal-title" id="modal-title">Confirmar pronóstico</div>
           <div class="modal-subtitle" id="modal-subtitle">Revisa tu predicción antes de guardar</div>
           <div class="modal-teams" id="modal-teams"></div>
@@ -1457,18 +1623,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             <span class="modal-total-label">Total potencial</span>
             <span class="modal-total-pts" id="modal-total">0 pts</span>
           </div>
-          <button class="modal-btn-confirm" id="modal-btn-confirm">Guardar pronóstico</button>
-          <button class="modal-btn-cancel" id="modal-btn-cancel">Cancelar</button>
+          <button class="modal-btn-confirm" id="modal-btn-confirm" type="button">Guardar pronóstico</button>
+          <button class="modal-btn-cancel" id="modal-btn-cancel" type="button">Cancelar</button>
         </div>
       </div>
 
-      <div class="tab-bar" id="tab-bar" style="display:none;">
-        <button class="tab-item" id="tab-home"><div class="tab-icon">⚽</div><div class="tab-label">Partidos</div></button>
-        <button class="tab-item" id="tab-especiales"><div class="tab-icon">⭐</div><div class="tab-label">Especiales</div></button>
-        <button class="tab-item" id="tab-tabla"><div class="tab-icon">🏆</div><div class="tab-label">Tabla</div></button>
-        <button class="tab-item" id="tab-reglas"><div class="tab-icon">📋</div><div class="tab-label">Reglas</div></button>
-        <button class="tab-item" id="tab-estadios" onclick="goTo('s-estadios')"><div class="tab-icon">⚙️</div><div class="tab-label">APIs</div></button>
-      </div>
+      <nav class="tab-bar" id="tab-bar" style="display:none;" role="navigation" aria-label="Navegación principal">
+        <button class="tab-item" id="tab-home" aria-label="Partidos"><div class="tab-icon" aria-hidden="true">⚽</div><div class="tab-label">Partidos</div></button>
+        <button class="tab-item" id="tab-especiales" aria-label="Especiales"><div class="tab-icon" aria-hidden="true">⭐</div><div class="tab-label">Especiales</div></button>
+        <button class="tab-item" id="tab-tabla" aria-label="Tabla de posiciones"><div class="tab-icon" aria-hidden="true">🏆</div><div class="tab-label">Tabla</div></button>
+        <button class="tab-item" id="tab-reglas" aria-label="Reglas"><div class="tab-icon" aria-hidden="true">📋</div><div class="tab-label">Reglas</div></button>
+        <button class="tab-item" id="tab-estadios" aria-label="APIs backoffice" onclick="goTo('s-estadios')"><div class="tab-icon" aria-hidden="true">⚙️</div><div class="tab-label">APIs</div></button>
+      </nav>
 
         </div><!-- /main-content -->
       </div><!-- /app-layout -->
@@ -1658,36 +1824,73 @@ var fasesOrden = ['16avos','octavos','cuartos','semis','3y4','final'];
 // ║ DATOS MOCK — reemplazar en Fase 1 con APIs de Velneo
 // ╚══════════════════════════════════════════════════════
 // ── DATOS ─────────────────────────────────────────────────────────────────
+// ── DATOS REALES — Mundial 2026 ───────────────────────────────────────────
 var equipos = [
-  {flag:'🇧🇷',name:'Brasil'},{flag:'🇦🇷',name:'Argentina'},{flag:'🇫🇷',name:'Francia'},
-  {flag:'🇵🇹',name:'Portugal'},{flag:'🇪🇸',name:'España'},{flag:'🇩🇪',name:'Alemania'},
-  {flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',name:'Inglaterra'},{flag:'🇳🇱',name:'Países Bajos'},{flag:'🇧🇪',name:'Bélgica'},
-  {flag:'🇺🇾',name:'Uruguay'},{flag:'🇨🇴',name:'Colombia'},{flag:'🇲🇽',name:'México'},
-  {flag:'🇺🇸',name:'EE.UU.'},{flag:'🇯🇵',name:'Japón'},{flag:'🇲🇦',name:'Marruecos'},
-  {flag:'🇸🇳',name:'Senegal'},{flag:'🇨🇦',name:'Canadá'},{flag:'🇦🇺',name:'Australia'},
-  {flag:'🇰🇷',name:'Corea del Sur'},{flag:'🇺🇿',name:'Uzbekistán'}
+  // Grupo A
+  {flag:'🇲🇽',name:'México'},       {flag:'🇿🇦',name:'Sudáfrica'},
+  {flag:'🇰🇷',name:'Corea del Sur'},{flag:'🇨🇿',name:'Rep. Checa'},
+  // Grupo B
+  {flag:'🇨🇦',name:'Canadá'},       {flag:'🇧🇦',name:'Bosnia'},
+  {flag:'🇶🇦',name:'Qatar'},         {flag:'🇨🇭',name:'Suiza'},
+  // Grupo C
+  {flag:'🇧🇷',name:'Brasil'},        {flag:'🇲🇦',name:'Marruecos'},
+  {flag:'🇭🇹',name:'Haití'},         {flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',name:'Escocia'},
+  // Grupo D
+  {flag:'🇺🇸',name:'EE.UU.'},        {flag:'🇵🇾',name:'Paraguay'},
+  {flag:'🇦🇺',name:'Australia'},     {flag:'🇹🇷',name:'Turquía'},
+  // Grupo E
+  {flag:'🇩🇪',name:'Alemania'},      {flag:'🇨🇼',name:'Curazao'},
+  {flag:'🇨🇮',name:'Costa de Marfil'},{flag:'🇪🇨',name:'Ecuador'},
+  // Grupo F
+  {flag:'🇳🇱',name:'Países Bajos'}, {flag:'🇯🇵',name:'Japón'},
+  {flag:'🇸🇪',name:'Suecia'},        {flag:'🇹🇳',name:'Túnez'},
+  // Grupo G
+  {flag:'🇧🇪',name:'Bélgica'},       {flag:'🇪🇬',name:'Egipto'},
+  {flag:'🇮🇷',name:'Irán'},          {flag:'🇳🇿',name:'Nueva Zelanda'},
+  // Grupo H
+  {flag:'🇪🇸',name:'España'},        {flag:'🇨🇻',name:'Cabo Verde'},
+  {flag:'🇸🇦',name:'Arabia Saudita'},{flag:'🇺🇾',name:'Uruguay'},
+  // Grupo I
+  {flag:'🇫🇷',name:'Francia'},       {flag:'🇸🇳',name:'Senegal'},
+  {flag:'🏳️',name:'Bol/Ira'},        {flag:'🇳🇴',name:'Noruega'},
+  // Grupo J
+  {flag:'🇦🇷',name:'Argentina'},     {flag:'🇩🇿',name:'Argelia'},
+  {flag:'🇦🇹',name:'Austria'},       {flag:'🇯🇴',name:'Jordania'},
+  // Grupo K
+  {flag:'🇵🇹',name:'Portugal'},      {flag:'🏳️',name:'Jam/RDC'},
+  {flag:'🇺🇿',name:'Uzbekistán'},    {flag:'🇨🇴',name:'Colombia'},
+  // Grupo L
+  {flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',name:'Inglaterra'}, {flag:'🇭🇷',name:'Croacia'},
+  {flag:'🇬🇭',name:'Ghana'},         {flag:'🇵🇦',name:'Panamá'}
 ];
 var grupos = {
-  A:['México','Canadá','EE.UU.','Uruguay'], B:['Brasil','Alemania','Japón','Marruecos'],
-  C:['Argentina','Francia','Bélgica','Corea del Sur'], D:['España','Países Bajos','Senegal','Australia'],
-  E:['Portugal','Inglaterra','Colombia','Uzbekistán'], F:['Brasil','Marruecos','Canadá','Senegal'],
-  G:['Argentina','Alemania','México','Corea del Sur'], H:['Francia','Portugal','EE.UU.','Japón'],
-  I:['España','Uruguay','Bélgica','Australia'], J:['Inglaterra','Brasil','Colombia','Marruecos'],
-  K:['Colombia','Portugal','Uzbekistán','Repechaje'], L:['México','Francia','Senegal','Canadá']
+  A:['México','Sudáfrica','Corea del Sur','Rep. Checa'],
+  B:['Canadá','Bosnia','Qatar','Suiza'],
+  C:['Brasil','Marruecos','Haití','Escocia'],
+  D:['EE.UU.','Paraguay','Australia','Turquía'],
+  E:['Alemania','Curazao','Costa de Marfil','Ecuador'],
+  F:['Países Bajos','Japón','Suecia','Túnez'],
+  G:['Bélgica','Egipto','Irán','Nueva Zelanda'],
+  H:['España','Cabo Verde','Arabia Saudita','Uruguay'],
+  I:['Francia','Senegal','Bol/Ira','Noruega'],
+  J:['Argentina','Argelia','Austria','Jordania'],
+  K:['Portugal','Jam/RDC','Uzbekistán','Colombia'],
+  L:['Inglaterra','Croacia','Ghana','Panamá']
 };
 var grupoSel = {};
 var activeGrupo = null;
 var openDropId = null;
 var colScore = 1, porScore = 1;
 
-// [tabMap v1 + goTo v1 eliminados — ver versión completa al final]
+
 
 // ── ESTADIOS ──────────────────────────────────────────────────────────────
 // ╔══════════════════════════════════════════════════════
 // ║ BACKOFFICE — Laboratorio de APIs (TEMPORAL)
 // ╚══════════════════════════════════════════════════════
 // ── LABORATORIO DE APIs ──────────────────────────────────────────────────
-var BASE = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
+var BASE    = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
+var BASE_V2 = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
 var KEY  = 'SuzvTp4qwXQtAVFJbdzP';
 var labState = { registros: [], campos: [], pagina: 0, porPagina: 10, apiActual: null };
 
@@ -1873,80 +2076,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("lab-apis")) initLab();
 });
 
-// [changeScore · switchTab · getFlag v1 eliminadas — ver versión única más adelante]
-
-function closeAllDrops() {
-  document.querySelectorAll('.esp-drop').forEach(function(d){ d.classList.remove('open'); });
-  document.querySelectorAll('.sel-arrow').forEach(function(a){ a.classList.remove('open'); });
-  openDropId = null;
-}
-
-// Track finalistas selections: key = dropId, value = team name
-var finalistasSel = { 'drop-campeon': 'Brasil', 'drop-sub': 'Francia', 'drop-3ro': null, 'drop-4to': null };
-var finalistasDrops = ['drop-campeon','drop-sub','drop-3ro','drop-4to'];
-
-function getUsedTeams(excludeDropId) {
-  var used = [];
-  finalistasDrops.forEach(function(id) {
-    if (id !== excludeDropId && finalistasSel[id]) used.push(finalistasSel[id]);
-  });
-  return used;
-}
-
-function refreshAllFinalistas() {
-  var configs = [
-    {dropId:'drop-campeon', btnId:'btn-campeon', valId:'val-campeon', isGold:true},
-    {dropId:'drop-sub',     btnId:'btn-sub',     valId:'val-sub',     isGold:false},
-    {dropId:'drop-3ro',     btnId:'btn-3ro',     valId:'val-3ro',     isGold:false},
-    {dropId:'drop-4to',     btnId:'btn-4to',     valId:'val-4to',     isGold:false}
-  ];
-  configs.forEach(function(c) { buildDrop(c.dropId, c.btnId, c.valId, finalistasSel[c.dropId], c.isGold); });
-}
-
-function buildDrop(dropId, btnId, valId, currentVal, isGold) {
-  var drop = document.getElementById(dropId);
-  if (!drop) return;
-  drop.innerHTML = '';
-  var used = getUsedTeams(dropId);
-  equipos.forEach(function(eq) {
-    var isUsed = used.indexOf(eq.name) !== -1;
-    var isCurrent = currentVal === eq.name;
-    var item = document.createElement('div');
-    item.className = 'esp-drop-item' + (isCurrent ? ' sel' : '') + (isUsed ? ' used' : '');
-    item.innerHTML = '<span>' + eq.flag + '</span><span style="' + (isUsed ? 'color:#c7c7cc;' : '') + '">' + eq.name + '</span>' + (isCurrent ? '<span style="margin-left:auto;color:#007aff;">✓</span>' : '') + (isUsed ? '<span style="margin-left:auto;font-size:11px;color:#c7c7cc;">ya elegido</span>' : '');
-    if (!isUsed) {
-      item.addEventListener('click', function() {
-        finalistasSel[dropId] = eq.name;
-        var valEl = document.getElementById(valId);
-        var btnEl = document.getElementById(btnId);
-        if (valEl) { valEl.textContent = eq.flag + ' ' + eq.name; valEl.style.color = ''; }
-        if (btnEl) {
-          btnEl.classList.add('has-val');
-          if (isGold) btnEl.classList.add('gold-val');
-        }
-        closeAllDrops();
-        refreshAllFinalistas();
-      });
-    }
-    drop.appendChild(item);
-  });
-  var btn = document.getElementById(btnId);
-  if (btn && !btn._dropBound) {
-    btn._dropBound = true;
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var drop2 = document.getElementById(dropId);
-      var isOpen = drop2.classList.contains('open');
-      closeAllDrops();
-      if (!isOpen) {
-        drop2.classList.add('open');
-        var arr = document.getElementById(dropId.replace('drop-','arr-'));
-        if (arr) arr.classList.add('open');
-        openDropId = dropId;
-      }
-    });
-  }
-}
 
 function buildGrupoDrop(dropId, grupoKey, pos, currentVal) {
   var drop = document.getElementById(dropId);
@@ -1972,6 +2101,7 @@ function buildGrupoDrop(dropId, grupoKey, pos, currentVal) {
         var otherP = pos === '1' ? '2' : '1';
         if (grupoSel[grupoKey][otherP] === name) grupoSel[grupoKey][otherP] = null;
         grupoSel[grupoKey][pos] = name;
+        marcarEspPendiente();
         closeAllDrops();
         buildGruposGrid();
         renderGrupoPanel(grupoKey);
@@ -2768,7 +2898,7 @@ function initBracketListeners(container) {
 
 function renderBracketHTML() { return renderBracket(); }
 
-// [goTo v2 + updateClock + changeScore + switchTab v2 eliminados]
+
 
 // ── ESPECIALES ────────────────────────────────────────────────────────────
 function getFlag(name) {
@@ -2783,7 +2913,7 @@ function closeAllDrops() {
 }
 
 // Track finalistas selections: key = dropId, value = team name
-var finalistasSel = { 'drop-campeon': 'Brasil', 'drop-sub': 'Francia', 'drop-3ro': null, 'drop-4to': null };
+var finalistasSel = { 'drop-campeon': null, 'drop-sub': null, 'drop-3ro': null, 'drop-4to': null };
 var finalistasDrops = ['drop-campeon','drop-sub','drop-3ro','drop-4to'];
 
 function getUsedTeams(excludeDropId) {
@@ -2808,6 +2938,27 @@ function buildDrop(dropId, btnId, valId, currentVal, isGold) {
   var drop = document.getElementById(dropId);
   if (!drop) return;
   drop.innerHTML = '';
+
+  // ── Sincronizar botón con el valor actual (incluyendo null = vacío) ──
+  var valEl = document.getElementById(valId);
+  var btnEl = document.getElementById(btnId);
+  if (valEl && btnEl) {
+    if (currentVal) {
+      var eqActual = equipos.find(function(e) { return e.name === currentVal; });
+      var flagActual = eqActual ? eqActual.flag : '';
+      valEl.textContent  = flagActual + ' ' + currentVal;
+      valEl.style.color  = '';
+      btnEl.classList.add('has-val');
+      if (isGold) btnEl.classList.add('gold-val');
+    } else {
+      // Sin selección: mostrar placeholder
+      valEl.textContent  = 'Seleccionar equipo...';
+      valEl.style.color  = '#8e8e93';
+      btnEl.classList.remove('has-val');
+      btnEl.classList.remove('gold-val');
+    }
+  }
+
   var used = getUsedTeams(dropId);
   equipos.forEach(function(eq) {
     var isUsed = used.indexOf(eq.name) !== -1;
@@ -2818,13 +2969,7 @@ function buildDrop(dropId, btnId, valId, currentVal, isGold) {
     if (!isUsed) {
       item.addEventListener('click', function() {
         finalistasSel[dropId] = eq.name;
-        var valEl = document.getElementById(valId);
-        var btnEl = document.getElementById(btnId);
-        if (valEl) { valEl.textContent = eq.flag + ' ' + eq.name; valEl.style.color = ''; }
-        if (btnEl) {
-          btnEl.classList.add('has-val');
-          if (isGold) btnEl.classList.add('gold-val');
-        }
+        marcarEspPendiente();
         closeAllDrops();
         refreshAllFinalistas();
       });
@@ -2873,6 +3018,7 @@ function buildGrupoDrop(dropId, grupoKey, pos, currentVal) {
         var otherP = pos === '1' ? '2' : '1';
         if (grupoSel[grupoKey][otherP] === name) grupoSel[grupoKey][otherP] = null;
         grupoSel[grupoKey][pos] = name;
+        marcarEspPendiente();
         closeAllDrops();
         buildGruposGrid();
         renderGrupoPanel(grupoKey);
@@ -2974,6 +3120,11 @@ function initEspeciales() {
   refreshAllFinalistas();
   buildGruposGrid();
   renderGrupoPanel(activeGrupo);
+  // Resetear badge si no hay jugador seleccionado
+  if (!sessionJugador) {
+    var badge = getEspEstadoBadge();
+    if (badge) { badge.textContent = 'Sin guardar'; badge.className = 'esp-estado-badge pendiente'; }
+  }
 }
 
 
@@ -3539,116 +3690,103 @@ function toggleAccordion(id) {
   }
 }
 
-// ── HOME TABS ─────────────────────────────────────────────────────────────
-function switchHomeTab(tab) {
-  ['resumen','grupos','finales'].forEach(function(t) {
-    document.getElementById('htab-' + t).classList.toggle('active', t === tab);
-    document.getElementById('htab-content-' + t).style.display = t === tab ? 'block' : 'none';
-  });
-  if (tab === 'grupos') initGruposFase();
-  if (tab === 'finales') {
-    var fp = document.getElementById('htab-content-finales');
-    if (fp) fp.innerHTML = '<div class="bracket-container">' + renderBracketHTML() + '</div>';
-  }
-}
-
 // ── FIXTURE FASE DE GRUPOS ────────────────────────────────────────────────
 var fixture = {
   A: [
-    {j:1, e1:'México',    f1:'🇲🇽', e2:'Canadá',      f2:'🇨🇦', fecha:'12 jun', hora:'12:00', estadio:'SoFi Stadium'},
-    {j:1, e1:'EE.UU.',    f1:'🇺🇸', e2:'Uruguay',     f2:'🇺🇾', fecha:'12 jun', hora:'15:00', estadio:'AT&T Stadium'},
-    {j:2, e1:'México',    f1:'🇲🇽', e2:'EE.UU.',      f2:'🇺🇸', fecha:'16 jun', hora:'18:00', estadio:'Azteca'},
-    {j:2, e1:'Uruguay',   f1:'🇺🇾', e2:'Canadá',      f2:'🇨🇦', fecha:'16 jun', hora:'21:00', estadio:'MetLife'},
-    {j:3, e1:'Canadá',    f1:'🇨🇦', e2:'EE.UU.',      f2:'🇺🇸', fecha:'20 jun', hora:'18:00', estadio:'Levis Stadium'},
-    {j:3, e1:'Uruguay',   f1:'🇺🇾', e2:'México',      f2:'🇲🇽', fecha:'20 jun', hora:'18:00', estadio:'Allegiant Stadium'}
+    {j:1, e1:'México',       f1:'🇲🇽', e2:'Sudáfrica',     f2:'🇿🇦', fecha:'11 jun', hora:'14:00', estadio:'Estadio Azteca'},
+    {j:1, e1:'Corea del Sur',f1:'🇰🇷', e2:'Rep. Checa',    f2:'🇨🇿', fecha:'12 jun', hora:'17:00', estadio:'SoFi Stadium'},
+    {j:2, e1:'México',       f1:'🇲🇽', e2:'Corea del Sur', f2:'🇰🇷', fecha:'15 jun', hora:'14:00', estadio:'AT&T Stadium'},
+    {j:2, e1:'Sudáfrica',    f1:'🇿🇦', e2:'Rep. Checa',    f2:'🇨🇿', fecha:'15 jun', hora:'17:00', estadio:'MetLife'},
+    {j:3, e1:'Rep. Checa',   f1:'🇨🇿', e2:'México',        f2:'🇲🇽', fecha:'19 jun', hora:'18:00', estadio:'Allegiant Stadium'},
+    {j:3, e1:'Sudáfrica',    f1:'🇿🇦', e2:'Corea del Sur', f2:'🇰🇷', fecha:'19 jun', hora:'18:00', estadio:'Rose Bowl'}
   ],
   B: [
-    {j:1, e1:'Brasil',    f1:'🇧🇷', e2:'Alemania',    f2:'🇩🇪', fecha:'13 jun', hora:'15:00', estadio:'MetLife'},
-    {j:1, e1:'Japón',     f1:'🇯🇵', e2:'Marruecos',   f2:'🇲🇦', fecha:'13 jun', hora:'18:00', estadio:'Rose Bowl'},
-    {j:2, e1:'Brasil',    f1:'🇧🇷', e2:'Marruecos',   f2:'🇲🇦', fecha:'17 jun', hora:'15:00', estadio:'SoFi Stadium'},
-    {j:2, e1:'Alemania',  f1:'🇩🇪', e2:'Japón',       f2:'🇯🇵', fecha:'17 jun', hora:'18:00', estadio:'AT&T Stadium'},
-    {j:3, e1:'Marruecos', f1:'🇲🇦', e2:'Alemania',    f2:'🇩🇪', fecha:'21 jun', hora:'18:00', estadio:'Levis Stadium'},
-    {j:3, e1:'Japón',     f1:'🇯🇵', e2:'Brasil',      f2:'🇧🇷', fecha:'21 jun', hora:'18:00', estadio:'Rose Bowl'}
+    {j:1, e1:'Canadá',  f1:'🇨🇦', e2:'Bosnia',  f2:'🇧🇦', fecha:'12 jun', hora:'14:00', estadio:'SoFi Stadium'},
+    {j:1, e1:'Qatar',   f1:'🇶🇦', e2:'Suiza',   f2:'🇨🇭', fecha:'12 jun', hora:'20:00', estadio:'MetLife'},
+    {j:2, e1:'Canadá',  f1:'🇨🇦', e2:'Qatar',   f2:'🇶🇦', fecha:'16 jun', hora:'14:00', estadio:'Rose Bowl'},
+    {j:2, e1:'Suiza',   f1:'🇨🇭', e2:'Bosnia',  f2:'🇧🇦', fecha:'16 jun', hora:'17:00', estadio:'Allegiant Stadium'},
+    {j:3, e1:'Bosnia',  f1:'🇧🇦', e2:'Qatar',   f2:'🇶🇦', fecha:'20 jun', hora:'18:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Suiza',   f1:'🇨🇭', e2:'Canadá',  f2:'🇨🇦', fecha:'20 jun', hora:'18:00', estadio:'Gillette Stadium'}
   ],
   C: [
-    {j:1, e1:'Argentina', f1:'🇦🇷', e2:'Francia',     f2:'🇫🇷', fecha:'13 jun', hora:'21:00', estadio:'Azteca'},
-    {j:1, e1:'Bélgica',   f1:'🇧🇪', e2:'Corea del Sur',f2:'🇰🇷',fecha:'14 jun', hora:'12:00', estadio:'Gillette Stadium'},
-    {j:2, e1:'Argentina', f1:'🇦🇷', e2:'Corea del Sur',f2:'🇰🇷',fecha:'18 jun', hora:'15:00', estadio:'AT&T Stadium'},
-    {j:2, e1:'Francia',   f1:'🇫🇷', e2:'Bélgica',     f2:'🇧🇪', fecha:'18 jun', hora:'18:00', estadio:'MetLife'},
-    {j:3, e1:'Corea del Sur',f1:'🇰🇷',e2:'Francia',   f2:'🇫🇷', fecha:'22 jun', hora:'18:00', estadio:'SoFi Stadium'},
-    {j:3, e1:'Bélgica',   f1:'🇧🇪', e2:'Argentina',   f2:'🇦🇷', fecha:'22 jun', hora:'18:00', estadio:'Rose Bowl'}
+    {j:1, e1:'Brasil',    f1:'🇧🇷', e2:'Marruecos', f2:'🇲🇦', fecha:'13 jun', hora:'14:00', estadio:'MetLife'},
+    {j:1, e1:'Haití',     f1:'🇭🇹', e2:'Escocia',   f2:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', fecha:'13 jun', hora:'17:00', estadio:'Levis Stadium'},
+    {j:2, e1:'Brasil',    f1:'🇧🇷', e2:'Haití',     f2:'🇭🇹', fecha:'17 jun', hora:'14:00', estadio:'Rose Bowl'},
+    {j:2, e1:'Marruecos', f1:'🇲🇦', e2:'Escocia',   f2:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', fecha:'17 jun', hora:'17:00', estadio:'SoFi Stadium'},
+    {j:3, e1:'Escocia',   f1:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', e2:'Brasil',   f2:'🇧🇷', fecha:'21 jun', hora:'18:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Marruecos', f1:'🇲🇦', e2:'Haití',     f2:'🇭🇹', fecha:'21 jun', hora:'18:00', estadio:'Allegiant Stadium'}
   ],
   D: [
-    {j:1, e1:'España',    f1:'🇪🇸', e2:'Países Bajos',f2:'🇳🇱', fecha:'14 jun', hora:'15:00', estadio:'AT&T Stadium'},
-    {j:1, e1:'Senegal',   f1:'🇸🇳', e2:'Australia',   f2:'🇦🇺', fecha:'14 jun', hora:'18:00', estadio:'Azteca'},
-    {j:2, e1:'España',    f1:'🇪🇸', e2:'Australia',   f2:'🇦🇺', fecha:'18 jun', hora:'21:00', estadio:'Gillette Stadium'},
-    {j:2, e1:'Países Bajos',f1:'🇳🇱',e2:'Senegal',    f2:'🇸🇳', fecha:'19 jun', hora:'12:00', estadio:'Levis Stadium'},
-    {j:3, e1:'Australia', f1:'🇦🇺', e2:'Países Bajos',f2:'🇳🇱', fecha:'23 jun', hora:'18:00', estadio:'MetLife'},
-    {j:3, e1:'Senegal',   f1:'🇸🇳', e2:'España',      f2:'🇪🇸', fecha:'23 jun', hora:'18:00', estadio:'AT&T Stadium'}
+    {j:1, e1:'EE.UU.',    f1:'🇺🇸', e2:'Paraguay',  f2:'🇵🇾', fecha:'13 jun', hora:'20:00', estadio:'Estadio Azteca'},
+    {j:1, e1:'Australia', f1:'🇦🇺', e2:'Turquía',   f2:'🇹🇷', fecha:'14 jun', hora:'14:00', estadio:'AT&T Stadium'},
+    {j:2, e1:'EE.UU.',    f1:'🇺🇸', e2:'Australia', f2:'🇦🇺', fecha:'18 jun', hora:'14:00', estadio:'Gillette Stadium'},
+    {j:2, e1:'Turquía',   f1:'🇹🇷', e2:'Paraguay',  f2:'🇵🇾', fecha:'18 jun', hora:'17:00', estadio:'MetLife'},
+    {j:3, e1:'Paraguay',  f1:'🇵🇾', e2:'Australia', f2:'🇦🇺', fecha:'22 jun', hora:'18:00', estadio:'SoFi Stadium'},
+    {j:3, e1:'Turquía',   f1:'🇹🇷', e2:'EE.UU.',    f2:'🇺🇸', fecha:'22 jun', hora:'18:00', estadio:'Rose Bowl'}
   ],
   E: [
-    {j:1, e1:'Portugal',  f1:'🇵🇹', e2:'Inglaterra',  f2:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'14 jun', hora:'21:00', estadio:'Rose Bowl'},
-    {j:1, e1:'Colombia',  f1:'🇨🇴', e2:'Uzbekistán',  f2:'🇺🇿', fecha:'15 jun', hora:'12:00', estadio:'Levis Stadium'},
-    {j:2, e1:'Portugal',  f1:'🇵🇹', e2:'Uzbekistán',  f2:'🇺🇿', fecha:'19 jun', hora:'15:00', estadio:'SoFi Stadium'},
-    {j:2, e1:'Inglaterra',f1:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',e2:'Colombia', f2:'🇨🇴', fecha:'19 jun', hora:'18:00', estadio:'Gillette Stadium'},
-    {j:3, e1:'Uzbekistán',f1:'🇺🇿', e2:'Inglaterra',  f2:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'23 jun', hora:'21:00', estadio:'Allegiant Stadium'},
-    {j:3, e1:'Colombia',  f1:'🇨🇴', e2:'Portugal',    f2:'🇵🇹', fecha:'23 jun', hora:'21:00', estadio:'AT&T Stadium'}
+    {j:1, e1:'Alemania',        f1:'🇩🇪', e2:'Curazao',         f2:'🇨🇼', fecha:'14 jun', hora:'17:00', estadio:'Levis Stadium'},
+    {j:1, e1:'Costa de Marfil', f1:'🇨🇮', e2:'Ecuador',         f2:'🇪🇨', fecha:'15 jun', hora:'14:00', estadio:'Allegiant Stadium'},
+    {j:2, e1:'Alemania',        f1:'🇩🇪', e2:'Costa de Marfil', f2:'🇨🇮', fecha:'19 jun', hora:'14:00', estadio:'MetLife'},
+    {j:2, e1:'Ecuador',         f1:'🇪🇨', e2:'Curazao',         f2:'🇨🇼', fecha:'19 jun', hora:'17:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Curazao',         f1:'🇨🇼', e2:'Costa de Marfil', f2:'🇨🇮', fecha:'23 jun', hora:'18:00', estadio:'Rose Bowl'},
+    {j:3, e1:'Ecuador',         f1:'🇪🇨', e2:'Alemania',        f2:'🇩🇪', fecha:'23 jun', hora:'18:00', estadio:'SoFi Stadium'}
   ],
   F: [
-    {j:1, e1:'Brasil',    f1:'🇧🇷', e2:'Marruecos',   f2:'🇲🇦', fecha:'15 jun', hora:'15:00', estadio:'Allegiant Stadium'},
-    {j:1, e1:'Canadá',    f1:'🇨🇦', e2:'Senegal',     f2:'🇸🇳', fecha:'15 jun', hora:'18:00', estadio:'AT&T Stadium'},
-    {j:2, e1:'Brasil',    f1:'🇧🇷', e2:'Senegal',     f2:'🇸🇳', fecha:'19 jun', hora:'21:00', estadio:'Rose Bowl'},
-    {j:2, e1:'Marruecos', f1:'🇲🇦', e2:'Canadá',      f2:'🇨🇦', fecha:'20 jun', hora:'12:00', estadio:'Levis Stadium'},
-    {j:3, e1:'Senegal',   f1:'🇸🇳', e2:'Marruecos',   f2:'🇲🇦', fecha:'24 jun', hora:'18:00', estadio:'SoFi Stadium'},
-    {j:3, e1:'Canadá',    f1:'🇨🇦', e2:'Brasil',      f2:'🇧🇷', fecha:'24 jun', hora:'18:00', estadio:'MetLife'}
+    {j:1, e1:'Países Bajos', f1:'🇳🇱', e2:'Japón',  f2:'🇯🇵', fecha:'15 jun', hora:'17:00', estadio:'Rose Bowl'},
+    {j:1, e1:'Suecia',       f1:'🇸🇪', e2:'Túnez',  f2:'🇹🇳', fecha:'15 jun', hora:'20:00', estadio:'Gillette Stadium'},
+    {j:2, e1:'Países Bajos', f1:'🇳🇱', e2:'Suecia', f2:'🇸🇪', fecha:'19 jun', hora:'20:00', estadio:'Levis Stadium'},
+    {j:2, e1:'Túnez',        f1:'🇹🇳', e2:'Japón',  f2:'🇯🇵', fecha:'20 jun', hora:'14:00', estadio:'Allegiant Stadium'},
+    {j:3, e1:'Japón',        f1:'🇯🇵', e2:'Suecia', f2:'🇸🇪', fecha:'24 jun', hora:'18:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Túnez',        f1:'🇹🇳', e2:'Países Bajos',f2:'🇳🇱',fecha:'24 jun', hora:'18:00', estadio:'MetLife'}
   ],
   G: [
-    {j:1, e1:'Argentina', f1:'🇦🇷', e2:'Alemania',    f2:'🇩🇪', fecha:'15 jun', hora:'21:00', estadio:'MetLife'},
-    {j:1, e1:'México',    f1:'🇲🇽', e2:'Corea del Sur',f2:'🇰🇷',fecha:'16 jun', hora:'12:00', estadio:'Rose Bowl'},
-    {j:2, e1:'Argentina', f1:'🇦🇷', e2:'Corea del Sur',f2:'🇰🇷',fecha:'20 jun', hora:'15:00', estadio:'AT&T Stadium'},
-    {j:2, e1:'Alemania',  f1:'🇩🇪', e2:'México',      f2:'🇲🇽', fecha:'20 jun', hora:'21:00', estadio:'Allegiant Stadium'},
-    {j:3, e1:'Corea del Sur',f1:'🇰🇷',e2:'Alemania',  f2:'🇩🇪', fecha:'24 jun', hora:'21:00', estadio:'Gillette Stadium'},
-    {j:3, e1:'México',    f1:'🇲🇽', e2:'Argentina',   f2:'🇦🇷', fecha:'24 jun', hora:'21:00', estadio:'SoFi Stadium'}
+    {j:1, e1:'Bélgica',       f1:'🇧🇪', e2:'Egipto',        f2:'🇪🇬', fecha:'16 jun', hora:'14:00', estadio:'SoFi Stadium'},
+    {j:1, e1:'Irán',          f1:'🇮🇷', e2:'Nueva Zelanda', f2:'🇳🇿', fecha:'16 jun', hora:'17:00', estadio:'Rose Bowl'},
+    {j:2, e1:'Bélgica',       f1:'🇧🇪', e2:'Irán',          f2:'🇮🇷', fecha:'20 jun', hora:'14:00', estadio:'Allegiant Stadium'},
+    {j:2, e1:'Nueva Zelanda', f1:'🇳🇿', e2:'Egipto',        f2:'🇪🇬', fecha:'20 jun', hora:'17:00', estadio:'Gillette Stadium'},
+    {j:3, e1:'Egipto',        f1:'🇪🇬', e2:'Irán',          f2:'🇮🇷', fecha:'24 jun', hora:'18:00', estadio:'Rose Bowl'},
+    {j:3, e1:'Nueva Zelanda', f1:'🇳🇿', e2:'Bélgica',       f2:'🇧🇪', fecha:'24 jun', hora:'18:00', estadio:'Levis Stadium'}
   ],
   H: [
-    {j:1, e1:'Francia',   f1:'🇫🇷', e2:'Portugal',    f2:'🇵🇹', fecha:'16 jun', hora:'15:00', estadio:'Gillette Stadium'},
-    {j:1, e1:'EE.UU.',    f1:'🇺🇸', e2:'Japón',       f2:'🇯🇵', fecha:'16 jun', hora:'18:00', estadio:'Levis Stadium'},
-    {j:2, e1:'Francia',   f1:'🇫🇷', e2:'Japón',       f2:'🇯🇵', fecha:'20 jun', hora:'18:00', estadio:'Rose Bowl'},
-    {j:2, e1:'Portugal',  f1:'🇵🇹', e2:'EE.UU.',      f2:'🇺🇸', fecha:'21 jun', hora:'12:00', estadio:'AT&T Stadium'},
-    {j:3, e1:'Japón',     f1:'🇯🇵', e2:'Portugal',    f2:'🇵🇹', fecha:'25 jun', hora:'18:00', estadio:'MetLife'},
-    {j:3, e1:'EE.UU.',    f1:'🇺🇸', e2:'Francia',     f2:'🇫🇷', fecha:'25 jun', hora:'18:00', estadio:'Allegiant Stadium'}
+    {j:1, e1:'España',        f1:'🇪🇸', e2:'Cabo Verde',    f2:'🇨🇻', fecha:'16 jun', hora:'20:00', estadio:'AT&T Stadium'},
+    {j:1, e1:'Arabia Saudita',f1:'🇸🇦', e2:'Uruguay',       f2:'🇺🇾', fecha:'17 jun', hora:'14:00', estadio:'MetLife'},
+    {j:2, e1:'España',        f1:'🇪🇸', e2:'Arabia Saudita',f2:'🇸🇦', fecha:'21 jun', hora:'14:00', estadio:'SoFi Stadium'},
+    {j:2, e1:'Uruguay',       f1:'🇺🇾', e2:'Cabo Verde',    f2:'🇨🇻', fecha:'21 jun', hora:'17:00', estadio:'Rose Bowl'},
+    {j:3, e1:'Cabo Verde',    f1:'🇨🇻', e2:'Arabia Saudita',f2:'🇸🇦', fecha:'25 jun', hora:'18:00', estadio:'Gillette Stadium'},
+    {j:3, e1:'Uruguay',       f1:'🇺🇾', e2:'España',        f2:'🇪🇸', fecha:'25 jun', hora:'18:00', estadio:'AT&T Stadium'}
   ],
   I: [
-    {j:1, e1:'España',    f1:'🇪🇸', e2:'Uruguay',     f2:'🇺🇾', fecha:'17 jun', hora:'12:00', estadio:'Rose Bowl'},
-    {j:1, e1:'Bélgica',   f1:'🇧🇪', e2:'Australia',   f2:'🇦🇺', fecha:'17 jun', hora:'15:00', estadio:'SoFi Stadium'},
-    {j:2, e1:'España',    f1:'🇪🇸', e2:'Australia',   f2:'🇦🇺', fecha:'21 jun', hora:'15:00', estadio:'Allegiant Stadium'},
-    {j:2, e1:'Uruguay',   f1:'🇺🇾', e2:'Bélgica',     f2:'🇧🇪', fecha:'21 jun', hora:'18:00', estadio:'Gillette Stadium'},
-    {j:3, e1:'Australia', f1:'🇦🇺', e2:'Uruguay',     f2:'🇺🇾', fecha:'25 jun', hora:'21:00', estadio:'Rose Bowl'},
-    {j:3, e1:'Bélgica',   f1:'🇧🇪', e2:'España',      f2:'🇪🇸', fecha:'25 jun', hora:'21:00', estadio:'Levis Stadium'}
+    {j:1, e1:'Francia', f1:'🇫🇷', e2:'Senegal', f2:'🇸🇳', fecha:'17 jun', hora:'17:00', estadio:'Allegiant Stadium'},
+    {j:1, e1:'Bol/Ira', f1:'🏳️', e2:'Noruega', f2:'🇳🇴', fecha:'17 jun', hora:'20:00', estadio:'Levis Stadium'},
+    {j:2, e1:'Francia', f1:'🇫🇷', e2:'Bol/Ira', f2:'🏳️', fecha:'21 jun', hora:'20:00', estadio:'MetLife'},
+    {j:2, e1:'Noruega', f1:'🇳🇴', e2:'Senegal', f2:'🇸🇳', fecha:'22 jun', hora:'14:00', estadio:'Gillette Stadium'},
+    {j:3, e1:'Senegal', f1:'🇸🇳', e2:'Bol/Ira', f2:'🏳️', fecha:'26 jun', hora:'18:00', estadio:'SoFi Stadium'},
+    {j:3, e1:'Noruega', f1:'🇳🇴', e2:'Francia', f2:'🇫🇷', fecha:'26 jun', hora:'18:00', estadio:'Rose Bowl'}
   ],
   J: [
-    {j:1, e1:'Inglaterra',f1:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',e2:'Brasil',   f2:'🇧🇷', fecha:'17 jun', hora:'21:00', estadio:'AT&T Stadium'},
-    {j:1, e1:'Colombia',  f1:'🇨🇴', e2:'Marruecos',   f2:'🇲🇦', fecha:'18 jun', hora:'12:00', estadio:'Allegiant Stadium'},
-    {j:2, e1:'Inglaterra',f1:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',e2:'Marruecos', f2:'🇲🇦', fecha:'22 jun', hora:'12:00', estadio:'MetLife'},
-    {j:2, e1:'Brasil',    f1:'🇧🇷', e2:'Colombia',    f2:'🇨🇴', fecha:'22 jun', hora:'15:00', estadio:'SoFi Stadium'},
-    {j:3, e1:'Marruecos', f1:'🇲🇦', e2:'Brasil',      f2:'🇧🇷', fecha:'26 jun', hora:'18:00', estadio:'Rose Bowl'},
-    {j:3, e1:'Colombia',  f1:'🇨🇴', e2:'Inglaterra',  f2:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', fecha:'26 jun', hora:'18:00', estadio:'Gillette Stadium'}
+    {j:1, e1:'Argentina', f1:'🇦🇷', e2:'Argelia',  f2:'🇩🇿', fecha:'18 jun', hora:'14:00', estadio:'MetLife'},
+    {j:1, e1:'Austria',   f1:'🇦🇹', e2:'Jordania', f2:'🇯🇴', fecha:'18 jun', hora:'17:00', estadio:'AT&T Stadium'},
+    {j:2, e1:'Argentina', f1:'🇦🇷', e2:'Austria',  f2:'🇦🇹', fecha:'22 jun', hora:'20:00', estadio:'Levis Stadium'},
+    {j:2, e1:'Jordania',  f1:'🇯🇴', e2:'Argelia',  f2:'🇩🇿', fecha:'23 jun', hora:'14:00', estadio:'SoFi Stadium'},
+    {j:3, e1:'Argelia',   f1:'🇩🇿', e2:'Austria',  f2:'🇦🇹', fecha:'27 jun', hora:'18:00', estadio:'Allegiant Stadium'},
+    {j:3, e1:'Jordania',  f1:'🇯🇴', e2:'Argentina',f2:'🇦🇷', fecha:'27 jun', hora:'18:00', estadio:'Gillette Stadium'}
   ],
   K: [
-    {j:1, e1:'Colombia',  f1:'🇨🇴', e2:'Uzbekistán',  f2:'🇺🇿', fecha:'18 jun', hora:'21:00', estadio:'Azteca'},
-    {j:1, e1:'Portugal',  f1:'🇵🇹', e2:'Repechaje',   f2:'🔄',   fecha:'19 jun', hora:'12:00', estadio:'Guadalajara'},
-    {j:2, e1:'Colombia',  f1:'🇨🇴', e2:'Repechaje',   f2:'🔄',   fecha:'23 jun', hora:'12:00', estadio:'Guadalajara'},
-    {j:2, e1:'Uzbekistán',f1:'🇺🇿', e2:'Portugal',    f2:'🇵🇹', fecha:'23 jun', hora:'15:00', estadio:'Monterrey'},
-    {j:3, e1:'Uzbekistán',f1:'🇺🇿', e2:'Repechaje',   f2:'🔄',   fecha:'27 jun', hora:'18:00', estadio:'Guadalajara'},
-    {j:3, e1:'Portugal',  f1:'🇵🇹', e2:'Colombia',    f2:'🇨🇴', fecha:'27 jun', hora:'18:00', estadio:'Miami'}
+    {j:1, e1:'Portugal',   f1:'🇵🇹', e2:'Jam/RDC',   f2:'🏳️', fecha:'19 jun', hora:'14:00', estadio:'Rose Bowl'},
+    {j:1, e1:'Uzbekistán', f1:'🇺🇿', e2:'Colombia',  f2:'🇨🇴', fecha:'19 jun', hora:'20:00', estadio:'Estadio Azteca'},
+    {j:2, e1:'Portugal',   f1:'🇵🇹', e2:'Uzbekistán',f2:'🇺🇿', fecha:'23 jun', hora:'17:00', estadio:'MetLife'},
+    {j:2, e1:'Colombia',   f1:'🇨🇴', e2:'Jam/RDC',   f2:'🏳️', fecha:'23 jun', hora:'20:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Jam/RDC',   f2:'🏳️', e2:'Uzbekistán', f1:'🇺🇿', fecha:'27 jun', hora:'18:00', estadio:'SoFi Stadium'},
+    {j:3, e1:'Colombia',   f1:'🇨🇴', e2:'Portugal',  f2:'🇵🇹', fecha:'27 jun', hora:'18:00', estadio:'Rose Bowl'}
   ],
   L: [
-    {j:1, e1:'México',    f1:'🇲🇽', e2:'Francia',     f2:'🇫🇷', fecha:'19 jun', hora:'21:00', estadio:'Azteca'},
-    {j:1, e1:'Senegal',   f1:'🇸🇳', e2:'Canadá',      f2:'🇨🇦', fecha:'20 jun', hora:'12:00', estadio:'Allegiant Stadium'},
-    {j:2, e1:'México',    f1:'🇲🇽', e2:'Canadá',      f2:'🇨🇦', fecha:'24 jun', hora:'12:00', estadio:'Rose Bowl'},
-    {j:2, e1:'Francia',   f1:'🇫🇷', e2:'Senegal',     f2:'🇸🇳', fecha:'24 jun', hora:'15:00', estadio:'AT&T Stadium'},
-    {j:3, e1:'Canadá',    f1:'🇨🇦', e2:'Francia',     f2:'🇫🇷', fecha:'28 jun', hora:'18:00', estadio:'Levis Stadium'},
-    {j:3, e1:'Senegal',   f1:'🇸🇳', e2:'México',      f2:'🇲🇽', fecha:'28 jun', hora:'18:00', estadio:'SoFi Stadium'}
+    {j:1, e1:'Inglaterra', f1:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', e2:'Croacia', f2:'🇭🇷', fecha:'20 jun', hora:'17:00', estadio:'Levis Stadium'},
+    {j:1, e1:'Ghana',      f1:'🇬🇭', e2:'Panamá',  f2:'🇵🇦', fecha:'20 jun', hora:'20:00', estadio:'Allegiant Stadium'},
+    {j:2, e1:'Inglaterra', f1:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', e2:'Ghana',   f2:'🇬🇭', fecha:'24 jun', hora:'14:00', estadio:'Gillette Stadium'},
+    {j:2, e1:'Panamá',     f1:'🇵🇦', e2:'Croacia', f2:'🇭🇷', fecha:'24 jun', hora:'17:00', estadio:'MetLife'},
+    {j:3, e1:'Croacia',    f1:'🇭🇷', e2:'Ghana',   f2:'🇬🇭', fecha:'28 jun', hora:'18:00', estadio:'AT&T Stadium'},
+    {j:3, e1:'Panamá',     f1:'🇵🇦', e2:'Inglaterra',f2:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',fecha:'28 jun', hora:'18:00', estadio:'Rose Bowl'}
   ]
 };
 
@@ -3944,8 +4082,17 @@ function goTo(screenId) {
   // Tab bar (móvil)
   var tb = document.getElementById('tab-bar');
   tb.style.display = isAuth ? 'none' : 'flex';
-  document.querySelectorAll('.tab-item').forEach(function(t){ t.classList.remove('active'); });
-  if (tabMap[screenId]) document.getElementById(tabMap[screenId]).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(function(t){
+    t.classList.remove('active');
+    t.removeAttribute('aria-current');
+  });
+  if (tabMap[screenId]) {
+    var activeTab = document.getElementById(tabMap[screenId]);
+    if (activeTab) {
+      activeTab.classList.add('active');
+      activeTab.setAttribute('aria-current', 'page');
+    }
+  }
 
   // Sidebar y top-bar (tablet/desktop)
   var sidebar = document.getElementById('sidebar');
@@ -3965,10 +4112,13 @@ function goTo(screenId) {
     if (ts) ts.textContent = meta.sub;
   }
   // Sidebar nav activo
-  document.querySelectorAll('.sidebar-nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(n){
+    n.classList.remove('active');
+    n.removeAttribute('aria-current');
+  });
   if (sidebarNavMap[screenId]) {
     var sn = document.getElementById(sidebarNavMap[screenId]);
-    if (sn) sn.classList.add('active');
+    if (sn) { sn.classList.add('active'); sn.setAttribute('aria-current', 'page'); }
   }
 
   if (screenId === 's-especiales') initEspeciales();
@@ -3988,7 +4138,6 @@ updateClock();
 setInterval(updateClock, 10000);
 
 // ── SCORE PICKER ──────────────────────────────────────────────────────────
-var colScore = 1, porScore = 1;
 function changeScore(team, delta) {
   if (team === 'col') { colScore = Math.max(0, colScore + delta); document.getElementById('col-score').textContent = colScore; }
   else { porScore = Math.max(0, porScore + delta); document.getElementById('por-score').textContent = porScore; }
@@ -4142,7 +4291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var hash50       = hashCompleto.substring(0, 50);
 
     // ── POST a Velneo para validar credenciales ───────────────
-    var urlAuth = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2/_process/API_VLD_USR?api_key=' + KEY;
+    var urlAuth = BASE_V2 + '/_process/API_VLD_USR?api_key=' + KEY;
 
     fetch(urlAuth, {
       method : 'POST',
@@ -4613,13 +4762,38 @@ function tainoMostrarRespuesta(texto) {
 // ╚══════════════════════════════════════════════════════
 function fetchJugadores(perfil) {
   if (!perfil) return;
-  var url = BASE + '/fifa_jug?api_key=' + KEY;
   var list = document.getElementById('cuenta-list');
   var sub  = document.getElementById('cuenta-sub');
-  if (sub)  sub.textContent = 'Cargando tus cuentas desde Velneo...';
+  if (sub)  sub.textContent = 'Cargando equipos y cuentas...';
   if (list) list.innerHTML  = '<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.6);font-size:14px;">⟳ Consultando...</div>';
 
-  fetch(url)
+  // ── [FIX] Cargar fifa_equ primero para tener IDs reales, luego fifa_jug ──
+  var urlEqu = BASE + '/fifa_equ?api_key=' + KEY;
+  var urlJug = BASE + '/fifa_jug?api_key=' + KEY;
+
+  fetch(urlEqu)
+    .then(function(r) { return r.json(); })
+    .then(function(dataEqu) {
+      // Construir mapas id↔nombre desde Velneo
+      var lista = dataEqu.fifa_equ || [];
+      equiposIdToNombre = {};
+      equiposNombreToId = {};
+      lista.forEach(function(e) {
+        equiposIdToNombre[e.id] = e.nom || e.name || e.nob || '';
+        equiposNombreToId[(e.nom || e.name || e.nob || '').toUpperCase()] = e.id;
+      });
+      // También actualizar el array local 'equipos' con banderas si tiene campo bandera
+      // (por ahora lo dejamos como está — banderas en equipos[] son correctas)
+    })
+    .catch(function() {
+      // Si falla fifa_equ, continuar sin mapeo — no bloquear el login
+      equiposIdToNombre = {};
+      equiposNombreToId = {};
+    })
+    .then(function() {
+      // Ahora cargar jugadores
+      return fetch(urlJug);
+    })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var todos   = data.fifa_jug || [];
@@ -4653,7 +4827,11 @@ function fetchJugadores(perfil) {
             '<div class="cuenta-pts">'+pts+' pts</div>'+
             '<div class="cuenta-chevron">›</div>';
           item.onclick = function() {
+            // ── [NEW-1] Guardar jugador activo en sesión ──
+            sessionJugador = c;
             selectCuenta(c.name, 'id:'+c.id, pts, color, iniciales);
+            // ── [NEW-6] Pre-cargar datos existentes del jugador ──
+            precargarDatosJugador(c);
             goTo('s-home');
           };
           list.appendChild(item);
@@ -4670,7 +4848,197 @@ function fetchJugadores(perfil) {
 }
 
 // Perfil activo en sesión
-var sessionPerfil = null;
+var sessionPerfil  = null;
+// ╔══════════════════════════════════════════════════════
+// ║ PLANTA BAJA — Mapas de equipos (desde fifa_equ)
+// ╚══════════════════════════════════════════════════════
+// id (Velneo) → nombre legible
+var equiposIdToNombre = {};
+// NOMBRE_EN_MAYUSCULAS → id (Velneo)
+var equiposNombreToId = {};
+// ╔══════════════════════════════════════════════════════
+// ║ PLANTA BAJA — Sesión del jugador activo
+// ╚══════════════════════════════════════════════════════
+// jugador activo: { id, name, reu, usr, grp_a_clf1 ... cam, sub, ter, cua }
+var sessionJugador = null;
+
+// ╔══════════════════════════════════════════════════════
+// ║ GLOBAL — Toast de notificación
+// ╚══════════════════════════════════════════════════════
+var _toastTimer = null;
+function showToast(msg, tipo) {
+  var el = document.getElementById('app-toast');
+  if (!el) return;
+  if (_toastTimer) clearTimeout(_toastTimer);
+  el.textContent = msg;
+  el.className   = 'toast ' + (tipo || '');
+  // forzar reflow para reiniciar animación
+  void el.offsetWidth;
+  el.classList.add('show');
+  _toastTimer = setTimeout(function() {
+    el.classList.remove('show');
+  }, 3200);
+}
+
+// ╔══════════════════════════════════════════════════════
+// ║ TORRE ESPECIALES — API_PUT_JUG
+// ╚══════════════════════════════════════════════════════
+function getEspEstadoBadge() { return document.getElementById('esp-estado-badge'); }
+function getBtnGuardar()     { return document.getElementById('btn-guardar-especiales'); }
+
+// Marca la badge como "sin guardar" cuando el usuario toca algo en Especiales
+function marcarEspPendiente() {
+  var badge = getEspEstadoBadge();
+  if (badge) { badge.textContent = 'Sin guardar'; badge.className = 'esp-estado-badge pendiente'; }
+}
+
+// Construye el payload para API_PUT_JUG desde el estado actual de grupoSel y finalistasSel
+function buildPayloadJug() {
+  if (!sessionJugador) return null;
+
+  // ── [FIX] Usa IDs reales de fifa_equ, con fallback al índice posicional ──
+  function equipoId(nombre) {
+    if (!nombre) return 0;
+    // 1. Buscar en el mapa real de Velneo (cargado desde fifa_equ)
+    var idReal = equiposNombreToId[nombre.toUpperCase()];
+    if (idReal) return idReal;
+    // 2. Fallback: índice posicional en array local (solo si mapa no disponible)
+    var idx = equipos.findIndex(function(e) { return e.name === nombre; });
+    return idx >= 0 ? idx + 1 : 0;
+  }
+
+  var letras = Object.keys(grupos);
+  var payload = { id: sessionJugador.id };
+
+  letras.forEach(function(k) {
+    var sel = grupoSel[k] || {};
+    payload['grp_' + k.toLowerCase() + '_clf1'] = equipoId(sel['1']) || 0;
+    payload['grp_' + k.toLowerCase() + '_clf2'] = equipoId(sel['2']) || 0;
+  });
+
+  payload.cam = equipoId(finalistasSel['drop-campeon']) || 0;
+  payload.sub = equipoId(finalistasSel['drop-sub'])     || 0;
+  payload.ter = equipoId(finalistasSel['drop-3ro'])     || 0;
+  payload.cua = equipoId(finalistasSel['drop-4to'])     || 0;
+
+  return payload;
+}
+
+function guardarEspeciales() {
+  if (!sessionJugador) {
+    showToast('⚠️ Selecciona un jugador primero', 'err');
+    return;
+  }
+
+  var payload = buildPayloadJug();
+  if (!payload) { showToast('⚠️ Error al armar pronóstico', 'err'); return; }
+
+  var btn   = getBtnGuardar();
+  var badge = getEspEstadoBadge();
+
+  // Estado: cargando
+  if (btn) {
+    btn.disabled   = true;
+    btn.innerHTML  = '<span class="btn-spinner"></span> Guardando...';
+  }
+
+  var url = BASE_V2 + '/_process/API_PUT_JUG?api_key=' + KEY;
+
+  fetch(url, {
+    method : 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body   : JSON.stringify(payload)
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json().catch(function() { return {}; });
+  })
+  .then(function() {
+    // Éxito
+    if (btn)   { btn.disabled = false; btn.innerHTML = '💾 Guardar pronóstico'; }
+    if (badge) { badge.textContent = '✓ Guardado'; badge.className = 'esp-estado-badge guardado'; }
+    showToast('✅ Pronóstico guardado correctamente', 'ok');
+    // Refrescar lab silenciosamente
+    labConsultar('fifa_jug');
+  })
+  .catch(function(err) {
+    if (btn)   { btn.disabled = false; btn.innerHTML = '💾 Guardar pronóstico'; }
+    if (badge) { badge.textContent = 'Error al guardar'; badge.className = 'esp-estado-badge pendiente'; }
+    showToast('❌ Error: ' + err.message, 'err');
+  });
+}
+
+// ╔══════════════════════════════════════════════════════
+// ║ TORRE ESPECIALES — Pre-carga datos de jugador
+// ╚══════════════════════════════════════════════════════
+// Dado un objeto jugador de fifa_jug, pre-llena grupoSel y finalistasSel
+function precargarDatosJugador(jug) {
+  if (!jug) return;
+
+  // ── Reset completo antes de cargar — evita mezclar datos de jugadores anteriores ──
+  grupoSel      = {};
+  finalistasSel = { 'drop-campeon': null, 'drop-sub': null, 'drop-3ro': null, 'drop-4to': null };
+
+  // ── [FIX] Usa mapa real de Velneo, con fallback al array local ──
+  function nombrePorId(id) {
+    if (!id || id === 0) return null;
+    // 1. Buscar en mapa real de fifa_equ
+    if (equiposIdToNombre[id]) {
+      var nomVelneo = equiposIdToNombre[id];
+      // Buscar en array local para obtener el nombre exacto del app (con tildes/mayúsculas correctas)
+      var match = equipos.find(function(e) {
+        return e.name.toUpperCase() === nomVelneo.toUpperCase() ||
+               normalizar(e.name) === normalizar(nomVelneo);
+      });
+      return match ? match.name : nomVelneo;
+    }
+    // 2. Fallback: índice posicional (solo si mapa no disponible)
+    var e = equipos[id - 1];
+    return e ? e.name : null;
+  }
+
+  var letras = Object.keys(grupos);
+  letras.forEach(function(k) {
+    var kl   = k.toLowerCase();
+    var clf1 = nombrePorId(jug['grp_' + kl + '_clf1']);
+    var clf2 = nombrePorId(jug['grp_' + kl + '_clf2']);
+    if (clf1 || clf2) {
+      if (!grupoSel[k]) grupoSel[k] = {};
+      if (clf1) grupoSel[k]['1'] = clf1;
+      if (clf2) grupoSel[k]['2'] = clf2;
+    }
+  });
+
+  // Finalistas
+  var mapFin = {
+    'drop-campeon': 'cam',
+    'drop-sub':     'sub',
+    'drop-3ro':     'ter',
+    'drop-4to':     'cua'
+  };
+  Object.keys(mapFin).forEach(function(dropId) {
+    var campo  = mapFin[dropId];
+    var nombre = nombrePorId(jug[campo]);
+    if (nombre) finalistasSel[dropId] = nombre;
+  });
+
+  // Marcar badge
+  var tieneAlgo = Object.keys(grupoSel).length > 0 ||
+                  Object.values(finalistasSel).some(function(v){ return v !== null; });
+  var badge = getEspEstadoBadge();
+  if (badge) {
+    badge.textContent = tieneAlgo ? '✓ Cargado de Velneo' : 'Sin guardar';
+    badge.className   = 'esp-estado-badge ' + (tieneAlgo ? 'guardado' : 'pendiente');
+  }
+}
+
+// Normalizar texto para comparación (quita tildes, minúsculas)
+function normalizar(str) {
+  if (!str) return '';
+  return str.toLowerCase()
+    .replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i')
+    .replace(/ó/g,'o').replace(/ú/g,'u').replace(/ü/g,'u').replace(/ñ/g,'n');
+}
 
 function labRefrescarTodo(el) {
   el.style.transition = 'transform 0.6s ease';
@@ -4976,6 +5344,7 @@ function initSimulador() {
     simActualizar();
   }
 }
+
 
 </script>
 </body>

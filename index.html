@@ -11,11 +11,16 @@
 ║                                                                  ║
 ║  NOVEDADES v44:                                                  ║
 ║  [NEW-1]  sessionJugador → jugador activo con id en sesión      ║
-║  [NEW-2]  fetchJugadores → carga datos existentes de fifa_jug   ║
+║  [NEW-2]  fetchJugadores → carga fifa_equ + fifa_ptd al login   ║
 ║  [NEW-3]  Torre Especiales → botón "Guardar pronóstico"         ║
 ║  [NEW-4]  API_PUT_JUG → POST grupos + finalistas a Velneo       ║
 ║  [NEW-5]  Toast de confirmación / error sin salir de pantalla   ║
 ║  [NEW-6]  Pre-carga de datos del jugador al seleccionar cuenta  ║
+║  [NEW-7]  API_PUT_PAR → POST pronóstico de partido a Velneo     ║
+║  [NEW-8]  buscarIdPartidoVelneo → cruza fixture local con ptd   ║
+║  [FIX-1]  finalistasSel sin defaults Brasil/Francia hardcoded   ║
+║  [FIX-2]  buildDrop sincroniza btn con currentVal (null=vacío)  ║
+║  [FIX-3]  Mapas id↔nombre reales desde fifa_equ                ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -2652,77 +2657,6 @@ var standings = {
   ]
 };
 
-function renderGruposTabla() {
-  var keys = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-  var btns = keys.map(function(k) {
-    return '<button class="tgs-btn' + (k === currentGrupoPos ? ' active' : '') + '" data-grupo="' + k + '">Grupo ' + k + '</button>';
-  }).join('');
-
-  // Table rows
-  var rows = (standings[currentGrupoPos] || []).map(function(t, i) {
-    var qualify = i < 2;
-    return '<div class="pos-row-data' + (qualify ? ' qualify' : '') + '">' +
-      '<span class="rank-cell">' + t.pos + '</span>' +
-      '<span class="team-cell">' + t.flag + ' ' + t.name + '</span>' +
-      '<span>' + t.pj + '</span><span>' + t.g + '</span><span>' + t.e + '</span>' +
-      '<span>' + t.p + '</span><span>' + t.gf + '</span><span>' + t.gc + '</span>' +
-      '<span class="pts-cell">' + t.pts + '</span>' +
-    '</div>';
-  }).join('');
-
-  // Group matches ordered chronologically
-  var gPartidos = (fixture[currentGrupoPos] || []).slice().sort(function(a,b){
-    var da = dateOrder.indexOf(a.fecha), db = dateOrder.indexOf(b.fecha);
-    if (da !== db) return da - db;
-    return a.hora.localeCompare(b.hora);
-  });
-
-  var lastJornada = 0;
-  var matchRows = gPartidos.map(function(p, i) {
-    var pid = currentGrupoPos + '-' + fixture[currentGrupoPos].indexOf(p);
-    var pron = pronosticoGrupos[currentGrupoPos] && pronosticoGrupos[currentGrupoPos][pid];
-    var ventana = dateOrder.indexOf(p.fecha) < dateOrder.indexOf(HOY) ? 'CERRADA' :
-                  p.fecha === HOY ? '100%' : 'Próximo';
-    var ventanaStyle = ventana === '100%' ? 'background:#34c759;color:#fff;' :
-                       ventana === 'CERRADA' ? 'background:#e5e5ea;color:#8e8e93;' :
-                       'background:#f2f2f7;color:#8e8e93;';
-    var header = '';
-    if (p.j !== lastJornada) {
-      lastJornada = p.j;
-      header = '<div class="ptab-section-title">Jornada ' + p.j + '</div>';
-    }
-    return header +
-      '<div class="partido-list-card">' +
-        '<div class="plc-header">' +
-          '<span class="plc-info">' + p.fecha + ' · ' + p.hora + ' (Col) · ' + p.estadio + '</span>' +
-          '<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;' + ventanaStyle + '">' + ventana + '</span>' +
-        '</div>' +
-        '<div class="plc-teams">' +
-          '<div class="plc-team"><span class="plc-flag">' + p.f1 + '</span><span class="plc-name">' + p.e1 + '</span></div>' +
-          '<span class="plc-vs">vs</span>' +
-          '<div class="plc-team right"><span class="plc-name">' + p.e2 + '</span><span class="plc-flag">' + p.f2 + '</span></div>' +
-        '</div>' +
-        '<div class="plc-footer">' +
-          '<span class="plc-pick' + (pron ? ' done' : '') + '">' + (pron ? '✓ ' + p.e1 + ' ' + pron.s1 + '-' + pron.s2 + ' ' + p.e2 : 'Sin pronóstico') + '</span>' +
-          '<span class="plc-pts">20 pts</span>' +
-        '</div>' +
-      '</div>';
-  }).join('');
-
-  return '<div class="tabla-grupo-selector">' + btns + '</div>' +
-    '<div style="margin:0 16px 6px;display:flex;gap:8px;align-items:center;">' +
-      '<div style="width:10px;height:10px;border-radius:50%;background:#34c759;flex-shrink:0;"></div>' +
-      '<span style="font-size:11px;color:#8e8e93;">Clasifica a Las Finales</span>' +
-    '</div>' +
-    '<div class="pos-table">' +
-      '<div class="pos-table-header">' +
-        '<span></span><span class="left">Selección</span><span>PJ</span><span>G</span><span>E</span><span>P</span><span>GF</span><span>GC</span><span>Pts</span>' +
-      '</div>' + rows +
-    '</div>' +
-    '<div style="font-size:16px;font-weight:700;color:#000;padding:16px 16px 8px;">Partidos · Grupo ' + currentGrupoPos + '</div>' +
-    matchRows;
-}
-
 
 function renderBracket() {
   var activeFase = window.activeFaseFinalesFilter || '16avos';
@@ -3384,7 +3318,6 @@ function openConfirmScreen(opts) {
 
 // ── PARTIDOS TABS ─────────────────────────────────────────────────────────
 var currentPartidosTab = 'grupos';
-var currentGrupoPos = 'A';
 var HOY = '18 jun'; // simular Colombia juega
 
 // Flatten all fixture into one sorted array - built lazily
@@ -3847,11 +3780,20 @@ function addGrupoMatchCards(k) {
       + (pron ? '' : '<button class="pgc-save-btn" data-pid="'+pid+'" data-grupo="'+k+'">Guardar pronostico</button>')
       + '</div>';
   });
-  panel.innerHTML += mH;
-  panel.querySelectorAll('.pgc-save-btn').forEach(function(btn){
+  // ── [FIX] Reemplazar (no acumular) — evita IDs duplicados en el DOM ──
+  var matchDiv = document.createElement('div');
+  matchDiv.id = 'grupo-match-cards';
+  matchDiv.innerHTML = mH;
+  var existing = panel.querySelector('#grupo-match-cards');
+  if (existing) existing.remove();
+  panel.appendChild(matchDiv);
+
+  matchDiv.querySelectorAll('.pgc-save-btn').forEach(function(btn){
     var pid=btn.dataset.pid, grupo=btn.dataset.grupo;
     btn.onclick = function(){
-      var s1el=document.getElementById('gs1-'+pid), s2el=document.getElementById('gs2-'+pid);
+      // ── [FIX] Buscar inputs dentro del contenedor — no en todo el DOM ──
+      var s1el=matchDiv.querySelector('#gs1-'+pid);
+      var s2el=matchDiv.querySelector('#gs2-'+pid);
       if(!s1el||!s2el||s1el.value===''||s2el.value===''){alert('Ingresa ambos marcadores');return;}
       var s1=s1el.value, s2=s2el.value, _pid=pid, _grupo=grupo, _s1=s1, _s2=s2;
       var p2=(fixture[grupo]||[])[parseInt(pid.split('-')[1])];
@@ -3863,6 +3805,9 @@ function addGrupoMatchCards(k) {
         onConfirm:function(){
           if(!pronosticoGrupos[_grupo])pronosticoGrupos[_grupo]={};
           pronosticoGrupos[_grupo][_pid]={s1:parseInt(_s1),s2:parseInt(_s2)};
+          // ── [NEW] POST a API_PUT_PAR ──
+          var idVelneo = buscarIdPartidoVelneo(p2 ? p2.e1 : '', p2 ? p2.e2 : '');
+          guardarPronosticoPartido({ idPartidoVelneo: idVelneo, s1: _s1, s2: _s2 });
           initGruposFase(); renderGrupoStandings(_grupo);
         }
       });
@@ -4030,11 +3975,74 @@ function renderGrupoFasePanel(k) {
         onConfirm: function() {
           if (!pronosticoGrupos[_grupo]) pronosticoGrupos[_grupo] = {};
           pronosticoGrupos[_grupo][_pid] = { s1: parseInt(_s1), s2: parseInt(_s2) };
+          // ── [NEW] POST a API_PUT_PAR ──
+          var idVelneo = buscarIdPartidoVelneo(p ? p.e1 : '', p ? p.e2 : '');
+          guardarPronosticoPartido({ idPartidoVelneo: idVelneo, s1: _s1, s2: _s2 });
           initGruposFase();
           renderGrupoFasePanel(_grupo);
         }
       });
     };
+  });
+}
+
+// ╔══════════════════════════════════════════════════════
+// ║ TORRE PARTIDOS — API_PUT_PAR
+// ╚══════════════════════════════════════════════════════
+
+// Busca el id real del partido en partidosCache cruzando por equ_loc y equ_vis
+function buscarIdPartidoVelneo(nombreLoc, nombreVis) {
+  if (!partidosCache || !partidosCache.length) return null;
+  var idLoc = equiposNombreToId[nombreLoc.toUpperCase()] ||
+              equiposNombreToId[normalizar(nombreLoc).toUpperCase()];
+  var idVis = equiposNombreToId[nombreVis.toUpperCase()] ||
+              equiposNombreToId[normalizar(nombreVis).toUpperCase()];
+  if (!idLoc || !idVis) return null;
+  var ptd = partidosCache.find(function(p) {
+    return Number(p.equ_loc) === Number(idLoc) && Number(p.equ_vis) === Number(idVis);
+  });
+  return ptd ? ptd.id : null;
+}
+
+// POST a API_PUT_PAR — llama después de confirmar pronóstico
+function guardarPronosticoPartido(opts) {
+  // opts: { idPartidoVelneo, s1, s2 }
+  if (!sessionJugador) return; // sin jugador activo, no enviar
+  if (!opts.idPartidoVelneo) {
+    // No encontramos el ID — guardar local sin POST
+    showToast('⚠️ ID de partido no encontrado en Velneo', 'err');
+    return;
+  }
+
+  var s1 = parseInt(opts.s1) || 0;
+  var s2 = parseInt(opts.s2) || 0;
+  var res = s1 > s2 ? '1' : s2 > s1 ? '2' : 'X'; // resultado calculado
+
+  var payload = {
+    jug: sessionJugador.id,
+    id:  opts.idPartidoVelneo,
+    pro_gol_loc: s1,
+    pro_gol_vis: s2,
+    pro_res:     res
+  };
+
+  var url = BASE_V2 + '/_process/API_PUT_PAR?api_key=' + KEY;
+
+  fetch(url, {
+    method : 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body   : JSON.stringify(payload)
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json().catch(function() { return {}; });
+  })
+  .then(function() {
+    showToast('✅ Pronóstico guardado en Velneo', 'ok');
+    labConsultar('fifa_jug_pro'); // refrescar pronósticos en Lab
+  })
+  .catch(function(err) {
+    showToast('❌ Error al guardar: ' + err.message, 'err');
   });
 }
 
@@ -4791,6 +4799,11 @@ function fetchJugadores(perfil) {
       equiposNombreToId = {};
     })
     .then(function() {
+      // Cargar fifa_ptd en paralelo para tener IDs de partidos disponibles (API_PUT_PAR)
+      fetch(BASE + '/fifa_ptd?api_key=' + KEY)
+        .then(function(r) { return r.json(); })
+        .then(function(d) { partidosCache = d.fifa_ptd || []; })
+        .catch(function() {}); // silencioso — no bloquear login
       // Ahora cargar jugadores
       return fetch(urlJug);
     })

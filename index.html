@@ -444,6 +444,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .pgc-score-inp { width: 40px; height: 36px; border-radius: 8px; border: 1.5px solid #e5e5ea; text-align: center; font-size: 18px; font-weight: 700; background: #f2f2f7; color: #000; outline: none; }
 .pgc-score-inp:focus { border-color: #007aff; background: #e8f3ff; }
 .pgc-sep { font-size: 16px; color: #c7c7cc; font-weight: 700; }
+.pgc-stepper { display: flex; align-items: center; background: #fff; border: 1.5px solid #e5e5ea; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+.pgc-stepper-btn { width: 40px; height: 44px; border: none; background: transparent; color: #1c1c1e; font-size: 22px; font-weight: 300; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; line-height: 1; flex-shrink: 0; }
+.pgc-stepper-btn:active { background: #f2f2f7; }
+.pgc-stepper-divider { width: 1px; height: 28px; background: #e5e5ea; flex-shrink: 0; }
+.pgc-score-inp { width: 44px; height: 44px; border: none; border-left: 1px solid #e5e5ea; border-right: 1px solid #e5e5ea; text-align: center; font-size: 18px; font-weight: 600; background: #fff; color: #1c1c1e; outline: none; -moz-appearance: textfield; flex-shrink: 0; }
+.pgc-score-inp::-webkit-inner-spin-button, .pgc-score-inp::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.pgc-name-wrap { font-size: 12px; font-weight: 600; color: #000; text-align: center; max-width: 72px; word-break: break-word; line-height: 1.3; }
 .pgc-time { font-size: 11px; color: #8e8e93; text-align: center; margin-top: 4px; }
 .pgc-save-btn { width: calc(100% - 28px); margin: 0 14px 12px; background: #007aff; color: #fff; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .pgc-saved { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 14px 10px; font-size: 12px; color: #34c759; font-weight: 600; }
@@ -3502,15 +3509,15 @@ function addGrupoMatchCards(k) {
       + '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">20 pts</span>'
       + '</div></div>'
       + '<div class="pgc-body"><div class="pgc-teams">'
-      + '<div class="pgc-team"><div class="pgc-flag">'+p.f1+'</div><div class="pgc-name">'+p.e1+'</div></div>'
+      + '<div class="pgc-team"><div class="pgc-flag">'+p.f1+'</div><div class="pgc-name-wrap">'+p.e1+'</div></div>'
       + '<div class="pgc-score-area">'
-      + '<input class="pgc-score-inp pgc-inp-loc" type="number" min="0" max="20" value="'+(pron?pron.s1:'')+'" placeholder="0">'
+      + '<div class="pgc-stepper"><button class="pgc-stepper-btn pgc-btn-dec-loc" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp pgc-inp-loc" type="number" min="0" max="20" value="'+(pron?pron.s1:0)+'" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn pgc-btn-inc-loc" type="button">+</button></div>'
       + '<span class="pgc-sep">-</span>'
-      + '<input class="pgc-score-inp pgc-inp-vis" type="number" min="0" max="20" value="'+(pron?pron.s2:'')+'" placeholder="0">'
+      + '<div class="pgc-stepper"><button class="pgc-stepper-btn pgc-btn-dec-vis" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp pgc-inp-vis" type="number" min="0" max="20" value="'+(pron?pron.s2:0)+'" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn pgc-btn-inc-vis" type="button">+</button></div>'
       + '</div>'
-      + '<div class="pgc-team"><div class="pgc-flag">'+p.f2+'</div><div class="pgc-name">'+p.e2+'</div></div>'
+      + '<div class="pgc-team"><div class="pgc-flag">'+p.f2+'</div><div class="pgc-name-wrap">'+p.e2+'</div></div>'
       + '</div><div class="pgc-time">'+(pron ? 'Check '+p.e1+' '+pron.s1+'-'+pron.s2+' '+p.e2 : 'Sin pronostico aun')+'</div></div>'
-      + '<button class="pgc-save-btn" data-pid="'+pid+'" data-ptd-id="'+p.id+'" data-grupo="'+k+'" data-e1="'+p.e1+'" data-f1="'+p.f1+'" data-e2="'+p.e2+'" data-f2="'+p.f2+'" data-j="'+p.j+'" data-fecha="'+p.fecha+'" data-hora="'+p.hora+'" data-estadio="'+p.estadio+'">' + (pron ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>'
+      + '<button class="pgc-save-btn" data-pid="'+pid+'" data-grupo="'+k+'" data-e1="'+p.e1+'" data-f1="'+p.f1+'" data-e2="'+p.e2+'" data-f2="'+p.f2+'" data-j="'+p.j+'" data-fecha="'+p.fecha+'" data-hora="'+p.hora+'" data-estadio="'+p.estadio+'">' + (pron ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>'
       + '</div>';
   });
 
@@ -3521,6 +3528,12 @@ function addGrupoMatchCards(k) {
   if (existing) existing.remove();
   panel.appendChild(matchDiv);
 
+  matchDiv.querySelectorAll('.partido-grupo-card').forEach(function(card){
+    card.querySelector('.pgc-btn-inc-loc').onclick = function(){ var i=card.querySelector('.pgc-inp-loc'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+    card.querySelector('.pgc-btn-dec-loc').onclick = function(){ var i=card.querySelector('.pgc-inp-loc'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+    card.querySelector('.pgc-btn-inc-vis').onclick = function(){ var i=card.querySelector('.pgc-inp-vis'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+    card.querySelector('.pgc-btn-dec-vis').onclick = function(){ var i=card.querySelector('.pgc-inp-vis'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+  });
   matchDiv.querySelectorAll('.pgc-save-btn').forEach(function(btn){
     btn.onclick = function(){
       // ── [FIX] Leer scores del card padre, no de getElementById ──
@@ -3542,7 +3555,7 @@ if(s2el.value==='')s2el.value='0';
         onConfirm:function(){
           if(!pronosticoGrupos[_grupo])pronosticoGrupos[_grupo]={};
           pronosticoGrupos[_grupo][_pid]={s1:parseInt(_s1),s2:parseInt(_s2)};
-          var idVelneo = Number(btn.dataset.ptdId) || buscarIdPartidoVelneo(e1, e2);
+          var idVelneo = buscarIdPartidoVelneo(e1, e2);
           guardarPronosticoPartido({ idPartidoVelneo: idVelneo, s1: _s1, s2: _s2 });
           initGruposFase(); renderGrupoStandings(_grupo);
         }
@@ -3607,17 +3620,17 @@ function renderGrupoFasePanel(k) {
       '</div>' +
       '<div class="pgc-body">' +
         '<div class="pgc-teams">' +
-          '<div class="pgc-team"><div class="pgc-flag">' + p.f1 + '</div><div class="pgc-name">' + p.e1 + '</div></div>' +
+          '<div class="pgc-team"><div class="pgc-flag">' + p.f1 + '</div><div class="pgc-name-wrap">' + p.e1 + '</div></div>' +
           '<div class="pgc-score-area">' +
-            '<input class="pgc-score-inp pgc-inp-loc" type="number" min="0" max="20" value="' + (saved ? saved.s1 : '') + '" placeholder="0">' +
+            '<div class="pgc-stepper"><button class="pgc-stepper-btn pgc-btn-dec-loc" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp pgc-inp-loc" type="number" min="0" max="20" value="' + (saved ? saved.s1 : 0) + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn pgc-btn-inc-loc" type="button">+</button></div>' +
             '<span class="pgc-sep">—</span>' +
-            '<input class="pgc-score-inp pgc-inp-vis" type="number" min="0" max="20" value="' + (saved ? saved.s2 : '') + '" placeholder="0">' +
+            '<div class="pgc-stepper"><button class="pgc-stepper-btn pgc-btn-dec-vis" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp pgc-inp-vis" type="number" min="0" max="20" value="' + (saved ? saved.s2 : 0) + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn pgc-btn-inc-vis" type="button">+</button></div>' +
           '</div>' +
-          '<div class="pgc-team"><div class="pgc-flag">' + p.f2 + '</div><div class="pgc-name">' + p.e2 + '</div></div>' +
+          '<div class="pgc-team"><div class="pgc-flag">' + p.f2 + '</div><div class="pgc-name-wrap">' + p.e2 + '</div></div>' +
         '</div>' +
         '<div class="pgc-time">' + (saved ? 'Pronóstico: ' + p.e1 + ' ' + saved.s1 + ' — ' + saved.s2 + ' ' + p.e2 : 'Sin pronóstico aún') + '</div>' +
       '</div>' +
-      '<button class="pgc-save-btn" data-pid="' + pid + '" data-ptd-id="' + p.id + '" data-grupo="' + k + '" data-e1="' + p.e1 + '" data-f1="' + p.f1 + '" data-e2="' + p.e2 + '" data-f2="' + p.f2 + '" data-j="' + p.j + '" data-fecha="' + p.fecha + '" data-hora="' + p.hora + '" data-estadio="' + p.estadio + '">' + (saved ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>' +
+      '<button class="pgc-save-btn" data-pid="' + pid + '" data-grupo="' + k + '" data-e1="' + p.e1 + '" data-f1="' + p.f1 + '" data-e2="' + p.e2 + '" data-f2="' + p.f2 + '" data-j="' + p.j + '" data-fecha="' + p.fecha + '" data-hora="' + p.hora + '" data-estadio="' + p.estadio + '">' + (saved ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>' +
     '</div>';
   });
   panel.innerHTML = html;
@@ -3644,7 +3657,7 @@ function renderGrupoFasePanel(k) {
         onConfirm: function() {
           if (!pronosticoGrupos[_grupo]) pronosticoGrupos[_grupo] = {};
           pronosticoGrupos[_grupo][_pid] = { s1: parseInt(_s1), s2: parseInt(_s2) };
-          var idVelneo = Number(btn.dataset.ptdId) || buscarIdPartidoVelneo(e1, e2);
+          var idVelneo = buscarIdPartidoVelneo(e1, e2);
           guardarPronosticoPartido({ idPartidoVelneo: idVelneo, s1: _s1, s2: _s2 });
           initGruposFase();
           renderGrupoFasePanel(_grupo);
@@ -5072,52 +5085,229 @@ function cargarPartidosYResumen() {
     });
 }
 
+// ── Helper: construir card apostable (hoy + próximos + inauguración) ─
+function buildCardApostable(p, badgeHTML, containerEl) {
+  var nomLoc = equiposIdToNombre[p.equ_loc] || capitalizar(p.nom_loc) || '?';
+  var nomVis = equiposIdToNombre[p.equ_vis] || capitalizar(p.nom_vis) || '?';
+  var flagLoc = getFlagEmoji(p.equ_loc) || bandera(p.nom_loc);
+  var flagVis = getFlagEmoji(p.equ_vis) || bandera(p.nom_vis);
+  var hora    = fmtHora(p.hor);
+  var fecha   = fmtFecha(p.fch);
+  // Buscar pronóstico guardado
+  var pronGuardado = null;
+  if (p.grp_for) {
+    var grp = p.grp_for.toUpperCase();
+    var gProns = pronosticoGrupos[grp] || {};
+    var partFixture = (fixture[grp] || []).find(function(x){ return x.id === p.id; });
+    if (partFixture) {
+      var idx = (fixture[grp]||[]).indexOf(partFixture);
+      pronGuardado = gProns[grp+'-'+idx] || null;
+    }
+  }
+  var s1init = pronGuardado ? pronGuardado.s1 : 0;
+  var s2init = pronGuardado ? pronGuardado.s2 : 0;
+  var ptsTag = '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">20 pts</span>';
+
+  var card = document.createElement('div');
+  card.className = 'match-card';
+  card.setAttribute('data-ptd-id',  p.id);
+  card.setAttribute('data-nom-loc', nomLoc);
+  card.setAttribute('data-nom-vis', nomVis);
+  card.setAttribute('data-flag-loc', flagLoc);
+  card.setAttribute('data-flag-vis', flagVis);
+  card.setAttribute('data-hora',    hora);
+  card.setAttribute('data-fecha',   fecha);
+  card.setAttribute('data-estadio', p.nom_est || '');
+  card.setAttribute('data-grp',     p.grp_for || '');
+
+  card.innerHTML =
+    '<div class="match-header">' +
+      '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
+      '<div style="display:flex;align-items:center;gap:5px;">' + ptsTag + badgeHTML + '</div>' +
+    '</div>' +
+    '<div class="match-teams">' +
+      '<div class="team" style="flex:1;">' +
+        '<div class="team-flag">' + flagLoc + '</div>' +
+        '<div class="team-name" style="text-align:center;word-break:break-word;max-width:80px;">' + nomLoc + '</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<div class="pgc-stepper"><button class="pgc-stepper-btn res-dec-loc" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp res-inp-loc" type="number" min="0" max="20" value="' + s1init + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn res-inc-loc" type="button">+</button></div>' +
+          '<span class="pgc-sep">—</span>' +
+          '<div class="pgc-stepper"><button class="pgc-stepper-btn res-dec-vis" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp res-inp-vis" type="number" min="0" max="20" value="' + s2init + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn res-inc-vis" type="button">+</button></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="team" style="flex:1;">' +
+        '<div class="team-flag">' + flagVis + '</div>' +
+        '<div class="team-name" style="text-align:center;word-break:break-word;max-width:80px;">' + nomVis + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="match-time">' + hora + ' hs · ' + (p.nom_est || '') + '</div>' +
+    '<button class="pgc-save-btn" style="margin-top:10px;width:100%;">' + (pronGuardado ? '✏️ Actualizar' : '⚽ Guardar pronóstico') + '</button>';
+
+  // Wire steppers
+  card.querySelector('.res-inc-loc').onclick = function(){ var i=card.querySelector('.res-inp-loc'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+  card.querySelector('.res-dec-loc').onclick = function(){ var i=card.querySelector('.res-inp-loc'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+  card.querySelector('.res-inc-vis').onclick = function(){ var i=card.querySelector('.res-inp-vis'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+  card.querySelector('.res-dec-vis').onclick = function(){ var i=card.querySelector('.res-inp-vis'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+
+  // Wire botón guardar
+  var btn = card.querySelector('.pgc-save-btn');
+  btn.onclick = function() {
+    var s1 = card.querySelector('.res-inp-loc').value;
+    var s2 = card.querySelector('.res-inp-vis').value;
+    var ptdId   = Number(card.dataset.ptdId);
+    var grp     = card.dataset.grp;
+    openConfirmScreen({
+      phase: (grp ? 'Grupo ' + grp.toUpperCase() : 'Fase de grupos'),
+      time: card.dataset.fecha + ' · ' + card.dataset.hora + ' · ' + card.dataset.estadio,
+      e1: card.dataset.nomLoc, f1: card.dataset.flagLoc,
+      e2: card.dataset.nomVis, f2: card.dataset.flagVis,
+      s1: s1, s2: s2, maxPts: 20,
+      onConfirm: function() {
+        guardarPronosticoPartido({ idPartidoVelneo: ptdId, s1: s1, s2: s2 });
+        if (grp) {
+          var g = grp.toUpperCase();
+          if (!pronosticoGrupos[g]) pronosticoGrupos[g] = {};
+          var part = (fixture[g]||[]).find(function(x){ return x.id === ptdId; });
+          if (part) { var idx=(fixture[g]||[]).indexOf(part); pronosticoGrupos[g][g+'-'+idx]={s1:parseInt(s1),s2:parseInt(s2)}; }
+        }
+        btn.textContent = '✏️ Actualizar';
+      }
+    });
+  };
+
+  containerEl.appendChild(card);
+}
+
+// ── Helper: primera fecha con partidos estrictamente después de 'desde' ──
+function proximaFechaConPartidos(partidos, desde) {
+  var seen = {};
+  var fechas = [];
+  partidos.forEach(function(p) {
+    var f = fmtFecha(p.fch);
+    if (f && !seen[f]) { seen[f] = true; fechas.push(f); }
+  });
+  fechas.sort();
+  return fechas.find(function(f) { return f > desde; }) || null;
+}
+
+// ── Helper: renderizar sección B (próxima fecha) ──────────────
+function renderSeccionProxima(partidos, desdeFecha, proxTitle, proxCards) {
+  var proximaFecha = proximaFechaConPartidos(partidos, desdeFecha);
+  if (!proximaFecha) {
+    proxTitle.style.display = 'none';
+    proxCards.innerHTML = '';
+    return;
+  }
+  var partidosProxima = partidos.filter(function(p) {
+    return fmtFecha(p.fch) === proximaFecha;
+  });
+  proxTitle.style.display = '';
+  proxTitle.textContent   = 'Próxima fecha · ' + proximaFecha;
+  proxCards.innerHTML     = '';
+  partidosProxima.forEach(function(p) {
+    var hora  = fmtHora(p.hor);
+    var badge = '<span class="match-badge badge-open">' + hora + '</span>';
+    buildCardApostable(p, badge, proxCards);
+  });
+}
+
+// ── Helper: card solo-visual (Finalizado) ─────────────────────
+function buildCardVisual(p, badgeHTML, containerEl) {
+  var nomLoc  = equiposIdToNombre[p.equ_loc] || capitalizar(p.nom_loc) || '?';
+  var nomVis  = equiposIdToNombre[p.equ_vis] || capitalizar(p.nom_vis) || '?';
+  var flagLoc = getFlagEmoji(p.equ_loc) || bandera(p.nom_loc);
+  var flagVis = getFlagEmoji(p.equ_vis) || bandera(p.nom_vis);
+  var hora    = fmtHora(p.hor);
+  var card    = document.createElement('div');
+  card.className = 'match-card';
+  card.innerHTML =
+    '<div class="match-header">' +
+      '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
+      badgeHTML +
+    '</div>' +
+    '<div class="match-teams">' +
+      '<div class="team"><div class="team-flag">' + flagLoc + '</div><div class="team-name">' + nomLoc + '</div></div>' +
+      '<div class="match-score" style="color:#8e8e93;">- - -</div>' +
+      '<div class="team"><div class="team-flag">' + flagVis + '</div><div class="team-name">' + nomVis + '</div></div>' +
+    '</div>' +
+    '<div class="match-time">' + hora + ' hs · ' + (p.nom_est || '') + '</div>';
+  containerEl.appendChild(card);
+}
+
 // ── Lógica principal del resumen ─────────────────────────────
 function renderResumen(partidos, fechaSim, horaSim) {
-  var hoyCards     = document.getElementById('resumen-hoy-cards');
-  var hoyTitle     = document.getElementById('resumen-hoy-title');
-  var proxCards    = document.getElementById('resumen-proximos-cards');
-  var proxTitle    = document.getElementById('resumen-proximos-title');
+  var hoyCards  = document.getElementById('resumen-hoy-cards');
+  var hoyTitle  = document.getElementById('resumen-hoy-title');
+  var proxCards = document.getElementById('resumen-proximos-cards');
+  var proxTitle = document.getElementById('resumen-proximos-title');
 
   if (!hoyCards) return;
 
-  // ── Casos especiales de fecha ─────────────────────────────
-  // Antes de la inauguración
+  // ── CASO 1 — Antes del mundial ────────────────────────────
   if (fechaSim < MUNDIAL_INICIO) {
-    hoyTitle.textContent = 'Cuenta regresiva';
-    hoyCards.innerHTML =
-      '<div class="match-card" style="text-align:center;padding:24px 16px;">' +
-        '<div style="font-size:32px;margin-bottom:8px;">🏟️</div>' +
-        '<div style="font-size:15px;font-weight:700;color:#000;margin-bottom:4px;">Partido de Inauguración</div>' +
-        '<div style="font-size:13px;color:#8e8e93;">México 🇲🇽 vs 🇿🇦 Sudáfrica</div>' +
-        '<div style="font-size:12px;color:#007aff;margin-top:8px;font-weight:600;">11 de junio · 14:00 · Estadio Azteca</div>' +
-      '</div>';
-    if (proxTitle) proxTitle.style.display = 'none';
-    if (proxCards) proxCards.innerHTML = '';
+    hoyTitle.textContent = 'Partido de Inauguración';
+    hoyCards.innerHTML   = '';
+    // Card apostable del partido inaugural (México=1 vs Sudáfrica=2)
+    var inaugural = partidos.find(function(p) {
+      return Number(p.equ_loc) === 1 && Number(p.equ_vis) === 2;
+    });
+    if (inaugural) {
+      var horaInau  = fmtHora(inaugural.hor);
+      var badgeInau = '<span class="match-badge badge-open">' + horaInau + '</span>';
+      buildCardApostable(inaugural, badgeInau, hoyCards);
+    } else {
+      hoyCards.innerHTML =
+        '<div class="match-card" style="text-align:center;padding:24px 16px;">' +
+          '<div style="font-size:32px;margin-bottom:8px;">🏟️</div>' +
+          '<div style="font-size:15px;font-weight:700;color:#000;margin-bottom:4px;">Partido de Inauguración</div>' +
+          '<div style="font-size:13px;color:#8e8e93;">México 🇲🇽 vs 🇿🇦 Sudáfrica</div>' +
+          '<div style="font-size:12px;color:#007aff;margin-top:8px;font-weight:600;">11 de junio · Estadio Azteca</div>' +
+        '</div>';
+    }
+    // Sección B: resto de partidos del 11 de junio (ej. Corea vs Chequia)
+    // Si no hay más partidos ese día, cae a la próxima fecha (12 jun)
+    var restoInaugural = partidos.filter(function(p) {
+      return fmtFecha(p.fch) === MUNDIAL_INICIO &&
+             !(Number(p.equ_loc) === 1 && Number(p.equ_vis) === 2);
+    });
+    if (restoInaugural.length) {
+      proxTitle.style.display = '';
+      proxTitle.textContent   = 'Más partidos · ' + MUNDIAL_INICIO;
+      proxCards.innerHTML     = '';
+      restoInaugural.forEach(function(p) {
+        var hora  = fmtHora(p.hor);
+        var badge = '<span class="match-badge badge-open">' + hora + '</span>';
+        buildCardApostable(p, badge, proxCards);
+      });
+    } else {
+      renderSeccionProxima(partidos, MUNDIAL_INICIO, proxTitle, proxCards);
+    }
     return;
   }
 
-  // Después del Mundial
+  // ── CASO 4 — Después del mundial ─────────────────────────
   if (fechaSim > MUNDIAL_FIN) {
-    hoyTitle.textContent = 'El Mundial terminó';
+    hoyTitle.textContent = '¡El Mundial terminó! 🏆';
     hoyCards.innerHTML =
       '<div class="match-card" style="text-align:center;padding:28px 16px;">' +
         '<div style="font-size:40px;margin-bottom:10px;">🏆</div>' +
         '<div style="font-size:16px;font-weight:700;color:#000;margin-bottom:6px;">¡Gracias por participar!</div>' +
         '<div style="font-size:13px;color:#8e8e93;line-height:1.5;">Gracias por participar en<br>La Polla Mundialista 2026</div>' +
       '</div>';
-    if (proxTitle) proxTitle.style.display = 'none';
-    if (proxCards) proxCards.innerHTML = '';
+    proxTitle.style.display = 'none';
+    proxCards.innerHTML     = '';
     return;
   }
 
-  // ── Partidos de hoy ───────────────────────────────────────
+  // ── CASOS 2, 3, 5, 6 — Durante el mundial ────────────────
   var hoy = partidos.filter(function(p) {
     return fmtFecha(p.fch) === fechaSim;
   });
 
   if (!hoy.length) {
-    // Día de descanso
+    // ── CASO 3 — Día de descanso ──────────────────────────
     hoyTitle.textContent = 'Hoy · ' + fechaSim;
     hoyCards.innerHTML =
       '<div class="match-card" style="text-align:center;padding:24px 16px;">' +
@@ -5126,83 +5316,34 @@ function renderResumen(partidos, fechaSim, horaSim) {
         '<div style="font-size:13px;color:#8e8e93;">No hay partidos programados para hoy</div>' +
       '</div>';
   } else {
+    // ── CASO 2 — Día con partidos (incluye casos 5 y 6) ──
     hoyTitle.textContent = 'Partidos de hoy · ' + fechaSim;
-    hoyCards.innerHTML = '';
+    hoyCards.innerHTML   = '';
     hoy.forEach(function(p) {
-      var hora    = fmtHora(p.hor);
-      // Estado del partido según hora simulada
-  var minSim    = horaAMinutos(horaSim);
-  var minInicio = horaAMinutos(hora);
-  var enVivo    = minSim >= minInicio && minSim <= minInicio + 105; // 0 a 1h45m
-  var finalizado = minSim > minInicio + 105;
-      var flagLoc = bandera(p.nom_loc);
-      var flagVis = bandera(p.nom_vis);
-      var badge = enVivo
-        ? '<span class="match-badge badge-live">● EN VIVO</span>'
-        : finalizado
-          ? '<span class="match-badge" style="background:#f2f2f7;color:#8e8e93;">✓ Finalizado</span>'
-          : '<span class="match-badge badge-open">' + hora + '</span>';
+      var hora      = fmtHora(p.hor);
+      var minSim    = horaAMinutos(horaSim);
+      var minInicio = horaAMinutos(hora);
+      var enVivo    = minSim >= minInicio && minSim <= minInicio + 105;
+      var finalizado = minSim > minInicio + 105;
 
-      var card = document.createElement('div');
-      card.className = 'match-card';
-      card.innerHTML =
-        '<div class="match-header">' +
-          '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
-          badge +
-        '</div>' +
-        '<div class="match-teams">' +
-          '<div class="team">' +
-            '<div class="team-flag">' + flagLoc + '</div>' +
-            '<div class="team-name">' + capitalizar(p.nom_loc) + '</div>' +
-          '</div>' +
-          '<div class="match-' + (enVivo ? 'score">? - ?' : finalizado ? 'score" style="color:#8e8e93;">- - -' : 'vs">vs') + '</div>' +
-          '<div class="team">' +
-            '<div class="team-flag">' + flagVis + '</div>' +
-            '<div class="team-name">' + capitalizar(p.nom_vis) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="match-time">' + hora + ' hs · ' + (p.nom_est || '') + '</div>';
-      hoyCards.appendChild(card);
+      if (finalizado) {
+        // CASO 6 — Finalizado: solo visualización, sin stepper
+        var badgeFin = '<span class="match-badge" style="background:#f2f2f7;color:#8e8e93;">✓ Finalizado</span>';
+        buildCardVisual(p, badgeFin, hoyCards);
+      } else if (enVivo) {
+        // CASO 5 — EN VIVO: stepper activo con badge rojo
+        var badgeVivo = '<span class="match-badge badge-live">● EN VIVO</span>';
+        buildCardApostable(p, badgeVivo, hoyCards);
+      } else {
+        // CASO 2 — Abierto: stepper normal con hora
+        var badgeAbierto = '<span class="match-badge badge-open">' + hora + '</span>';
+        buildCardApostable(p, badgeAbierto, hoyCards);
+      }
     });
   }
 
-  // ── Próximos partidos (siguiente día con partidos) ────────
-  var proximos = partidos.filter(function(p) {
-    return fmtFecha(p.fch) > fechaSim;
-  }).slice(0, 4);
-
-  if (proximos.length) {
-    proxTitle.style.display = '';
-    proxTitle.textContent   = 'Próximos partidos';
-    proxCards.innerHTML     = '';
-    proximos.forEach(function(p) {
-      var flagLoc = bandera(p.nom_loc);
-      var flagVis = bandera(p.nom_vis);
-      var card = document.createElement('div');
-      card.className = 'match-card';
-      card.innerHTML =
-        '<div class="match-header">' +
-          '<span class="match-phase">' + (p.nom_fas || 'Grupos') + '</span>' +
-          '<span class="match-badge badge-pending">' + fmtFecha(p.fch) + '</span>' +
-        '</div>' +
-        '<div class="match-teams">' +
-          '<div class="team">' +
-            '<div class="team-flag">' + flagLoc + '</div>' +
-            '<div class="team-name">' + capitalizar(p.nom_loc) + '</div>' +
-          '</div>' +
-          '<div class="match-vs">vs</div>' +
-          '<div class="team">' +
-            '<div class="team-flag">' + flagVis + '</div>' +
-            '<div class="team-name">' + capitalizar(p.nom_vis) + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="match-time">' + fmtHora(p.hor) + ' hs · ' + (p.nom_est || '') + '</div>';
-      proxCards.appendChild(card);
-    });
-  } else {
-    if (proxTitle) proxTitle.style.display = 'none';
-    if (proxCards) proxCards.innerHTML = '';
-  }
+  // ── Sección B — Próxima fecha (Casos 2, 3) ───────────────
+  renderSeccionProxima(partidos, fechaSim, proxTitle, proxCards);
 }
 
 function renderResumenVacio(msg) {

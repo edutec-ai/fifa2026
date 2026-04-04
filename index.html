@@ -4516,6 +4516,13 @@ function tainoEnviar() {
 }
 
 function tainoEnviarConVoz() {
+  // Fix iOS: pre-autorizar el motor de voz en el gesto del usuario
+  // Safari bloquea speak() si no viene de un tap directo — esto lo desbloquea
+  if (window.speechSynthesis) {
+    var desbloqueo = new SpeechSynthesisUtterance('');
+    desbloqueo.volume = 0;
+    window.speechSynthesis.speak(desbloqueo);
+  }
   tainoEnviarBase(true);
 }
 

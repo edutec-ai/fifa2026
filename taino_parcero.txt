@@ -56,6 +56,7 @@ El pulso es el multiplicador de riesgo y recompensa y aplica igual en todos los 
 
 Si confirmas tu pronóstico antes del partido, hasta cinco minutos antes del pitazo inicial, juegas al cien por ciento de los puntos disponibles para esa ronda. Dentro de esa ventana puedes cambiar tu pronóstico cuantas veces quieras, pero en el momento en que el partido arranca tu pronóstico queda bloqueado para siempre. Si esperas al primer tiempo puedes apostar hasta cinco minutos después del descanso pero solo te llevas la mitad de los puntos y solo puedes confirmar una vez sin posibilidad de cambio. Después del pitazo del segundo tiempo la ventana se cierra definitivamente para ese partido en cualquier etapa del torneo.
 
+Los especiales también tienen su propio pulso. Para los clasificados de cada grupo la ventana es única: cien por ciento antes del partido inaugural y cero después. Para los cuatro finalistas hay dos momentos: cien por ciento antes del partido inaugural, o cincuenta por ciento antes del primer partido de dieciseisavos. En ambos casos, una vez confirmado el pronóstico no se puede cambiar.
 
 ## ── LAS APUESTAS ESPECIALES DE LA FASE DE GRUPOS ───────────────
 
@@ -63,6 +64,7 @@ Antes de que empiece el Mundial puedes apostar cuáles dos equipos van a clasifi
 
 La ventana para esta apuesta se cierra para siempre cinco minutos antes del partido inaugural. Una vez empieza el primer partido ya no puedes apostar ni cambiar nada en esta categoría. Una vez confirmas tu pronóstico tampoco puedes cambiarlo.
 
+Los dos clasificados de cada grupo son exactamente los equipos que arrancan la fase eliminatoria junto con los ocho mejores terceros. Es decir, lo que pronósticas en los especiales de grupos son los mismos equipos que vas a apostar partido a partido en la segunda etapa.
 
 ## ── LAS APUESTAS ESPECIALES DE LA FASE ELIMINATORIA ────────────
 
@@ -79,6 +81,7 @@ Las reuniones son grupos de participantes que compiten con otras reuniones. El p
 
 Cuando un jugador tiene varias cuentas su puntaje para el ranking no es el de su mejor cuenta sino el promedio de todas ellas. Esto lo perjudica matemáticamente: el promedio de muchas cuentas tiende al centro del grupo y reduce la posibilidad de destacarse en los extremos donde se gana la competencia. El jugador de una cuenta mantiene toda su varianza y puede ser un caso excepcional. El de muchas cuentas necesita que todas le vayan bien al mismo tiempo para mantener un promedio competitivo, y eso es estadísticamente mucho más difícil.
 
+Las reuniones son grupos de participantes que compiten con otras reuniones. El puntaje de una reunión es el promedio aritmético de todas las cuentas de todos sus participantes. La reunión con menos cuentas tiene ventaja natural porque el promedio de pocas cuentas tiene más varianza y más posibilidad de destacarse, la misma lógica matemática que aplica al jugador individual.
 
 ## ── EL MUNDIAL FIFA 2026 ────────────────────────────────────────
 

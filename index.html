@@ -1,6 +1,6 @@
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
-║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v44            ║
+║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v76            ║
 ║                                                                  ║
 ║  PLANTA BAJA  ·  Login  ·  Selección de cuenta  ·  goTo()       ║
 ║  TORRE PARTIDOS ·  Home  ·  Grupos  ·  Finales/Bracket          ║
@@ -9,18 +9,13 @@
 ║  TORRE REGLAS  ·  Acordeón  ·  Taíno (AI)                       ║
 ║  BACKOFFICE    ·  Lab APIs  ·  Simulador de fecha               ║
 ║                                                                  ║
-║  NOVEDADES v44:                                                  ║
-║  [NEW-1]  sessionJugador → jugador activo con id en sesión      ║
-║  [NEW-2]  fetchJugadores → carga fifa_equ + fifa_ptd al login   ║
-║  [NEW-3]  Torre Especiales → botón "Guardar pronóstico"         ║
-║  [NEW-4]  API_PUT_JUG → POST grupos + finalistas a Velneo       ║
-║  [NEW-5]  Toast de confirmación / error sin salir de pantalla   ║
-║  [NEW-6]  Pre-carga de datos del jugador al seleccionar cuenta  ║
-║  [NEW-7]  API_PUT_PAR → POST pronóstico de partido a Velneo     ║
-║  [NEW-8]  buscarIdPartidoVelneo → cruza fixture local con ptd   ║
-║  [FIX-1]  finalistasSel sin defaults Brasil/Francia hardcoded   ║
-║  [FIX-2]  buildDrop sincroniza btn con currentVal (null=vacío)  ║
-║  [FIX-3]  Mapas id↔nombre reales desde fifa_equ                ║
+║  NOVEDADES v76:                                                  ║
+║  [NEW-1]  Taíno: 3 personalidades — Serio / Experto / Parcero   ║
+║  [NEW-2]  Selector personalidad en s-cuentas (con localStorage) ║
+║  [NEW-3]  Selector de voz movido de s-reglas a s-cuentas        ║
+║  [NEW-4]  3 archivos txt: taino_serio / experto / parcero       ║
+║  [NEW-5]  s-reglas: se retira botón ⚙️ y panel de voces         ║
+║  [FIX-1]  Voz y personalidad persisten con localStorage         ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -932,6 +927,52 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             <button class="btn-otra-cuenta" onclick="volverAlLogin()">← Volver / Cambiar usuario</button>
             <div style="height:1px;background:rgba(255,255,255,0.15);margin:8px 0;"></div>
             <button class="btn-otra-cuenta" onclick="volverAlLogin()" style="color:rgba(255,100,100,0.85);font-size:13px;">⏻ Salir del App</button>
+
+            <!-- TAINO CONFIG en s-cuentas -->
+            <div style="margin-top:20px;background:rgba(255,255,255,0.1);border-radius:16px;padding:16px;">
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.08em;margin-bottom:12px;">TAINO — CONFIGURACION</div>
+
+              <!-- PERSONALIDAD -->
+              <div style="margin-bottom:14px;">
+                <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:8px;">Personalidad</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <button onclick="tainoSetPerfil('parcero')" id="taino-perfil-parcero"
+                    style="text-align:left;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;cursor:pointer;transition:all 0.2s;">
+                    <span style="font-weight:700;">Parcero</span>
+                    <span style="font-size:11px;opacity:0.7;margin-left:6px;">Energico, colombiano, de barrio</span>
+                  </button>
+                  <button onclick="tainoSetPerfil('experto')" id="taino-perfil-experto"
+                    style="text-align:left;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;cursor:pointer;transition:all 0.2s;">
+                    <span style="font-weight:700;">Experto</span>
+                    <span style="font-size:11px;opacity:0.7;margin-left:6px;">Tactica, estrategia, comentarista</span>
+                  </button>
+                  <button onclick="tainoSetPerfil('serio')" id="taino-perfil-serio"
+                    style="text-align:left;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;cursor:pointer;transition:all 0.2s;">
+                    <span style="font-weight:700;">Serio</span>
+                    <span style="font-size:11px;opacity:0.7;margin-left:6px;">Formal, cosmopolita, culto</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- VOZ -->
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);">Voz de Taino</div>
+                  <div id="taino-voz-activa-label" style="font-size:11px;color:rgba(255,255,255,0.55);">Automatica</div>
+                </div>
+                <button onclick="tainoToggleVocesCuentas()"
+                  style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;cursor:pointer;text-align:left;">
+                  Cambiar voz del dispositivo
+                </button>
+                <div id="taino-voces-panel-cuentas" style="display:none;margin-top:8px;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px 12px;">
+                  <div id="taino-voces-lista-cuentas" style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;"></div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:8px;">Toca el nombre para seleccionar · Toca el triangulo para probar</div>
+                </div>
+              </div>
+
+            </div>
+            <!-- fin TAINO CONFIG -->
+
           </div>
         </div>
 
@@ -1049,18 +1090,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
                   🔊
                 </button>
-                <button onclick="tainoToggleVoces()" type="button"
-                  title="Configurar voz"
-                  aria-label="Configurar voz de Taíno"
-                  style="background:#f5f5f7;color:#8e8e93;border:1.5px solid #e5e5ea;border-radius:12px;width:44px;height:44px;font-size:18px;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
-                  ⚙️
-                </button>
-              </div>
-              <!-- Panel selector de voz — oculto por defecto -->
-              <div id="taino-voces-panel" style="display:none;margin-top:10px;background:#f5f5f7;border-radius:14px;padding:12px 14px;">
-                <div style="font-size:11px;font-weight:700;color:#3c3c43;margin-bottom:8px;">🎙️ Voz disponible en este dispositivo</div>
-                <div id="taino-voces-lista" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;"></div>
-                <div style="font-size:10px;color:#c7c7cc;margin-top:8px;">Toca ▶ para probar · Toca el nombre para seleccionar</div>
               </div>
               <div style="font-size:10px;color:#c7c7cc;margin-top:6px;text-align:center;">Powered by Claude - Solo responde sobre reglas y el Mundial 2026</div>
             </div>
@@ -4508,45 +4537,114 @@ function generarExtractoPDF() {
 
 
 // ╔══════════════════════════════════════════════════════════════════
-// TAINO - Asistente AI de reglas y Mundial 2026
-// Modelo: claude-haiku-4-5-20251001
+// ╔══════════════════════════════════════════════════════════════════
+// TAINO - Asistente AI — v76
+// 3 perfiles: parcero / experto / serio
+// Archivos: taino_parcero.txt / taino_experto.txt / taino_serio.txt
 // ╚══════════════════════════════════════════════════════════════════
 
 var tainoHistorial = [];
 var tainoPensando  = false;
 
-// ── TAÍNO SYSTEM PROMPT — cargado desde taino_reglas.txt ─────
-// Fallback al texto hardcodeado si el fetch falla (ej: file://)
-var TAINO_SYSTEM = "Eres Taino, la mascota oficial de La Polla Mundialista 2026. Eres experto en dos temas unicamente: (1) LAS REGLAS DE ESTA POLLA: ventana de apuesta 100% antes del partido / 50% en primer tiempo / 0% despues, microjuegos por partido (resultado G/E/P, marcador exacto, goles local, goles visita, diferencia), puntos por fase con multiplicadores, especiales Ciclo 1 clasificados por grupo y Ciclo 2 finalistas. (2) EL MUNDIAL FIFA 2026: 48 selecciones, 12 grupos de 4, 104 partidos, 3 paises anfitriones USA/Mexico/Canada, del 11 junio al 19 julio 2026, final en MetLife Stadium Nueva Jersey. Grupos: A(Mexico,Sudafrica,Corea del Sur,UEFA D), B(Canada,Qatar,Suiza,UEFA 1), C(Brasil,Marruecos,Haiti,Escocia), D(EE.UU.,Paraguay,Australia,UEFA C), E(Alemania,Curazao,Costa de Marfil,Ecuador), F(Paises Bajos,Japon,UEFA B,Tunez), G(Belgica,Egipto,Iran,Nueva Zelanda), H(Espana,Cabo Verde,Arabia Saudita,Uruguay), I(Francia,Senegal,Rep.Irak/Bol.,Noruega), J(Argentina,Argelia,Austria,Jordania), K(Portugal,Rep.1,Uzbekistan,Colombia), L(Mexico,Rep.2,Pol./Ucrania,Turquia). PERSONALIDAD: hablas en espanol colombiano, eres energetico y apasionado. Maximo 3 oraciones por respuesta. Si te preguntan algo fuera de estos temas responde: Eso esta fuera de mi cancha, pero sobre reglas o el Mundial te cuento todo.";
+// ── PERFIL ACTIVO ─────────────────────────────────────────────
+// Persiste en localStorage — default: parcero
+var TAINO_PERFIL_ACTIVO = localStorage.getItem('taino_perfil') || 'parcero';
 
-// Intentar cargar taino_reglas.txt desde el mismo directorio
+// Fallback hardcodeado (usado si el .txt no carga)
+var TAINO_FALLBACK = 'Eres Taino, la mascota oficial de La Polla Mundialista 2026. ' +
+  'Eres un experto apasionado en futbol mundial y en las reglas de esta polla. ' +
+  'Hablas en espanol colombiano, eres energetico y apasionado. ' +
+  'Maximo 3 oraciones por respuesta.';
+
+// Cache de los 3 system prompts
+var TAINO_SYSTEMS = {
+  parcero: TAINO_FALLBACK,
+  experto: TAINO_FALLBACK,
+  serio:   TAINO_FALLBACK
+};
+
+// TAINO_SYSTEM apunta siempre al perfil activo
+var TAINO_SYSTEM = TAINO_FALLBACK;
+
+// ── CARGA DE LOS 3 TXT ────────────────────────────────────────
+function tainoLimpiarTxt(txt) {
+  return txt
+    .split('\n')
+    .filter(function(l) { return l.trim().indexOf('##') !== 0; })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 (function() {
-  var url = (window.location.href.indexOf('file://') === -1)
-    ? 'taino_reglas.txt'                          // GitHub Pages / servidor
-    : null;                                        // local file:// — usar fallback
-  if (!url) return;
-  fetch(url + '?v=' + Date.now())
-    .then(function(r) {
-      if (!r.ok) throw new Error('no encontrado');
-      return r.text();
-    })
-    .then(function(txt) {
-      // Limpiar líneas de comentarios (##) y espacios extra
-      var limpio = txt
-        .split('\n')
-        .filter(function(l) { return l.trim().indexOf('##') !== 0; })
-        .join('\n')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-      if (limpio.length > 50) {
-        TAINO_SYSTEM = limpio;
-        console.log('✅ Taíno: reglas cargadas desde taino_reglas.txt (' + limpio.length + ' chars)');
-      }
-    })
-    .catch(function() {
-      console.log('ℹ️ Taíno: usando reglas del HTML (fallback)');
-    });
+  if (window.location.href.indexOf('file://') !== -1) {
+    console.log('info Taino: modo file://, usando fallback para los 3 perfiles');
+    return;
+  }
+  var perfiles = ['parcero', 'experto', 'serio'];
+  perfiles.forEach(function(p) {
+    fetch('taino_' + p + '.txt?v=' + Date.now())
+      .then(function(r) {
+        if (!r.ok) throw new Error('404');
+        return r.text();
+      })
+      .then(function(txt) {
+        var limpio = tainoLimpiarTxt(txt);
+        if (limpio.length > 100) {
+          TAINO_SYSTEMS[p] = limpio;
+          if (p === TAINO_PERFIL_ACTIVO) TAINO_SYSTEM = limpio;
+          console.log('ok Taino: taino_' + p + '.txt cargado (' + limpio.length + ' chars)');
+        }
+      })
+      .catch(function() {
+        console.log('warn Taino: taino_' + p + '.txt no encontrado, usando fallback');
+      });
+  });
 })();
+
+// ── CAMBIAR PERFIL ────────────────────────────────────────────
+function tainoSetPerfil(perfil) {
+  TAINO_PERFIL_ACTIVO = perfil;
+  TAINO_SYSTEM = TAINO_SYSTEMS[perfil];
+  localStorage.setItem('taino_perfil', perfil);
+  tainoHistorial = []; // reset conversación al cambiar perfil
+  tainoActualizarBotonesPerfil();
+  // Resetear el bubble
+  var bubble = document.getElementById('taino-bubble');
+  var msgs = {
+    parcero: 'Hola parcero! Preguntame sobre las reglas o el Mundial 2026.',
+    experto: 'Listo para el analisis tactico. Que quieres saber sobre la polla o el Mundial?',
+    serio:   'Buenas. En que puedo orientarte sobre las reglas de la polla o el Mundial FIFA 2026?'
+  };
+  if (bubble) {
+    bubble.style.color = '#1a1a1a';
+    bubble.style.fontStyle = 'normal';
+    bubble.textContent = msgs[perfil] || msgs.parcero;
+  }
+  console.log('Taino perfil cambiado a: ' + perfil);
+}
+
+function tainoActualizarBotonesPerfil() {
+  var perfiles = ['parcero', 'experto', 'serio'];
+  perfiles.forEach(function(p) {
+    var btn = document.getElementById('taino-perfil-' + p);
+    if (!btn) return;
+    if (p === TAINO_PERFIL_ACTIVO) {
+      btn.style.background = 'rgba(255,255,255,0.9)';
+      btn.style.color = '#003087';
+      btn.style.borderColor = 'rgba(255,255,255,0.9)';
+    } else {
+      btn.style.background = 'rgba(255,255,255,0.1)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'rgba(255,255,255,0.25)';
+    }
+  });
+}
+
+// Inicializar botones al cargar
+document.addEventListener('DOMContentLoaded', function() {
+  tainoActualizarBotonesPerfil();
+});
 
 function tainoPreguntar(texto) {
   var input = document.getElementById('taino-input');
@@ -4720,43 +4818,46 @@ function tainoVoz() {
 }
 
 // ── SELECTOR DE VOZ ──────────────────────────────────────────
-var tainoVozSeleccionada = null; // null = usar cascada automática
+// El selector de voz vive ahora en s-cuentas (tainoToggleVocesCuentas / tainoRenderVocesCuentas)
+// tainoVozSeleccionada se mantiene aqui como variable global compartida
+var tainoVozSeleccionada = null; // null = cascada automatica
 
-function tainoToggleVoces() {
-  var panel = document.getElementById('taino-voces-panel');
+// ── SELECTOR DE VOZ EN S-CUENTAS ─────────────────────────────
+function tainoToggleVocesCuentas() {
+  var panel = document.getElementById('taino-voces-panel-cuentas');
   if (!panel) return;
-  var visible = panel.style.display !== 'none';
-  if (visible) {
+  if (panel.style.display !== 'none') {
     panel.style.display = 'none';
     return;
   }
   panel.style.display = 'block';
-  tainoRenderVoces();
+  tainoRenderVocesCuentas();
 }
 
-function tainoRenderVoces() {
-  var lista = document.getElementById('taino-voces-lista');
+function tainoRenderVocesCuentas() {
+  var lista = document.getElementById('taino-voces-lista-cuentas');
   if (!lista) return;
-
   var voces = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
   var vocesEsp = voces.filter(function(v) { return v.lang.startsWith('es'); });
 
   if (!vocesEsp.length) {
-    lista.innerHTML = '<div style="font-size:12px;color:#8e8e93;padding:8px;">No se encontraron voces en español en este dispositivo.</div>';
+    lista.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,0.5);padding:8px;">No se encontraron voces en espanol en este dispositivo.</div>';
     return;
   }
 
   lista.innerHTML = '';
 
-  // Opción automática
+  // Opcion automatica
   var autoItem = document.createElement('div');
+  var esAuto = (tainoVozSeleccionada === null);
   autoItem.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;cursor:pointer;' +
-    (tainoVozSeleccionada === null ? 'background:#d5f0e0;border:1.5px solid #27ae60;' : 'background:#fff;border:1.5px solid #e5e5ea;');
-  autoItem.innerHTML =
-    '<span style="font-size:12px;font-weight:700;color:' + (tainoVozSeleccionada === null ? '#27ae60' : '#3c3c43') + ';">🤖 Automática (recomendada)</span>';
+    (esAuto ? 'background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.7);' : 'background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.2);');
+  autoItem.innerHTML = '<span style="font-size:12px;font-weight:700;color:#fff;">Automatica (recomendada)</span>';
   autoItem.onclick = function() {
     tainoVozSeleccionada = null;
-    tainoRenderVoces();
+    localStorage.removeItem('taino_voz');
+    tainoActualizarVozLabel();
+    tainoRenderVocesCuentas();
   };
   lista.appendChild(autoItem);
 
@@ -4764,22 +4865,22 @@ function tainoRenderVoces() {
     var seleccionada = tainoVozSeleccionada && tainoVozSeleccionada.name === v.name;
     var item = document.createElement('div');
     item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;cursor:pointer;gap:8px;' +
-      (seleccionada ? 'background:#d5f0e0;border:1.5px solid #27ae60;' : 'background:#fff;border:1.5px solid #e5e5ea;');
+      (seleccionada ? 'background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.7);' : 'background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.2);');
 
     var info = document.createElement('div');
     info.style.cssText = 'flex:1;min-width:0;';
     info.innerHTML =
-      '<div style="font-size:12px;font-weight:' + (seleccionada ? '700' : '600') + ';color:' + (seleccionada ? '#27ae60' : '#3c3c43') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + v.name + '</div>' +
-      '<div style="font-size:10px;color:#8e8e93;">' + v.lang + (v.localService ? ' · local' : ' · online') + '</div>';
+      '<div style="font-size:12px;font-weight:' + (seleccionada ? '700' : '600') + ';color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + v.name + '</div>' +
+      '<div style="font-size:10px;color:rgba(255,255,255,0.5);">' + v.lang + (v.localService ? ' · local' : ' · online') + '</div>';
 
     var btnProbar = document.createElement('button');
     btnProbar.textContent = '▶';
     btnProbar.type = 'button';
-    btnProbar.style.cssText = 'background:#f0faf4;border:1px solid #b7e4c7;border-radius:8px;padding:4px 8px;font-size:12px;color:#27ae60;cursor:pointer;flex-shrink:0;';
+    btnProbar.style.cssText = 'background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px 8px;font-size:12px;color:#fff;cursor:pointer;flex-shrink:0;';
     btnProbar.onclick = function(e) {
       e.stopPropagation();
       tainoSilenciar();
-      var u = new SpeechSynthesisUtterance('¡Hola parcero! Soy Taíno, la mascota del Mundial.');
+      var u = new SpeechSynthesisUtterance('Hola. Soy Taino, la mascota de La Polla Mundialista.');
       u.voice = v; u.lang = v.lang; u.rate = 1.05; u.pitch = 1.1;
       window.speechSynthesis.speak(u);
     };
@@ -4788,20 +4889,44 @@ function tainoRenderVoces() {
     item.appendChild(btnProbar);
     item.onclick = function() {
       tainoVozSeleccionada = v;
-      tainoRenderVoces();
+      localStorage.setItem('taino_voz', v.name);
+      tainoActualizarVozLabel();
+      tainoRenderVocesCuentas();
     };
     lista.appendChild(item);
   });
 }
 
-// Las voces se cargan async — re-renderizar si el panel está abierto
-if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
-  window.speechSynthesis.onvoiceschanged = function() {
-    window.speechSynthesis.getVoices();
-    var panel = document.getElementById('taino-voces-panel');
-    if (panel && panel.style.display !== 'none') tainoRenderVoces();
-  };
+function tainoActualizarVozLabel() {
+  var label = document.getElementById('taino-voz-activa-label');
+  if (!label) return;
+  label.textContent = tainoVozSeleccionada ? tainoVozSeleccionada.name : 'Automatica';
 }
+
+// Restaurar voz guardada en localStorage
+(function() {
+  var vozGuardada = localStorage.getItem('taino_voz');
+  if (!vozGuardada) return;
+  function intentarRestaurar() {
+    var voces = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    var encontrada = voces.find(function(v) { return v.name === vozGuardada; });
+    if (encontrada) {
+      tainoVozSeleccionada = encontrada;
+      tainoActualizarVozLabel();
+    }
+  }
+  if (window.speechSynthesis) {
+    intentarRestaurar();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = function() {
+        window.speechSynthesis.getVoices();
+        intentarRestaurar();
+        var panel = document.getElementById('taino-voces-panel-cuentas');
+        if (panel && panel.style.display !== 'none') tainoRenderVocesCuentas();
+      };
+    }
+  }
+})();
 
 
 // ╔══════════════════════════════════════════════════════

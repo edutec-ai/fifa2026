@@ -293,6 +293,32 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
 .home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; }
+
+/* ── Header universal torres ── */
+.torre-header { background: var(--grad-marca); padding: 16px 20px 20px; color: #fff; }
+.torre-header-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.torre-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
+.torre-name { font-size: 22px; font-weight: 700; }
+.torre-action-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.torre-action-btn:active { background: rgba(255,255,255,0.35); }
+.torre-header-btns { display: flex; gap: 6px; margin-top: 4px; }
+
+/* Chip de cuenta con blink */
+.torre-cuenta-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.18); border-radius: 20px; padding: 4px 12px 4px 8px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.95); margin-top: 8px; border: 1px solid rgba(255,255,255,0.25); animation: chipBlink 2.4s ease-in-out infinite; }
+.torre-cuenta-dot { width: 7px; height: 7px; border-radius: 50%; background: #34c759; flex-shrink: 0; }
+@keyframes chipBlink {
+  0%, 100% { border-color: rgba(255,255,255,0.25); box-shadow: none; }
+  50%       { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+}
+
+/* Modal confirmación volver a cuentas */
+.exit-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; padding-bottom: env(safe-area-inset-bottom,0); animation: fadeInOvl 0.18s ease; }
+.exit-modal { background: #fff; border-radius: 20px 20px 0 0; padding: 28px 20px 20px; width: 100%; max-width: 480px; }
+.exit-modal-title { font-size: 17px; font-weight: 700; color: #000; margin-bottom: 8px; }
+.exit-modal-sub { font-size: 14px; color: #3c3c43; line-height: 1.5; margin-bottom: 22px; }
+.exit-modal-btn-danger { width: 100%; padding: 14px; background: var(--color-rojo); color: #fff; font-size: 15px; font-weight: 700; border: none; border-radius: 14px; cursor: pointer; margin-bottom: 10px; }
+.exit-modal-btn-cancel { width: 100%; padding: 14px; background: #f2f2f7; color: #3c3c43; font-size: 15px; font-weight: 600; border: none; border-radius: 14px; cursor: pointer; }
+@keyframes fadeInOvl { from { opacity: 0; } to { opacity: 1; } }
 .pts-card { background: rgba(255,255,255,0.15); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; border: 1px solid rgba(255,255,255,0.2); }
 .pts-item { text-align: center; }
 .pts-num { font-size: 22px; font-weight: 700; }
@@ -862,7 +888,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                 <span style="color:#8e8e93;font-weight:400;">Jugando: </span><span id="top-bar-jugador-nombre">--</span>
               </div>
               <button class="top-bar-btn" onclick="generarExtractoPDF()">⬇️ PDF</button>
-              <button class="top-bar-btn" onclick="goTo('s-cuentas'); if(sessionPerfil) fetchJugadores(sessionPerfil);">🏠</button>
+              <button class="top-bar-btn" onclick="confirmarSalidaCuentas()">🏠</button>
             </div>
           </div>
 
@@ -923,7 +949,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                 <button onclick="generarExtractoPDF()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">
                   <span style="font-size:13px;">⬇️</span> PDF
                 </button>
-                <button onclick="goTo('s-cuentas'); if(sessionPerfil) fetchJugadores(sessionPerfil);" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
+                <button onclick="confirmarSalidaCuentas()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
                   <span style="font-size:13px;">🏠</span>
                 </button>
               </div>
@@ -972,10 +998,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ TORRE REGLAS ═══ -->
         <div class="screen" id="s-reglas">
-          <div style="background:#fff;padding:16px 20px 12px;border-bottom:0.5px solid rgba(0,0,0,0.1);">
-            <div style="font-size:22px;font-weight:700;color:#000;">Reglas</div>
-            <div style="font-size:13px;color:#8e8e93;margin-top:2px;">Cómo funciona La Polla Mundialista</div>
-          </div>
+          <div id="torre-header-reglas"></div>
           <div style="padding:12px 16px 100px;">
 
             <!-- ACCORDION BUTTONS -->
@@ -1114,9 +1137,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ TORRE TABLA ═══ -->
         <div class="screen" id="s-tabla">
-          <div class="tabla-header">
-            <div class="tabla-title">Tabla de posiciones</div>
-          </div>
+          <div id="torre-header-tabla"></div>
 
           <!-- TABS -->
           <div style="display:flex;border-bottom:1px solid #e5e5ea;background:#fff;padding:0 16px;">
@@ -1461,18 +1482,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ TORRE ESPECIALES ═══ -->
         <div class="screen" id="s-especiales">
-          <div class="esp-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <div>
-              <div class="esp-title">Categorías especiales</div>
-              <div class="esp-sub">Pronósticos del torneo completo</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
-              <div id="esp-estado-badge" class="esp-estado-badge pendiente">Sin guardar</div>
-              <button class="esp-guardar-btn" id="btn-guardar-especiales" onclick="guardarEspeciales()" style="padding:10px 16px;font-size:14px;border-radius:12px;white-space:nowrap;">
-                💾 Guardar
-              </button>
-            </div>
-          </div>
+          <div id="torre-header-especiales"></div>
           <div style="padding:12px 16px 100px;">
 
             <!-- ══ CICLO 1: GRUPOS ══ -->
@@ -1542,11 +1552,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ BACKOFFICE — APIs (temporal) ═══ -->
         <div class="screen" id="s-estadios">
+          <div id="torre-header-estadios"></div>
           <div style="padding:16px 16px 100px;">
-            <div style="margin-bottom:16px;">
-              <div style="font-size:18px;font-weight:700;color:#000;margin-bottom:2px;display:flex;align-items:center;gap:8px;"><span id="lab-gear" onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;display:inline-block;" title="Refrescar todas las APIs">⚙️</span> Laboratorio de APIs</div>
-              <div style="font-size:12px;color:#8e8e93;">Velneo · Carga automática al entrar · ↻ para refrescar individualmente</div>
-            </div>
             <!-- ╔═══════════════════════════════════════════
                  ║ SIMULADOR DE FECHA/HORA
                  ╚═══════════════════════════════════════════ -->
@@ -2962,6 +2969,7 @@ function renderGrupoPanel(k) {
 }
 
 function initEspeciales() {
+  activeGrupo = null; // ← fix: evitar que quede activo el último grupo visitado
   refreshAllFinalistas();
   buildGruposGrid();
   renderGrupoPanel(activeGrupo);
@@ -3833,6 +3841,12 @@ function goTo(screenId) {
   if (screenId === 's-reglas') initReglas();
   if (screenId === 's-estadios') initLab();
   if (screenId === 's-home') { setTimeout(function(){ if(currentHomeTab==='grupos') initGruposFase(); }, 50); }
+
+  // ── Header universal: renderizar al entrar a cada torre ──
+  var torresConHeader = ['s-especiales', 's-tabla', 's-reglas', 's-estadios'];
+  if (torresConHeader.indexOf(screenId) !== -1) {
+    renderHeaderUniversal(screenId);
+  }
 }
 
 // ── CLOCK ─────────────────────────────────────────────────────────────────
@@ -3856,7 +3870,95 @@ function changeScore(team, delta) {
   document.getElementById('score-display').textContent = colScore + ' - ' + porScore;
 }
 
-// ── SELECCIÓN DE CUENTA ───────────────────────────────────────────────────
+// ── HEADER UNIVERSAL TORRES ──────────────────────────────────────────────
+
+function getSaludoHora() {
+  var h = new Date().getHours();
+  if (h >= 5  && h < 12) return 'Buenos días';
+  if (h >= 12 && h < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+}
+
+// Torres: { id, titulo, subtitulo, extraBtns (HTML extra en acciones) }
+var TORRE_CONFIG = {
+  's-especiales': { titulo: 'Categorías especiales', sub: 'Pronósticos del torneo completo',
+    extra: '<div id="esp-estado-badge" class="esp-estado-badge pendiente" style="font-size:11px;">Sin guardar</div>' +
+           '<button class="esp-guardar-btn torre-action-btn" id="btn-guardar-especiales" onclick="guardarEspeciales()" style="background:rgba(255,255,255,0.9);color:#003087;border-color:transparent;">💾 Guardar</button>' },
+  's-tabla':      { titulo: 'Tabla de posiciones',   sub: 'Ranking de jugadores' },
+  's-reglas':     { titulo: 'Reglas',                sub: 'Cómo funciona La Polla Mundialista' },
+  's-estadios':   { titulo: '<span id="lab-gear" onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;" title="Refrescar APIs">⚙️</span> Laboratorio de APIs',
+                    sub:    'Velneo · Carga automática al entrar · ↻ para refrescar' }
+};
+
+function renderHeaderUniversal(screenId) {
+  var cfg = TORRE_CONFIG[screenId];
+  if (!cfg) return;
+  var containerId = 'torre-header-' + screenId.replace('s-', '');
+  var container = document.getElementById(containerId);
+  if (!container) return;
+
+  var nombre  = (sessionJugador && sessionJugador.name) ? sessionJugador.name : '—';
+  var cuenta  = '';
+  var tag     = document.getElementById('home-cuenta-tag');
+  if (tag) {
+    cuenta = tag.textContent.trim().replace('📋 ', '');
+  } else if (sessionJugador) {
+    cuenta = sessionJugador.name + ' · id:' + sessionJugador.id;
+  }
+
+  container.innerHTML =
+    '<div class="torre-header">' +
+      '<div class="torre-header-top">' +
+        '<div>' +
+          '<div class="torre-greeting">' + getSaludoHora() + ' 👋</div>' +
+          '<div class="torre-name">' + nombre + '</div>' +
+        '</div>' +
+        '<div class="torre-header-btns">' +
+          '<button class="torre-action-btn" onclick="generarExtractoPDF()"><span>⬇️</span> PDF</button>' +
+          '<button class="torre-action-btn" onclick="confirmarSalidaCuentas()"><span>🏠</span></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="torre-cuenta-chip">' +
+        '<div class="torre-cuenta-dot"></div>' +
+        '<span>Cuenta: ' + cuenta + '</span>' +
+      '</div>' +
+      (cfg.extra ? '<div style="margin-top:12px;display:flex;align-items:center;gap:8px;">' + cfg.extra + '</div>' : '') +
+    '</div>';
+}
+
+// ── Modal confirmación salida a cuentas ──────────────────────────────────
+
+function confirmarSalidaCuentas() {
+  // Evitar doble overlay
+  if (document.getElementById('exit-modal-overlay')) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'exit-modal-overlay';
+  overlay.id = 'exit-modal-overlay';
+  overlay.innerHTML =
+    '<div class="exit-modal">' +
+      '<div class="exit-modal-title">¿Volver a selección de cuenta?</div>' +
+      '<div class="exit-modal-sub">Si estás en medio de un pronóstico, los cambios <strong>no guardados</strong> se perderán.</div>' +
+      '<button class="exit-modal-btn-danger" onclick="ejecutarSalidaCuentas()">Sí, cambiar de cuenta</button>' +
+      '<button class="exit-modal-btn-cancel" onclick="cerrarModalSalida()">Cancelar — seguir aquí</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) cerrarModalSalida();
+  });
+}
+
+function cerrarModalSalida() {
+  var overlay = document.getElementById('exit-modal-overlay');
+  if (overlay) overlay.remove();
+}
+
+function ejecutarSalidaCuentas() {
+  cerrarModalSalida();
+  goTo('s-cuentas');
+  if (sessionPerfil) fetchJugadores(sessionPerfil);
+}
+
+
 function selectCuenta(nombre, usuario, pts, color, iniciales) {
   // Tag en home
   var tag = document.getElementById('home-cuenta-tag');
@@ -3890,6 +3992,11 @@ function selectCuenta(nombre, usuario, pts, color, iniciales) {
   var bannerNombre = document.getElementById('top-bar-jugador-nombre');
   if (banner) banner.style.display = '';
   if (bannerNombre) bannerNombre.textContent = nombre;
+
+  // ── Refrescar headers universales de todas las torres ──
+  ['s-especiales', 's-tabla', 's-reglas', 's-estadios'].forEach(function(sid) {
+    renderHeaderUniversal(sid);
+  });
 }
 
 // ── TABLA TABS ────────────────────────────────────────────────────────────

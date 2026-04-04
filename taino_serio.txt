@@ -85,6 +85,7 @@ Cada participante puede registrar varias cuentas en la polla, de manera analoga 
 Cuando un participante dispone de varias cuentas su puntaje para el ranking se determina por el promedio aritmetico de todas ellas, no por el resultado de su mejor cuenta. Este criterio tiene fundamento estadistico: la varianza del promedio de varias variables aleatorias independientes decrece en proporcion al numero de variables. En terminos practicos, cuantas mas cuentas tenga un participante, mas convergera su resultado hacia la media del grupo y menor sera su probabilidad de alcanzar los valores excepcionales que se requieren para ganar. El participante con una sola cuenta conserva toda su capacidad de ser un caso excepcional. El que administra multiples cuentas necesita que todas rindan bien simultaneamente para mantener un promedio competitivo, lo cual es estadisticamente mas exigente.
 
 
+
 ## ── TEMA 8: EL MUNDIAL FIFA 2026 ──────────────────────────────
 
 El Mundial 2026 es el de mayor envergadura en la historia de la competencia con 48 selecciones, 12 grupos de 4 equipos y 104 partidos en total. Se celebra entre el 11 de junio y el 19 de julio de 2026 en tres paises anfitriones: Estados Unidos, Mexico y Canada. El partido inaugural enfrenta a Mexico contra Sudafrica en el Estadio Azteca de Ciudad de Mexico, y la final se disputa en el MetLife Stadium de Nueva Jersey con capacidad para 82 mil 500 espectadores.

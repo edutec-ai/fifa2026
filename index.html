@@ -1019,6 +1019,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   </div>
                 </div>
               </div>
+              <!-- Botón silencio — solo visible mientras Taíno habla -->
+              <div id="taino-silencio-wrap" style="display:none;margin-bottom:10px;">
+                <button onclick="tainoSilenciar()" type="button"
+                  style="width:100%;padding:10px;background:#ff3b30;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  ⏹ Silenciar a Taíno
+                </button>
+              </div>
               <div id="taino-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
                 <button onclick="tainoPreguntar('Como funciona la ventana de apuesta?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Ventana</button>
                 <button onclick="tainoPreguntar('Cuantos puntos gano si acierto el marcador exacto?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Puntos</button>
@@ -1035,6 +1042,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   aria-label="Enviar pregunta a Taíno"
                   style="background:#27ae60;color:#fff;border:none;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;">
                   &gt;
+                </button>
+                <button id="taino-voz-btn" onclick="tainoEnviarConVoz()" type="button"
+                  aria-label="Enviar pregunta a Taíno y escuchar respuesta en voz"
+                  title="Enviar y escuchar"
+                  style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
+                  🔊
                 </button>
               </div>
               <div style="font-size:10px;color:#c7c7cc;margin-top:6px;text-align:center;">Powered by Claude - Solo responde sobre reglas y el Mundial 2026</div>
@@ -4499,6 +4512,14 @@ function tainoPreguntar(texto) {
 }
 
 function tainoEnviar() {
+  tainoEnviarBase(false);
+}
+
+function tainoEnviarConVoz() {
+  tainoEnviarBase(true);
+}
+
+function tainoEnviarBase(conVoz) {
   if (tainoPensando) return;
   var input = document.getElementById('taino-input');
   if (!input) return;
@@ -4519,14 +4540,11 @@ function tainoEnviar() {
     return;
   }
 
-  // PROXY URL — reemplaza con tu Cloudflare Worker URL después del deploy
   var PROXY_URL = window.TAINO_PROXY_URL || 'https://taino-proxy.TU-USUARIO.workers.dev';
 
   fetch(PROXY_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
@@ -4544,6 +4562,7 @@ function tainoEnviar() {
     tainoPensando = false;
     var av = document.getElementById('taino-avatar');
     if (av) { av.style.transform = 'scale(1.15)'; setTimeout(function(){ av.style.transform = 'scale(1)'; }, 300); }
+    if (conVoz) tainoVoz();
   })
   .catch(function() {
     tainoMostrarRespuesta('No pude conectarme. Verifica tu conexion.');
@@ -4578,6 +4597,78 @@ function tainoMostrarRespuesta(texto) {
   bubble.style.fontStyle = 'normal';
   bubble.textContent = texto;
   bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  tainoUltimaRespuesta = texto; // ← guardar para el botón de voz
+}
+
+// ── TAÍNO VOZ — Web Speech API ────────────────────────────────
+var tainoUltimaRespuesta = '';
+var tainoHablando = false;
+
+function tainoSilenciarWrap(show) {
+  var wrap = document.getElementById('taino-silencio-wrap');
+  if (wrap) wrap.style.display = show ? 'block' : 'none';
+}
+
+function tainoSilenciar() {
+  try {
+    window.speechSynthesis.pause();
+    window.speechSynthesis.resume();
+    window.speechSynthesis.cancel();
+  } catch(e) {
+    window.speechSynthesis.cancel();
+  }
+  tainoHablando = false;
+  tainoSilenciarWrap(false);
+  var av = document.getElementById('taino-avatar');
+  if (av) av.style.boxShadow = '0 2px 8px rgba(46,204,113,0.4)';
+}
+
+function tainoVoz() {
+  if (!window.speechSynthesis) {
+    alert('Tu navegador no soporta síntesis de voz. Prueba en Chrome o Safari.');
+    return;
+  }
+
+  if (!tainoUltimaRespuesta) return;
+
+  // Si ya está hablando, silenciar primero
+  tainoSilenciar();
+
+  var utter = new SpeechSynthesisUtterance(tainoUltimaRespuesta);
+
+  var voces = window.speechSynthesis.getVoices();
+  var vozEsp = voces.find(function(v) { return v.lang === 'es-CO'; })
+            || voces.find(function(v) { return v.lang === 'es-MX'; })
+            || voces.find(function(v) { return v.lang === 'es-US'; })
+            || voces.find(function(v) { return v.lang.startsWith('es'); });
+  if (vozEsp) utter.voice = vozEsp;
+  utter.lang  = 'es-CO';
+  utter.rate  = 1.05;
+  utter.pitch = 1.1;
+
+  utter.onstart = function() {
+    tainoHablando = true;
+    tainoSilenciarWrap(true);  // mostrar botón rojo
+    var av = document.getElementById('taino-avatar');
+    if (av) av.style.boxShadow = '0 0 0 6px rgba(39,174,96,0.3)';
+  };
+  utter.onend = function() {
+    tainoHablando = false;
+    tainoSilenciarWrap(false); // ocultar botón rojo
+    var av = document.getElementById('taino-avatar');
+    if (av) av.style.boxShadow = '0 2px 8px rgba(46,204,113,0.4)';
+  };
+  utter.onerror = function() {
+    tainoHablando = false;
+    tainoSilenciarWrap(false);
+  };
+
+  window.speechSynthesis.speak(utter);
+}
+
+// Las voces se cargan async en algunos navegadores — pre-cargar
+if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
 }
 
 

@@ -57,6 +57,7 @@ El pulso es el multiplicador de riesgo y recompensa que aplica de forma idéntic
 
 Confirmar el pronóstico antes del partido, hasta cinco minutos antes del pitazo, otorga el cien por ciento de los puntos disponibles para esa ronda. Dentro de esa ventana el pronóstico puede modificarse cuantas veces se desee, pero al cierre queda bloqueado definitivamente. Esperar al primer tiempo permite apostar hasta cinco minutos después del descanso pero solo entrega la mitad de los puntos y admite una sola confirmación sin cambio posterior. Desde el pitazo del segundo tiempo la ventana se cierra para ese partido sin excepción en cualquier etapa del torneo.
 
+Los especiales también tienen su propio pulso. Para los clasificados de cada grupo la ventana es única: cien por ciento antes del partido inaugural y cero después. Para los cuatro finalistas hay dos momentos: cien por ciento antes del partido inaugural, o cincuenta por ciento antes del primer partido de dieciseisavos. En ambos casos, una vez confirmado el pronóstico no se puede cambiar.
 
 ## ── APUESTAS ESPECIALES DE LA FASE DE GRUPOS ───────────────────
 
@@ -64,6 +65,7 @@ Estas apuestas son parte integral de la primera etapa y suman al banco junto con
 
 La ventana cierra definitivamente cinco minutos antes del partido inaugural. Una vez confirmado el pronóstico no puede modificarse.
 
+Los dos clasificados de cada grupo son exactamente los equipos que arrancan la fase eliminatoria junto con los ocho mejores terceros. Es decir, lo que pronósticas en los especiales de grupos son los mismos equipos que vas a apostar partido a partido en la segunda etapa.
 
 ## ── APUESTAS ESPECIALES DE LA FASE ELIMINATORIA ────────────────
 
@@ -80,6 +82,7 @@ Las reuniones son grupos de participantes que compiten con otras reuniones. El p
 
 Cuando un participante tiene múltiples cuentas su puntaje para el ranking es el promedio aritmético de todas ellas. Esto tiene fundamento estadístico: la varianza del promedio de N variables decrece en proporción a N, lo que significa que más cuentas implica mayor convergencia hacia la media del grupo y menor probabilidad de alcanzar los valores excepcionales necesarios para ganar. Una cuenta bien gestionada tiene mayor probabilidad de destacarse que varias cuentas cuyo promedio tiende inevitablemente al centro.
 
+Las reuniones son grupos de participantes que compiten con otras reuniones. El puntaje de una reunión es el promedio aritmético de todas las cuentas de todos sus participantes. La reunión con menos cuentas tiene ventaja natural porque el promedio de pocas cuentas tiene más varianza y más posibilidad de destacarse, la misma lógica matemática que aplica al jugador individual
 
 ## ── EL MUNDIAL FIFA 2026 ────────────────────────────────────────
 

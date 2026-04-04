@@ -1,6 +1,6 @@
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
-║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v76            ║
+║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v77            ║
 ║                                                                  ║
 ║  PLANTA BAJA  ·  Login  ·  Selección de cuenta  ·  goTo()       ║
 ║  TORRE PARTIDOS ·  Home  ·  Grupos  ·  Finales/Bracket          ║
@@ -16,6 +16,7 @@
 ║  [NEW-4]  3 archivos txt: taino_serio / experto / parcero       ║
 ║  [NEW-5]  s-reglas: se retira botón ⚙️ y panel de voces         ║
 ║  [FIX-1]  Voz y personalidad persisten con localStorage         ║
+║  [FIX-2]  Keepalive speechSynthesis — fix congelamiento macOS   ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -4816,6 +4817,16 @@ function tainoVoz() {
 
   window.speechSynthesis.speak(utter);
 }
+
+// ── KEEPALIVE macOS — evita que speechSynthesis se congele ──
+// En macOS (Chrome y Safari desktop) el motor de voz se bloquea
+// silenciosamente tras inactividad. Pause+resume cada 10s lo mantiene vivo.
+setInterval(function() {
+  if (window.speechSynthesis && !tainoHablando) {
+    window.speechSynthesis.pause();
+    window.speechSynthesis.resume();
+  }
+}, 10000);
 
 // ── SELECTOR DE VOZ ──────────────────────────────────────────
 // El selector de voz vive ahora en s-cuentas (tainoToggleVocesCuentas / tainoRenderVocesCuentas)

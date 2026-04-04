@@ -1049,6 +1049,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
                   🔊
                 </button>
+                <button onclick="tainoToggleVoces()" type="button"
+                  title="Configurar voz"
+                  aria-label="Configurar voz de Taíno"
+                  style="background:#f5f5f7;color:#8e8e93;border:1.5px solid #e5e5ea;border-radius:12px;width:44px;height:44px;font-size:18px;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
+                  ⚙️
+                </button>
+              </div>
+              <!-- Panel selector de voz — oculto por defecto -->
+              <div id="taino-voces-panel" style="display:none;margin-top:10px;background:#f5f5f7;border-radius:14px;padding:12px 14px;">
+                <div style="font-size:11px;font-weight:700;color:#3c3c43;margin-bottom:8px;">🎙️ Voz disponible en este dispositivo</div>
+                <div id="taino-voces-lista" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;"></div>
+                <div style="font-size:10px;color:#c7c7cc;margin-top:8px;">Toca ▶ para probar · Toca el nombre para seleccionar</div>
               </div>
               <div style="font-size:10px;color:#c7c7cc;margin-top:6px;text-align:center;">Powered by Claude - Solo responde sobre reglas y el Mundial 2026</div>
             </div>
@@ -4503,7 +4515,38 @@ function generarExtractoPDF() {
 var tainoHistorial = [];
 var tainoPensando  = false;
 
+// ── TAÍNO SYSTEM PROMPT — cargado desde taino_reglas.txt ─────
+// Fallback al texto hardcodeado si el fetch falla (ej: file://)
 var TAINO_SYSTEM = "Eres Taino, la mascota oficial de La Polla Mundialista 2026. Eres experto en dos temas unicamente: (1) LAS REGLAS DE ESTA POLLA: ventana de apuesta 100% antes del partido / 50% en primer tiempo / 0% despues, microjuegos por partido (resultado G/E/P, marcador exacto, goles local, goles visita, diferencia), puntos por fase con multiplicadores, especiales Ciclo 1 clasificados por grupo y Ciclo 2 finalistas. (2) EL MUNDIAL FIFA 2026: 48 selecciones, 12 grupos de 4, 104 partidos, 3 paises anfitriones USA/Mexico/Canada, del 11 junio al 19 julio 2026, final en MetLife Stadium Nueva Jersey. Grupos: A(Mexico,Sudafrica,Corea del Sur,UEFA D), B(Canada,Qatar,Suiza,UEFA 1), C(Brasil,Marruecos,Haiti,Escocia), D(EE.UU.,Paraguay,Australia,UEFA C), E(Alemania,Curazao,Costa de Marfil,Ecuador), F(Paises Bajos,Japon,UEFA B,Tunez), G(Belgica,Egipto,Iran,Nueva Zelanda), H(Espana,Cabo Verde,Arabia Saudita,Uruguay), I(Francia,Senegal,Rep.Irak/Bol.,Noruega), J(Argentina,Argelia,Austria,Jordania), K(Portugal,Rep.1,Uzbekistan,Colombia), L(Mexico,Rep.2,Pol./Ucrania,Turquia). PERSONALIDAD: hablas en espanol colombiano, eres energetico y apasionado. Maximo 3 oraciones por respuesta. Si te preguntan algo fuera de estos temas responde: Eso esta fuera de mi cancha, pero sobre reglas o el Mundial te cuento todo.";
+
+// Intentar cargar taino_reglas.txt desde el mismo directorio
+(function() {
+  var url = (window.location.href.indexOf('file://') === -1)
+    ? 'taino_reglas.txt'                          // GitHub Pages / servidor
+    : null;                                        // local file:// — usar fallback
+  if (!url) return;
+  fetch(url + '?v=' + Date.now())
+    .then(function(r) {
+      if (!r.ok) throw new Error('no encontrado');
+      return r.text();
+    })
+    .then(function(txt) {
+      // Limpiar líneas de comentarios (##) y espacios extra
+      var limpio = txt
+        .split('\n')
+        .filter(function(l) { return l.trim().indexOf('##') !== 0; })
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+      if (limpio.length > 50) {
+        TAINO_SYSTEM = limpio;
+        console.log('✅ Taíno: reglas cargadas desde taino_reglas.txt (' + limpio.length + ' chars)');
+      }
+    })
+    .catch(function() {
+      console.log('ℹ️ Taíno: usando reglas del HTML (fallback)');
+    });
+})();
 
 function tainoPreguntar(texto) {
   var input = document.getElementById('taino-input');
@@ -4644,10 +4687,13 @@ function tainoVoz() {
   var utter = new SpeechSynthesisUtterance(tainoUltimaRespuesta);
 
   var voces = window.speechSynthesis.getVoices();
-  var vozEsp = voces.find(function(v) { return v.lang === 'es-CO'; })
-            || voces.find(function(v) { return v.lang === 'es-MX'; })
-            || voces.find(function(v) { return v.lang === 'es-US'; })
-            || voces.find(function(v) { return v.lang.startsWith('es'); });
+  // Usar voz seleccionada manualmente, o cascada automática
+  var vozEsp = tainoVozSeleccionada
+    || voces.find(function(v) { return v.lang === 'es-CO'; })
+    || voces.find(function(v) { return v.name === 'Paulina'; })
+    || voces.find(function(v) { return v.lang === 'es-MX'; })
+    || voces.find(function(v) { return v.lang === 'es-US'; })
+    || voces.find(function(v) { return v.lang.startsWith('es'); });
   if (vozEsp) utter.voice = vozEsp;
   utter.lang  = 'es-CO';
   utter.rate  = 1.05;
@@ -4673,9 +4719,88 @@ function tainoVoz() {
   window.speechSynthesis.speak(utter);
 }
 
-// Las voces se cargan async en algunos navegadores — pre-cargar
+// ── SELECTOR DE VOZ ──────────────────────────────────────────
+var tainoVozSeleccionada = null; // null = usar cascada automática
+
+function tainoToggleVoces() {
+  var panel = document.getElementById('taino-voces-panel');
+  if (!panel) return;
+  var visible = panel.style.display !== 'none';
+  if (visible) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
+  tainoRenderVoces();
+}
+
+function tainoRenderVoces() {
+  var lista = document.getElementById('taino-voces-lista');
+  if (!lista) return;
+
+  var voces = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  var vocesEsp = voces.filter(function(v) { return v.lang.startsWith('es'); });
+
+  if (!vocesEsp.length) {
+    lista.innerHTML = '<div style="font-size:12px;color:#8e8e93;padding:8px;">No se encontraron voces en español en este dispositivo.</div>';
+    return;
+  }
+
+  lista.innerHTML = '';
+
+  // Opción automática
+  var autoItem = document.createElement('div');
+  autoItem.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;cursor:pointer;' +
+    (tainoVozSeleccionada === null ? 'background:#d5f0e0;border:1.5px solid #27ae60;' : 'background:#fff;border:1.5px solid #e5e5ea;');
+  autoItem.innerHTML =
+    '<span style="font-size:12px;font-weight:700;color:' + (tainoVozSeleccionada === null ? '#27ae60' : '#3c3c43') + ';">🤖 Automática (recomendada)</span>';
+  autoItem.onclick = function() {
+    tainoVozSeleccionada = null;
+    tainoRenderVoces();
+  };
+  lista.appendChild(autoItem);
+
+  vocesEsp.forEach(function(v) {
+    var seleccionada = tainoVozSeleccionada && tainoVozSeleccionada.name === v.name;
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:10px;cursor:pointer;gap:8px;' +
+      (seleccionada ? 'background:#d5f0e0;border:1.5px solid #27ae60;' : 'background:#fff;border:1.5px solid #e5e5ea;');
+
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    info.innerHTML =
+      '<div style="font-size:12px;font-weight:' + (seleccionada ? '700' : '600') + ';color:' + (seleccionada ? '#27ae60' : '#3c3c43') + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + v.name + '</div>' +
+      '<div style="font-size:10px;color:#8e8e93;">' + v.lang + (v.localService ? ' · local' : ' · online') + '</div>';
+
+    var btnProbar = document.createElement('button');
+    btnProbar.textContent = '▶';
+    btnProbar.type = 'button';
+    btnProbar.style.cssText = 'background:#f0faf4;border:1px solid #b7e4c7;border-radius:8px;padding:4px 8px;font-size:12px;color:#27ae60;cursor:pointer;flex-shrink:0;';
+    btnProbar.onclick = function(e) {
+      e.stopPropagation();
+      tainoSilenciar();
+      var u = new SpeechSynthesisUtterance('¡Hola parcero! Soy Taíno, la mascota del Mundial.');
+      u.voice = v; u.lang = v.lang; u.rate = 1.05; u.pitch = 1.1;
+      window.speechSynthesis.speak(u);
+    };
+
+    item.appendChild(info);
+    item.appendChild(btnProbar);
+    item.onclick = function() {
+      tainoVozSeleccionada = v;
+      tainoRenderVoces();
+    };
+    lista.appendChild(item);
+  });
+}
+
+// Las voces se cargan async — re-renderizar si el panel está abierto
 if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
-  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+  window.speechSynthesis.onvoiceschanged = function() {
+    window.speechSynthesis.getVoices();
+    var panel = document.getElementById('taino-voces-panel');
+    if (panel && panel.style.display !== 'none') tainoRenderVoces();
+  };
 }
 
 

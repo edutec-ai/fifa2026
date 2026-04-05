@@ -1,6 +1,6 @@
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
-║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v77            ║
+║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v90            ║
 ║                                                                  ║
 ║  PLANTA BAJA  ·  Login  ·  Selección de cuenta  ·  goTo()       ║
 ║  TORRE PARTIDOS ·  Home  ·  Grupos  ·  Finales/Bracket          ║
@@ -9,14 +9,12 @@
 ║  TORRE REGLAS  ·  Acordeón  ·  Taíno (AI)                       ║
 ║  BACKOFFICE    ·  Lab APIs  ·  Simulador de fecha               ║
 ║                                                                  ║
-║  NOVEDADES v76:                                                  ║
-║  [NEW-1]  Taíno: 3 personalidades — Serio / Experto / Parcero   ║
-║  [NEW-2]  Selector personalidad en s-cuentas (con localStorage) ║
-║  [NEW-3]  Selector de voz movido de s-reglas a s-cuentas        ║
-║  [NEW-4]  3 archivos txt: taino_serio / experto / parcero       ║
-║  [NEW-5]  s-reglas: se retira botón ⚙️ y panel de voces         ║
-║  [FIX-1]  Voz y personalidad persisten con localStorage         ║
-║  [FIX-2]  Keepalive speechSynthesis — fix congelamiento macOS   ║
+║  NOVEDADES v78-v82:                                             ║
+║  [NEW-1]  Grilla 2×2 en todos los steppers de pronóstico        ║
+║  [NEW-2]  Header home sticky — layout flex propio de s-home     ║
+║  [FIX-1]  Overflow móvil — home-header y pgc-teams              ║
+║  [FIX-2]  Botón "Actualizar" duplicado en partidos grupos       ║
+║  [FIX-3]  scrollTop diferenciado home-scroll vs screen-content  ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -74,59 +72,83 @@
 }
 
 /* ════ RESET ════ */
-/* ════ PLANTA BAJA — Layout base ════ */
-body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif; background: var(--fondo-app); min-height: 100vh; display: flex; flex-direction: column; }
-.phone-wrap { flex: 1; display: flex; flex-direction: column; }
-.phone { flex: 1; display: flex; flex-direction: column; background: var(--fondo-app); position: relative; }
-.phone-screen { flex: 1; display: flex; flex-direction: column; background: var(--fondo-app); overflow: hidden; position: relative; }
-.notch { display: none; }
-.status-bar { display: none; }
-.screen-content { flex: 1; overflow-y: auto; padding-bottom: 70px; }
-.screen-content::-webkit-scrollbar { display: none; scrollbar-width: none; }
+/* ════ v90 — Layout base mobile-first ════ */
+html { height: 100dvh; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+  background: var(--fondo-app);
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+/* App shell — único contenedor raíz */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  background: var(--fondo-app);
+}
+/* Único scroll container de la app */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 60px; /* altura tab-bar */
+}
+.app-content::-webkit-scrollbar { display: none; }
 
-/* ════ PLANTA BAJA — Tab Bar (móvil) ════ */
-.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border-top: 0.5px solid rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-around; padding: 0 8px env(safe-area-inset-bottom, 8px); z-index: 999; }
+/* Pantallas: ocultas por defecto */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Pantallas de auth: ocupan toda la altura del app-content */
+#s-login.active, #s-cuentas.active {
+  min-height: calc(100dvh - 60px);
+}
+
+/* ════ Tab Bar (móvil) ════ */
+.tab-bar {
+  flex-shrink: 0;
+  height: 60px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-top: 0.5px solid rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px env(safe-area-inset-bottom, 0px);
+  z-index: 999;
+}
 .tab-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 12px; border-radius: 12px; transition: all 0.15s; border: none; background: none; }
 .tab-item.active { background: rgba(0,122,255,0.1); }
 .tab-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .tab-label { font-size: 10px; font-weight: 500; color: var(--texto-terciario); }
 .tab-item.active .tab-label { color: var(--color-accion); }
-.screen { display: none; }
-.screen.active { display: block; }
 
-/* ════ PLANTA BAJA — Sidebar (tablet/desktop) ════ */
+/* ════ Sidebar (tablet/desktop) ════ */
 .sidebar { display: none; }
 .top-bar { display: none; }
-.app-layout { display: contents; }
-.main-content { display: contents; }
 
+/* ════ Desktop: sidebar + contenido ════ */
 @media (min-width: 768px) {
-  body { overflow: hidden; height: 100vh; }
-  .phone-wrap, .phone, .phone-screen { height: 100vh; overflow: hidden; }
-
-  /* Ocultar tab-bar en tablet/desktop */
+  .app-shell { flex-direction: row; }
   .tab-bar { display: none !important; }
 
-  /* Layout principal: sidebar + contenido */
-  .app-layout {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  /* Sidebar */
+  /* Sidebar fijo a la izquierda */
   .sidebar {
     display: flex;
     flex-direction: column;
     width: 200px;
     min-width: 200px;
-    height: 100vh;
+    height: 100dvh;
     background: #fff;
     border-right: 0.5px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
     z-index: 100;
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
   }
   .sidebar-logo {
     display: flex; align-items: center; gap: 10px;
@@ -164,17 +186,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
   .sidebar-user-name { font-size: 12px; font-weight: 600; color: #000; }
   .sidebar-user-pts { font-size: 11px; color: #8e8e93; }
 
-  /* Área de contenido derecha */
-  .main-content {
+  /* Columna derecha: top-bar + contenido */
+  .app-content-col {
     display: flex;
     flex-direction: column;
-    margin-left: 200px;
-    height: 100vh;
-    overflow: hidden;
     flex: 1;
+    height: 100dvh;
+    overflow: hidden;
   }
-
-  /* Top bar */
   .top-bar {
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 24px;
@@ -197,56 +216,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
   .top-bar-btn.primary { background: #007aff; color: #fff; }
   .top-bar-btn.primary:hover { background: #0066d6; }
 
-  /* Screen content en tablet/desktop */
-  .screen-content {
-    flex: 1; overflow-y: auto; padding-bottom: 0;
+  /* app-content dentro del col de desktop */
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 0;
     background: #f2f2f7;
   }
+  .app-content::-webkit-scrollbar { display: block; width: 6px; }
+  .app-content::-webkit-scrollbar-track { background: transparent; }
+  .app-content::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 3px; }
 
-  /* Ocultar el home-header botones PDF/Home (ya están en top-bar) */
-  .home-header-actions { display: none; }
-  /* En desktop s-home usa el layout normal del screen-content */
-  #s-home { display: block; height: auto; overflow: visible; }
-  .home-scroll { overflow: visible; padding-bottom: 0; }
+  /* En desktop las pantallas de auth se centran */
+  #s-login.active, #s-cuentas.active { min-height: 100dvh; }
 
-  /* Grid 2 columnas para match-cards en desktop */
-  .match-cards-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    padding: 0;
-  }
+  /* Ocultar botones PDF/Home del header (ya están en top-bar) */
+  .home-header-actions { display: none !important; }
+
+  /* Grid 2 columnas para match-cards */
+  .match-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0; }
   .match-cards-grid .match-card { margin: 0 8px 10px; }
-  .match-cards-grid-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-  }
+  .match-cards-grid-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
   .match-cards-grid-inner .match-card { margin: 0 8px 10px; }
-
-  /* Especiales Ciclo 2: 2 columnas */
-  .esp-finales-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 0 16px;
-  }
+  .esp-finales-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
   .esp-finales-grid .fin-card { margin: 0; }
 }
 
 @media (min-width: 1024px) {
   .sidebar { width: 220px; }
-  .main-content { margin-left: 220px; }
 }
 
-/* ── AJUSTES TABLET/DESKTOP ──────────────────────────────────────────── */
+/* ── AJUSTES TABLET/DESKTOP ── */
 @media (min-width: 768px) {
-  /* Login y cuentas: centrados sin sidebar */
-  #s-login .login-bg,
-  #s-cuentas .cuenta-bg {
-    min-height: 100vh;
-  }
-  /* Ocultar home-header actions (PDF/Home) ya están en top-bar */
+  #s-login .login-bg, #s-cuentas .cuenta-bg { min-height: 100dvh; }
   .home-header-actions { display: none !important; }
 
   /* Padding extra en el contenido principal */
@@ -277,7 +279,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 }
 
 /* ════ PLANTA BAJA — Login ════ */
-.login-bg { min-height: 100dvh; background: var(--grad-login); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; }
+.login-bg { height: 100%; min-height: 100dvh; background: var(--grad-login); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; overflow-y: auto; }
 .login-logo { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.25); }
 .login-title { font-size: 26px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
 .login-sub { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 40px; }
@@ -290,13 +292,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 /* ════ TORRE PARTIDOS — Home ════ */
 .home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; box-sizing: border-box; width: 100%; overflow: hidden; }
 /* ── s-home: layout propio — sticky arriba, scroll abajo ── */
-#s-home { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-.home-sticky { flex-shrink: 0; z-index: 200; }
-.home-scroll { flex: 1; overflow-y: auto; padding-bottom: 70px; }
-.home-scroll::-webkit-scrollbar { display: none; }
+/* s-home: sticky del header gratis por arquitectura — app-content es el único scroll */
+#s-home { display: block; }
+.home-sticky { position: sticky; top: 0; z-index: 200; }
+.home-scroll { display: contents; } /* transparente — el scroll lo maneja app-content */
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 0; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 1; }
+.home-header-actions-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; min-width: 0; width: 100%; }
+.home-header-actions { display: flex; gap: 6px; }
+.home-header-btn { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 4px 11px; font-size: 11px; font-weight: 700; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
 
 /* ── Header universal torres ── */
 .torre-header { background: var(--grad-marca); padding: 16px 20px 20px; color: #fff; }
@@ -323,7 +328,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .exit-modal-btn-danger { width: 100%; padding: 14px; background: var(--color-rojo); color: #fff; font-size: 15px; font-weight: 700; border: none; border-radius: 14px; cursor: pointer; margin-bottom: 10px; }
 .exit-modal-btn-cancel { width: 100%; padding: 14px; background: #f2f2f7; color: #3c3c43; font-size: 15px; font-weight: 600; border: none; border-radius: 14px; cursor: pointer; }
 @keyframes fadeInOvl { from { opacity: 0; } to { opacity: 1; } }
-.pts-card { background: rgba(255,255,255,0.15); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; border: 1px solid rgba(255,255,255,0.2); }
+.pts-card { background: rgba(255,255,255,0.15); border-radius: 16px; padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; align-items: center; border: 1px solid rgba(255,255,255,0.2); }
 .pts-item { text-align: center; }
 .pts-num { font-size: 22px; font-weight: 700; }
 .pts-lbl { font-size: 11px; opacity: 0.75; margin-top: 2px; }
@@ -332,6 +337,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .match-phase { font-size: 11px; color: #8e8e93; font-weight: 500; }
 .match-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+.badge-pts-naranja { font-size:11px; font-weight:700; color:#ff9500; background:#fff9ec; border:1px solid #ffd080; border-radius:20px; padding:3px 8px; }
+.badge-pts-azul { font-size:11px; background:#e8f3ff; color:#007aff; border-radius:6px; padding:1px 6px; font-weight:600; }
+.badge-pts-oscuro { font-size:11px; background:#fff9ec; color:#c05a00; border-radius:6px; padding:1px 6px; font-weight:600; }
+.txt-azul { color:#007aff; }
+.txt-gris-sm { font-size:11px; color:#8e8e93; }
+.txt-gris-xs { font-size:10px; color:#8e8e93; }
 .badge-live { background: #ff3b30; color: #fff; }
 .badge-open { background: #34c759; color: #fff; }
 .badge-closed { background: #e5e5ea; color: #8e8e93; }
@@ -473,7 +484,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .pgc-stepper-local { grid-column:1; grid-row:2; display:flex; justify-content:center; }
 .pgc-stepper-visit { grid-column:2; grid-row:2; display:flex; justify-content:center; }
 .pgc-flag { font-size:20px; flex-shrink:0; }
-.pgc-name-wrap { font-size:12px; font-weight:600; color:#000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px; line-height:1.2; }
+.pgc-flag-label { font-size:13px; background:#f2f2f7; border-radius:8px; padding:4px 6px; font-weight:600; color:#3c3c43; word-break:break-word; text-align:center; line-height:1.3; }
+.pgc-name-wrap { font-size:12px; font-weight:600; color:#000; white-space:normal; word-break:break-word; line-height:1.3; text-align:center; max-width:100%; }
 .pgc-team { display:flex; flex-direction:column; align-items:center; gap:3px; }
 .pgc-team-inner { display:flex; align-items:center; gap:4px; }
 .pgc-steppers { display:flex; align-items:center; gap:4px; }
@@ -836,72 +848,57 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 }
 </style>
 <body>
-<a href="#screen-content-main" class="skip-link">Saltar al contenido principal</a>
-<!-- ════ GLOBAL — Toast de notificación ════ -->
+<a href="#app-content-main" class="skip-link">Saltar al contenido principal</a>
 <div id="app-toast" class="toast" role="status" aria-live="polite"></div>
 
-<div class="phone-wrap">
-  <div class="phone">
-    <div class="phone-screen">
+<div class="app-shell">
 
-      <!-- ── SIDEBAR (tablet/desktop) ────────────────────────────────── -->
-      <div class="sidebar" id="sidebar">
-        <div class="sidebar-logo">
-          <div class="sidebar-logo-icon">⚽</div>
-          <div>
-            <div class="sidebar-logo-text">La Polla<br>Mundialista</div>
-            <div class="sidebar-logo-sub">FIFA 2026</div>
-          </div>
-        </div>
-        <nav class="sidebar-nav">
-          <button class="sidebar-nav-item active" id="snav-home" onclick="goTo('s-home')">
-            <span class="snav-icon">⚽</span> Partidos
-          </button>
-          <button class="sidebar-nav-item" id="snav-especiales" onclick="goTo('s-especiales')">
-            <span class="snav-icon">⭐</span> Especiales
-          </button>
-          <button class="sidebar-nav-item" id="snav-tabla" onclick="goTo('s-tabla')">
-            <span class="snav-icon">🏆</span> Tabla
-          </button>
-          <button class="sidebar-nav-item" id="snav-reglas" onclick="goTo('s-reglas')">
-            <span class="snav-icon">📋</span> Reglas
-          </button>
-          <button class="sidebar-nav-item" id="snav-estadios" onclick="goTo('s-estadios')">
-            <span class="snav-icon">⚙️</span> APIs
-          </button>
-          <button class="sidebar-nav-item" id="snav-admin" onclick="goTo('s-admin')">
-            <span class="snav-icon">📊</span> Resumen
-          </button>
-        </nav>
-        <div class="sidebar-user" id="sidebar-user" style="display:none;">
-          <div class="sidebar-user-avatar" id="sidebar-avatar">--</div>
-          <div>
-            <div class="sidebar-user-name" id="sidebar-user-name">--</div>
-            <div class="sidebar-user-pts" id="sidebar-pts">--</div>
-          </div>
-        </div>
+  <!-- ── SIDEBAR (tablet/desktop) ── -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">⚽</div>
+      <div>
+        <div class="sidebar-logo-text">La Polla<br>Mundialista</div>
+        <div class="sidebar-logo-sub">FIFA 2026</div>
       </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-nav-item active" id="snav-home" onclick="goTo('s-home')"><span class="snav-icon">⚽</span> Partidos</button>
+      <button class="sidebar-nav-item" id="snav-especiales" onclick="goTo('s-especiales')"><span class="snav-icon">⭐</span> Especiales</button>
+      <button class="sidebar-nav-item" id="snav-tabla" onclick="goTo('s-tabla')"><span class="snav-icon">🏆</span> Tabla</button>
+      <button class="sidebar-nav-item" id="snav-reglas" onclick="goTo('s-reglas')"><span class="snav-icon">📋</span> Reglas</button>
+      <button class="sidebar-nav-item" id="snav-estadios" onclick="goTo('s-estadios')"><span class="snav-icon">⚙️</span> APIs</button>
+      <button class="sidebar-nav-item" id="snav-admin" onclick="goTo('s-admin')"><span class="snav-icon">📊</span> Resumen</button>
+    </nav>
+    <div class="sidebar-user" id="sidebar-user" style="display:none;">
+      <div class="sidebar-user-avatar" id="sidebar-avatar">--</div>
+      <div>
+        <div class="sidebar-user-name" id="sidebar-user-name">--</div>
+        <div class="sidebar-user-pts" id="sidebar-pts">--</div>
+      </div>
+    </div>
+  </div>
 
-      <!-- ── APP LAYOUT WRAPPER ──────────────────────────────────────── -->
-      <div class="app-layout" id="app-layout">
-        <div class="main-content" id="main-content">
+  <!-- ── COLUMNA DERECHA (desktop) / contenido completo (móvil) ── -->
+  <div class="app-content-col">
 
-          <!-- ── TOP BAR (tablet/desktop) ──────────────────────────── -->
-          <div class="top-bar" id="top-bar">
-            <div class="top-bar-left">
-              <div class="top-bar-title" id="top-bar-title">Mis Partidos</div>
-              <div class="top-bar-sub" id="top-bar-sub">Gestiona tus pronósticos</div>
-            </div>
-            <div class="top-bar-actions">
-              <div id="top-bar-jugador" style="display:none;background:#f2f2f7;border-radius:10px;padding:5px 12px;font-size:12px;font-weight:600;color:#3c3c43;margin-right:4px;">
-                <span style="color:#8e8e93;font-weight:400;">Jugando: </span><span id="top-bar-jugador-nombre">--</span>
-              </div>
-              <button class="top-bar-btn" onclick="generarExtractoPDF()">⬇️ PDF</button>
-              <button class="top-bar-btn" onclick="confirmarSalidaCuentas()">🏠</button>
-            </div>
-          </div>
+    <!-- Top bar (desktop) -->
+    <div class="top-bar" id="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-title" id="top-bar-title">Mis Partidos</div>
+        <div class="top-bar-sub" id="top-bar-sub">Gestiona tus pronósticos</div>
+      </div>
+      <div class="top-bar-actions">
+        <div id="top-bar-jugador" style="display:none;background:#f2f2f7;border-radius:10px;padding:5px 12px;font-size:12px;font-weight:600;color:#3c3c43;margin-right:4px;">
+          <span style="color:#8e8e93;font-weight:400;">Jugando: </span><span id="top-bar-jugador-nombre">--</span>
+        </div>
+        <button class="top-bar-btn" onclick="generarExtractoPDF()">⬇️ PDF</button>
+        <button class="top-bar-btn" onclick="confirmarSalidaCuentas()">🏠</button>
+      </div>
+    </div>
 
-      <div class="screen-content" id="screen-content-main" tabindex="-1">
+    <!-- Contenido principal — único scroll container -->
+    <div class="app-content" id="app-content-main" tabindex="-1">
 
         <!-- LOGIN -->
 
@@ -998,19 +995,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
           <div class="home-header">
             <div class="home-greeting">Buenas tardes</div>
             <div class="home-name" id="home-name">Carlos Rodríguez 👋</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;min-width:0;width:100%;" class="home-header-actions-row">
-              <div class="home-cuenta-tag" id="home-cuenta-tag" style="margin-bottom:0;flex-shrink:1;">📋 Cuenta 1 · @carlos1</div>
-              <div class="home-header-actions" style="display:flex;gap:6px;">
-                
-                <button onclick="generarExtractoPDF()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">
-                  <span style="font-size:13px;">⬇️</span> PDF
-                </button>
-                <button onclick="confirmarSalidaCuentas()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
-                  <span style="font-size:13px;">🏠</span>
-                </button>
+            <div class="home-header-actions-row">
+              <div class="home-cuenta-tag" id="home-cuenta-tag">📋 Cuenta 1 · @carlos1</div>
+              <div class="home-header-actions">
+                <button class="home-header-btn" onclick="generarExtractoPDF()"><span>⬇️</span> PDF</button>
+                <button class="home-header-btn" onclick="confirmarSalidaCuentas()"><span>🏠</span></button>
               </div>
             </div>
-            <div class="pts-card" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;align-items:center;">
+            <div class="pts-card">
               <div class="pts-item"><div class="pts-num">247</div><div class="pts-lbl">Mis puntos</div></div>
               <div class="pts-item"><div class="pts-num">#4</div><div class="pts-lbl">Posición</div></div>
               <div class="pts-item-alert-red">
@@ -1227,8 +1219,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row"><div class="rank gold">1</div><div class="avatar" style="background:#fff3e0;color:#e65100;">MR</div>
                 <div class="tabla-info"><div class="tabla-name">María Ramírez</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 380</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 32</span>
+                    <span class="badge-pts-azul">Partidos 380</span>
+                    <span class="badge-pts-oscuro">Especiales 32</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">412</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1236,8 +1228,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row"><div class="rank silver">2</div><div class="avatar" style="background:#e8eaf6;color:#283593;">JG</div>
                 <div class="tabla-info"><div class="tabla-name">Juan García</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 359</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 30</span>
+                    <span class="badge-pts-azul">Partidos 359</span>
+                    <span class="badge-pts-oscuro">Especiales 30</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">389</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1245,8 +1237,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row"><div class="rank bronze">3</div><div class="avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div>
                 <div class="tabla-info"><div class="tabla-name">Laura Pérez</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 326</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 30</span>
+                    <span class="badge-pts-azul">Partidos 326</span>
+                    <span class="badge-pts-oscuro">Especiales 30</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">356</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1254,17 +1246,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row me"><div class="rank" style="color:#007aff;font-weight:800;">4</div><div class="avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div>
                 <div class="tabla-info"><div class="tabla-name">Carlos Rodríguez (Yo)</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 247</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 0</span>
+                    <span class="badge-pts-azul">Partidos 247</span>
+                    <span class="badge-pts-oscuro">Especiales 0</span>
                   </div>
                 </div>
-                <div><div class="tabla-pts" style="color:#007aff;">247</div><div class="tabla-pts-lbl">puntos</div></div>
+                <div><div class="tabla-pts" class="txt-azul">247</div><div class="tabla-pts-lbl">puntos</div></div>
               </div>
               <div class="tabla-row"><div class="rank">5</div><div class="avatar" style="background:#fce4ec;color:#880e4f;">AS</div>
                 <div class="tabla-info"><div class="tabla-name">Andrés Soto</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 201</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 30</span>
+                    <span class="badge-pts-azul">Partidos 201</span>
+                    <span class="badge-pts-oscuro">Especiales 30</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">231</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1272,8 +1264,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row"><div class="rank">6</div><div class="avatar" style="background:#f3e5f5;color:#4a148c;">VM</div>
                 <div class="tabla-info"><div class="tabla-name">Valeria Mora</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 198</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 0</span>
+                    <span class="badge-pts-azul">Partidos 198</span>
+                    <span class="badge-pts-oscuro">Especiales 0</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">198</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1281,8 +1273,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               <div class="tabla-row"><div class="rank">7</div><div class="avatar" style="background:#e0f7fa;color:#006064;">DC</div>
                 <div class="tabla-info"><div class="tabla-name">Diego Castro</div>
                   <div style="display:flex;gap:8px;margin-top:3px;">
-                    <span style="font-size:11px;background:#e8f3ff;color:#007aff;border-radius:6px;padding:1px 6px;font-weight:600;">Partidos 176</span>
-                    <span style="font-size:11px;background:#fff9ec;color:#c05a00;border-radius:6px;padding:1px 6px;font-weight:600;">Especiales 0</span>
+                    <span class="badge-pts-azul">Partidos 176</span>
+                    <span class="badge-pts-oscuro">Especiales 0</span>
                   </div>
                 </div>
                 <div><div class="tabla-pts">176</div><div class="tabla-pts-lbl">puntos</div></div>
@@ -1307,13 +1299,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   <span style="font-size:11px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">Clasif.</span>
                   <span style="font-size:11px;font-weight:600;color:#000;min-width:55px;text-align:right;">Total</span>
                 </div>
-                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">380</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">32</span><span class="cat-pts">412</span></div>
-                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">359</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">389</span></div>
-                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">326</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">356</span></div>
-                <div class="cat-row me-row"><span class="cat-rank" style="color:#007aff;">4</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" style="color:#007aff;">Carlos R. (Yo)</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">247</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#007aff;">247</span></div>
-                <div class="cat-row"><span class="cat-rank">5</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">201</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">231</span></div>
-                <div class="cat-row"><span class="cat-rank">6</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">198</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts">198</span></div>
-                <div class="cat-row"><span class="cat-rank">7</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">176</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts">176</span></div>
+                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">380</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">32</span><span class="cat-pts">412</span></div>
+                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">359</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">389</span></div>
+                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">326</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">356</span></div>
+                <div class="cat-row me-row"><span class="cat-rank" class="txt-azul">4</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" class="txt-azul">Carlos R. (Yo)</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">247</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts" class="txt-azul">247</span></div>
+                <div class="cat-row"><span class="cat-rank">5</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">201</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">231</span></div>
+                <div class="cat-row"><span class="cat-rank">6</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">198</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts">198</span></div>
+                <div class="cat-row"><span class="cat-rank">7</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">176</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts">176</span></div>
                 <div style="padding:8px 14px;font-size:11px;color:#8e8e93;display:flex;justify-content:space-between;">
                   <span>🏅 Gana el Ganador Fase de Grupos</span>
                   <span style="font-weight:600;color:#007aff;">Premio: 1.440 pts</span>
@@ -1335,13 +1327,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   <span style="font-size:11px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">Finalistas</span>
                   <span style="font-size:11px;font-weight:600;color:#000;min-width:55px;text-align:right;">Total</span>
                 </div>
-                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">180</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">210</span></div>
-                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">160</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">190</span></div>
-                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">120</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">32</span><span class="cat-pts">152</span></div>
-                <div class="cat-row"><span class="cat-rank">4</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">0</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">30</span></div>
-                <div class="cat-row me-row"><span class="cat-rank" style="color:#007aff;">5</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" style="color:#007aff;">Carlos R. (Yo)</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">0</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#ff3b30;">0</span></div>
-                <div class="cat-row"><span class="cat-rank" style="color:#c7c7cc;">5</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">0</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#c7c7cc;">0</span></div>
-                <div class="cat-row"><span class="cat-rank" style="color:#c7c7cc;">5</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">0</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#c7c7cc;">0</span></div>
+                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">180</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">210</span></div>
+                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">160</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">190</span></div>
+                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">120</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">32</span><span class="cat-pts">152</span></div>
+                <div class="cat-row"><span class="cat-rank">4</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">0</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">30</span></div>
+                <div class="cat-row me-row"><span class="cat-rank" class="txt-azul">5</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" class="txt-azul">Carlos R. (Yo)</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">0</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#ff3b30;">0</span></div>
+                <div class="cat-row"><span class="cat-rank" style="color:#c7c7cc;">5</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">0</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#c7c7cc;">0</span></div>
+                <div class="cat-row"><span class="cat-rank" style="color:#c7c7cc;">5</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">0</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#c7c7cc;">0</span></div>
                 <div style="padding:8px 14px;font-size:11px;color:#8e8e93;display:flex;justify-content:space-between;">
                   <span>🏅 Gana el Ganador Las Finales</span>
                   <span style="font-weight:600;color:#007aff;">Premio: 1.940 pts</span>
@@ -1363,13 +1355,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                   <span style="font-size:11px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">Finales</span>
                   <span style="font-size:11px;font-weight:600;color:#000;min-width:55px;text-align:right;">Total</span>
                 </div>
-                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">412</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">152</span><span class="cat-pts">564</span></div>
-                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">389</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">210</span><span class="cat-pts">599</span></div>
-                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">231</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">190</span><span class="cat-pts">421</span></div>
-                <div class="cat-row"><span class="cat-rank">4</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">356</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">30</span><span class="cat-pts">386</span></div>
-                <div class="cat-row me-row"><span class="cat-rank" style="color:#007aff;">5</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" style="color:#007aff;">Carlos R. (Yo)</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">247</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts" style="color:#007aff;">247</span></div>
-                <div class="cat-row"><span class="cat-rank">6</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">198</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts">198</span></div>
-                <div class="cat-row"><span class="cat-rank">7</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span style="font-size:12px;font-weight:600;color:#007aff;min-width:70px;text-align:right;">176</span><span style="font-size:12px;font-weight:600;color:#c05a00;min-width:70px;text-align:right;">0</span><span class="cat-pts">176</span></div>
+                <div class="cat-row gold-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">412</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">152</span><span class="cat-pts">564</span></div>
+                <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">389</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">210</span><span class="cat-pts">599</span></div>
+                <div class="cat-row"><span class="cat-rank bronze">3</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">231</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">190</span><span class="cat-pts">421</span></div>
+                <div class="cat-row"><span class="cat-rank">4</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">356</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">30</span><span class="cat-pts">386</span></div>
+                <div class="cat-row me-row"><span class="cat-rank" class="txt-azul">5</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" class="txt-azul">Carlos R. (Yo)</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">247</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts" class="txt-azul">247</span></div>
+                <div class="cat-row"><span class="cat-rank">6</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">198</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts">198</span></div>
+                <div class="cat-row"><span class="cat-rank">7</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span class="badge-pts-azul" style="min-width:70px;text-align:right;">176</span><span class="badge-pts-oscuro" style="min-width:70px;text-align:right;">0</span><span class="cat-pts">176</span></div>
                 <div style="padding:8px 14px;font-size:11px;color:#8e8e93;display:flex;justify-content:space-between;">
                   <span>👑 Gana el Campeón de la Polla</span>
                   <span style="font-weight:600;color:#ff9500;">Premio: 5.450 pts</span>
@@ -1388,38 +1380,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
                 <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;">Detalle por reunión</div>
                 <div style="margin:0 14px 10px;background:#fff;border-radius:14px;border:0.5px solid #e5e5ea;overflow:hidden;">
                   <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f9f9fb;border-bottom:0.5px solid #e5e5ea;">
-                    <div><div style="font-size:14px;font-weight:700;">🏠 Familia Rodríguez</div><div style="font-size:11px;color:#8e8e93;">4 participantes</div></div>
-                    <div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#34c759;">258</div><div style="font-size:10px;color:#8e8e93;">pts prom.</div></div>
+                    <div><div style="font-size:14px;font-weight:700;">🏠 Familia Rodríguez</div><div class="txt-gris-sm">4 participantes</div></div>
+                    <div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#34c759;">258</div><div class="txt-gris-xs">pts prom.</div></div>
                   </div>
                   <div class="cat-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#fff3e0;color:#e65100;">MR</div><span class="cat-name">María Ramírez</span><span class="cat-pts">412</span></div>
-                  <div class="cat-row me-row"><span class="cat-rank" style="color:#007aff;">2</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" style="color:#007aff;">Carlos R. (Yo)</span><span class="cat-pts" style="color:#007aff;">247</span></div>
+                  <div class="cat-row me-row"><span class="cat-rank" class="txt-azul">2</span><div class="cat-avatar" style="background:#e3f2fd;color:#0d47a1;">CR</div><span class="cat-name" class="txt-azul">Carlos R. (Yo)</span><span class="cat-pts" class="txt-azul">247</span></div>
                   <div class="cat-row"><span class="cat-rank">3</span><div class="cat-avatar" style="background:#f3e5f5;color:#4a148c;">VM</div><span class="cat-name">Valeria Mora</span><span class="cat-pts">198</span></div>
                   <div class="cat-row"><span class="cat-rank">4</span><div class="cat-avatar" style="background:#e0f7fa;color:#006064;">DC</div><span class="cat-name">Diego Castro</span><span class="cat-pts">176</span></div>
-                  <div style="padding:6px 14px 8px;display:flex;justify-content:flex-end;"><span style="font-size:11px;color:#8e8e93;">1.033 pts ÷ 4 = </span><span style="font-size:11px;font-weight:700;color:#34c759;margin-left:4px;">258 promedio</span></div>
+                  <div style="padding:6px 14px 8px;display:flex;justify-content:flex-end;"><span class="txt-gris-sm">1.033 pts ÷ 4 = </span><span style="font-size:11px;font-weight:700;color:#34c759;margin-left:4px;">258 promedio</span></div>
                 </div>
                 <div style="margin:0 14px 10px;background:#fff;border-radius:14px;border:0.5px solid #e5e5ea;overflow:hidden;">
                   <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f9f9fb;border-bottom:0.5px solid #e5e5ea;">
-                    <div><div style="font-size:14px;font-weight:700;">🏢 Oficina Tech</div><div style="font-size:11px;color:#8e8e93;">3 participantes</div></div>
-                    <div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#ff9500;">325</div><div style="font-size:10px;color:#8e8e93;">pts prom.</div></div>
+                    <div><div style="font-size:14px;font-weight:700;">🏢 Oficina Tech</div><div class="txt-gris-sm">3 participantes</div></div>
+                    <div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:#ff9500;">325</div><div class="txt-gris-xs">pts prom.</div></div>
                   </div>
                   <div class="cat-row"><span class="cat-rank gold">1</span><div class="cat-avatar" style="background:#e8eaf6;color:#283593;">JG</div><span class="cat-name">Juan García</span><span class="cat-pts">389</span></div>
                   <div class="cat-row"><span class="cat-rank silver">2</span><div class="cat-avatar" style="background:#e8f5e9;color:#1b5e20;">LP</div><span class="cat-name">Laura Pérez</span><span class="cat-pts">356</span></div>
                   <div class="cat-row"><span class="cat-rank">3</span><div class="cat-avatar" style="background:#fce4ec;color:#880e4f;">AS</div><span class="cat-name">Andrés Soto</span><span class="cat-pts">231</span></div>
-                  <div style="padding:6px 14px 8px;display:flex;justify-content:flex-end;"><span style="font-size:11px;color:#8e8e93;">976 pts ÷ 3 = </span><span style="font-size:11px;font-weight:700;color:#ff9500;margin-left:4px;">325 promedio</span></div>
+                  <div style="padding:6px 14px 8px;display:flex;justify-content:flex-end;"><span class="txt-gris-sm">976 pts ÷ 3 = </span><span style="font-size:11px;font-weight:700;color:#ff9500;margin-left:4px;">325 promedio</span></div>
                 </div>
                 <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;">Ranking entre reuniones</div>
                 <div style="margin:0 14px 20px;background:#fff;border-radius:14px;border:0.5px solid #e5e5ea;overflow:hidden;">
                   <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid #e5e5ea;background:#fff9ec;">
                     <span style="font-size:16px;font-weight:800;color:#ff9500;width:24px;">1</span>
                     <span style="font-size:22px;margin:0 10px;">🏢</span>
-                    <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Oficina Tech</div><div style="font-size:11px;color:#8e8e93;">3 participantes</div></div>
-                    <div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#ff9500;">325</div><div style="font-size:10px;color:#8e8e93;">prom.</div></div>
+                    <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Oficina Tech</div><div class="txt-gris-sm">3 participantes</div></div>
+                    <div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#ff9500;">325</div><div class="txt-gris-xs">prom.</div></div>
                   </div>
                   <div style="display:flex;align-items:center;padding:12px 14px;">
                     <span style="font-size:16px;font-weight:800;color:#8e8e93;width:24px;">2</span>
                     <span style="font-size:22px;margin:0 10px;">🏠</span>
-                    <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Familia Rodríguez</div><div style="font-size:11px;color:#8e8e93;">4 participantes</div></div>
-                    <div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#8e8e93;">258</div><div style="font-size:10px;color:#8e8e93;">prom.</div></div>
+                    <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Familia Rodríguez</div><div class="txt-gris-sm">4 participantes</div></div>
+                    <div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#8e8e93;">258</div><div class="txt-gris-xs">prom.</div></div>
                   </div>
                 </div>
               </div>
@@ -1459,7 +1451,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
               </div>
               <div style="margin-left:auto;text-align:right;">
                 <div id="audit-banner-pts" style="font-size:18px;font-weight:800;color:#007aff;">412</div>
-                <div style="font-size:10px;color:#8e8e93;">puntos</div>
+                <div class="txt-gris-xs">puntos</div>
               </div>
             </div>
 
@@ -1681,13 +1673,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
           <div class="admin-section">
             <div class="admin-section-title">🏆 Podio actual</div>
             <div class="admin-match-card" style="padding:0;overflow:hidden;">
-              <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);background:#fff9ec;"><div style="font-size:20px;margin-right:10px;">🥇</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">María Ramírez</div><div style="font-size:11px;color:#8e8e93;">32 apuestas · 14 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#ff9500;">412</div><div style="font-size:10px;color:#8e8e93;">pts</div></div></div>
-              <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div style="font-size:20px;margin-right:10px;">🥈</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Juan García</div><div style="font-size:11px;color:#8e8e93;">30 apuestas · 11 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#8e8e93;">389</div><div style="font-size:10px;color:#8e8e93;">pts</div></div></div>
-              <div style="display:flex;align-items:center;padding:12px 14px;"><div style="font-size:20px;margin-right:10px;">🥉</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Laura Pérez</div><div style="font-size:11px;color:#8e8e93;">31 apuestas · 10 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#c8a062;">356</div><div style="font-size:10px;color:#8e8e93;">pts</div></div></div>
+              <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);background:#fff9ec;"><div style="font-size:20px;margin-right:10px;">🥇</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">María Ramírez</div><div class="txt-gris-sm">32 apuestas · 14 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#ff9500;">412</div><div class="txt-gris-xs">pts</div></div></div>
+              <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div style="font-size:20px;margin-right:10px;">🥈</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Juan García</div><div class="txt-gris-sm">30 apuestas · 11 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#8e8e93;">389</div><div class="txt-gris-xs">pts</div></div></div>
+              <div style="display:flex;align-items:center;padding:12px 14px;"><div style="font-size:20px;margin-right:10px;">🥉</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Laura Pérez</div><div class="txt-gris-sm">31 apuestas · 10 exactos</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#c8a062;">356</div><div class="txt-gris-xs">pts</div></div></div>
             </div>
             <div class="admin-section-title">📍 Mi posición</div>
             <div class="admin-match-card" style="background:#e8f3ff;border:1.5px solid #007aff;">
-              <div style="display:flex;align-items:center;"><div style="width:36px;height:36px;border-radius:50%;background:#007aff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;margin-right:12px;">#4</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Carlos Rodríguez</div><div style="font-size:11px;color:#8e8e93;">18 apuestas · 7 exactos · a 165 pts del líder</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#007aff;">247</div><div style="font-size:10px;color:#8e8e93;">pts</div></div></div>
+              <div style="display:flex;align-items:center;"><div style="width:36px;height:36px;border-radius:50%;background:#007aff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;margin-right:12px;">#4</div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">Carlos Rodríguez</div><div class="txt-gris-sm">18 apuestas · 7 exactos · a 165 pts del líder</div></div><div style="text-align:right;"><div style="font-size:18px;font-weight:800;color:#007aff;">247</div><div class="txt-gris-xs">pts</div></div></div>
             </div>
             <div class="admin-section-title">📈 Estadísticas</div>
             <div class="admin-match-card" style="padding:0;overflow:hidden;">
@@ -1698,9 +1690,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             </div>
             <div class="admin-section-title">📅 Últimos resultados</div>
             <div class="admin-match-card" style="padding:0;overflow:hidden;margin-bottom:100px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div><div style="font-size:13px;font-weight:600;">🇨🇴 Col 2-0 Uzb 🇺🇿</div><div style="font-size:11px;color:#8e8e93;">Grupo K · 18 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#34c759;">+20 pts</div><div style="font-size:10px;color:#8e8e93;">Exacto ✅</div></div></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div><div style="font-size:13px;font-weight:600;">🇦🇷 Arg 1-1 Fra 🇫🇷</div><div style="font-size:11px;color:#8e8e93;">Grupo C · 13 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#ff9500;">+10 pts</div><div style="font-size:10px;color:#8e8e93;">Ganador ✓</div></div></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;"><div><div style="font-size:13px;font-weight:600;">🇧🇷 Bra 2-1 Mex 🇲🇽</div><div style="font-size:11px;color:#8e8e93;">Grupo B · 13 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#ff3b30;">+8 pts</div><div style="font-size:10px;color:#8e8e93;">Parcial</div></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div><div style="font-size:13px;font-weight:600;">🇨🇴 Col 2-0 Uzb 🇺🇿</div><div class="txt-gris-sm">Grupo K · 18 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#34c759;">+20 pts</div><div class="txt-gris-xs">Exacto ✅</div></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:0.5px solid rgba(0,0,0,0.06);"><div><div style="font-size:13px;font-weight:600;">🇦🇷 Arg 1-1 Fra 🇫🇷</div><div class="txt-gris-sm">Grupo C · 13 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#ff9500;">+10 pts</div><div class="txt-gris-xs">Ganador ✓</div></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;"><div><div style="font-size:13px;font-weight:600;">🇧🇷 Bra 2-1 Mex 🇲🇽</div><div class="txt-gris-sm">Grupo B · 13 jun</div></div><div style="text-align:right;"><div style="font-size:13px;font-weight:700;color:#ff3b30;">+8 pts</div><div class="txt-gris-xs">Parcial</div></div></div>
             </div>
           </div>
         </div>
@@ -1733,12 +1725,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
         <button class="tab-item" id="tab-estadios" aria-label="APIs backoffice" onclick="goTo('s-estadios')"><div class="tab-icon" aria-hidden="true">⚙️</div><div class="tab-label">APIs</div></button>
       </nav>
 
-        </div><!-- /main-content -->
-      </div><!-- /app-layout -->
-
-    </div>
-  </div>
-</div>
+    </div><!-- /app-content-col -->
+</div><!-- /app-shell -->
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════════════
@@ -1823,7 +1811,7 @@ var reglasSections = [
       var tdH = 'padding:5px 6px;text-align:center;font-weight:800;color:#ff9500;border-bottom:0.5px solid #f0f0f0;background:#fff9ec;';
       var tdG = 'padding:5px 6px;text-align:center;color:#c7c7cc;font-style:italic;border-bottom:0.5px solid #f0f0f0;';
 
-      return '<div class="acc-row" style="background:#e8f3ff;"><div><div class="acc-row-label" style="color:#007aff;">⚽ 90 minutos (reglamentarios)</div><div class="acc-row-sub">Todos los microjuegos normales aplican · ventana 100%/50%</div></div></div>'
+      return '<div class="acc-row" style="background:#e8f3ff;"><div><div class="acc-row-label" class="txt-azul">⚽ 90 minutos (reglamentarios)</div><div class="acc-row-sub">Todos los microjuegos normales aplican · ventana 100%/50%</div></div></div>'
         + '<div style="height:1px;background:#e5e5ea;margin:4px 14px;"></div>'
         + '<div class="acc-row" style="background:#fff9ec;"><div><div class="acc-row-label">⏰ En caso de alargue: ¿quién avanza?</div><div class="acc-row-sub">Único microjuego extra · se congela al pitazo del 2do tiempo · no hay ventana</div></div></div>'
         + '<div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#8e8e93;text-transform:uppercase;letter-spacing:0.5px;">Puntos por fase (al 100%)</div>'
@@ -1894,7 +1882,7 @@ var reglasSections = [
         + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;"><div style="background:linear-gradient(135deg,#7b1fa2,#c8102e);border-radius:6px;padding:1px 7px;font-size:9px;font-weight:700;color:#fff;letter-spacing:0.4px;">CICLO 2</div><div class="acc-row-label" style="margin:0;">🏆 Ganador Fase Final</div></div>'
         + '<div class="acc-row-sub">Más pts en 32 partidos finales + Finalistas del torneo</div></div><span class="acc-row-val">3.290 pts</span></div>'
         + '<div style="height:1px;background:#e5e5ea;margin:4px 14px;"></div>'
-        + '<div class="acc-row" style="background:#e8f3ff;"><div><div class="acc-row-label" style="color:#007aff;">👑 Campeón de la Polla</div><div class="acc-row-sub">Acumulado total: Ciclo Grupos + Ciclo Finales · 104 partidos + categorías especiales</div></div><span class="acc-row-val blue big">5.450 pts</span></div>'
+        + '<div class="acc-row" style="background:#e8f3ff;"><div><div class="acc-row-label" class="txt-azul">👑 Campeón de la Polla</div><div class="acc-row-sub">Acumulado total: Ciclo Grupos + Ciclo Finales · 104 partidos + categorías especiales</div></div><span class="acc-row-val blue big">5.450 pts</span></div>'
         + '<div class="acc-row"><div><div class="acc-row-label">🥈 Subcampeón de la Polla</div><div class="acc-row-sub">Segundo mayor acumulado total</div></div></div>'
         + '<div class="acc-row"><div><div class="acc-row-label">🥉 Tercer puesto de la Polla</div><div class="acc-row-sub">Tercer mayor acumulado total</div></div></div>'
         + '<div class="acc-note">🚀 Un acierto en finalistas en orden puede remontar semanas de desventaja en partidos.</div>';
@@ -1915,6 +1903,16 @@ var faseLabels = {
   'final': 'Final'
 };
 var fasesOrden = ['16avos','octavos','cuartos','semis','3y4','final'];
+
+// Fechas de inicio de cada fase — activa el botón cuando fechaSim >= fecha
+var faseFechaInicio = {
+  '16avos': '2026-07-04',
+  'octavos': '2026-07-11',
+  'cuartos': '2026-07-17',
+  'semis':   '2026-07-21',
+  '3y4':     '2026-07-25',
+  'final':   '2026-07-26'
+};
 
 
 // ╔══════════════════════════════════════════════════════
@@ -1977,7 +1975,7 @@ function initLab() {
         '<div style="width:40px;height:40px;border-radius:10px;background:'+api.color+'22;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">'+api.icon+'</div>'+
         '<div style="flex:1;">'+
           '<div style="font-size:14px;font-weight:700;color:#000;">'+api.label+'</div>'+
-          '<div style="font-size:11px;color:#8e8e93;">'+api.desc+'</div>'+
+          '<div class="txt-gris-sm">'+api.desc+'</div>'+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:8px;">'+
           '<div id="lab-badge-'+api.id+'" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:#f2f2f7;color:#8e8e93;white-space:nowrap;">...</div>'+
@@ -1990,9 +1988,9 @@ function initLab() {
     if (card2) {
       var descEl = card2.querySelector('div > div:last-child');
       if (descEl) descEl.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;">' +
-        '<span style="font-size:11px;color:#8e8e93;">est=</span>' +
+        '<span class="txt-gris-sm">est=</span>' +
         '<input id="lab-filtro-est" type="number" value="2" min="0" max="9" style="width:44px;padding:3px 6px;border:1px solid #e5e5ea;border-radius:6px;font-size:12px;font-weight:700;color:#c0392b;text-align:center;" />' +
-        '<span style="font-size:11px;color:#8e8e93;">· toca ↻ para consultar</span>' +
+        '<span class="txt-gris-sm">· toca ↻ para consultar</span>' +
         '</div>';
     }
     labInited = true;
@@ -2062,7 +2060,7 @@ function labMostrar(api, data) {
   document.getElementById('lab-resultado').style.display = 'block';
   labRenderTabla();
   setTimeout(function(){
-    document.querySelector('.screen-content').scrollTop = document.getElementById('lab-resultado').offsetTop - 20;
+    document.getElementById('app-content-main').scrollTop = document.getElementById('lab-resultado').offsetTop - 20;
   }, 50);
 }
 
@@ -2346,14 +2344,14 @@ function renderFinalesFasePanel(key) {
       '<div class="pgc-header">' +
         '<span class="pgc-info">' + p.fecha + ' · ' + p.hora + ' · ' + p.estadio + '</span>' +
         '<div style="display:flex;align-items:center;gap:6px;">' +
-        '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">' + faseConf.pts + '</span>' +
+        '<span class="badge-pts-naranja">' + faseConf.pts + '</span>' +
         '<span class="' + (saved ? 'pgc-badge-pending' : 'pgc-badge-open') + '">' + (saved ? '✓' : 'Abierta') + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="pgc-body">' +
         '<div class="pgc-teams">' +
-          '<div class="pgc-team-local"><span class="pgc-flag" style="font-size:13px;background:#f2f2f7;border-radius:8px;padding:4px 6px;font-weight:600;color:#3c3c43;">' + p.e1 + '</span></div>' +
-          '<div class="pgc-team-visit"><span class="pgc-flag" style="font-size:13px;background:#f2f2f7;border-radius:8px;padding:4px 6px;font-weight:600;color:#3c3c43;">' + p.e2 + '</span></div>' +
+          '<div class="pgc-team-local"><span class="pgc-flag" class="pgc-flag-label">' + p.e1 + '</span></div>' +
+          '<div class="pgc-team-visit"><span class="pgc-flag" class="pgc-flag-label">' + p.e2 + '</span></div>' +
           '<div class="pgc-stepper-local"><input class="pgc-score-inp" id="sf1-' + p.id + '" type="number" min="0" max="20" value="' + (saved ? saved.s1 : '') + '" placeholder="0"></div>' +
           '<div class="pgc-stepper-visit"><input class="pgc-score-inp" id="sf2-' + p.id + '" type="number" min="0" max="20" value="' + (saved ? saved.s2 : '') + '" placeholder="0"></div>' +
         '</div>' +
@@ -2648,29 +2646,63 @@ var standings = {}; // se puebla desde fifa_equ en fetchJugadores
 
 
 function renderBracket() {
+  var fechaSim = simGetFechaStr();
+
+  // Determinar qué fases están habilitadas según la fecha del simulador
+  var fasesHabilitadas = fasesOrden.filter(function(f) {
+    return fechaSim >= faseFechaInicio[f];
+  });
+
+  // Si la fase activa ya no está habilitada, saltar a la primera disponible
   var activeFase = window.activeFaseFinalesFilter || '16avos';
+  if (fasesHabilitadas.length > 0 && fasesHabilitadas.indexOf(activeFase) === -1) {
+    activeFase = fasesHabilitadas[0];
+    window.activeFaseFinalesFilter = activeFase;
+  }
+
+  // Si no hay ninguna fase habilitada aún, mostrar pantalla de espera
+  if (fasesHabilitadas.length === 0) {
+    var diasRestantes = Math.ceil((new Date(faseFechaInicio['16avos']) - new Date(fechaSim)) / 86400000);
+    return '<div style="padding:60px 20px;text-align:center;">'
+      + '<div style="font-size:48px;margin-bottom:12px;">🏆</div>'
+      + '<div style="font-size:16px;font-weight:700;color:#000;margin-bottom:6px;">Fase Eliminatoria</div>'
+      + '<div style="font-size:13px;color:#8e8e93;line-height:1.5;">Los dieciseisavos de final arrancan el 4 de julio.<br>Faltan aproximadamente ' + diasRestantes + ' días.</div>'
+      + '</div>';
+  }
+
   var faseConf = fasesFinalesConfig.find(function(f){ return f.key === activeFase; });
   var maxPts = faseConf ? parseInt(faseConf.pts) : 40;
   var ganadorPts = faseGanadorPts[activeFase] || 12;
   var isFinal = activeFase === 'final';
   var partidos = fixtureFinales[activeFase] || [];
 
-  // Build fase selector buttons
+  // Build fase selector buttons — solo muestra las fases habilitadas
   var btnHtml = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px 8px;">';
   fasesOrden.forEach(function(f) {
     var fc = fasesFinalesConfig.find(function(x){ return x.key === f; });
     var isActive = f === activeFase;
+    var habilitada = fasesHabilitadas.indexOf(f) !== -1;
     var done = window.pronosticoBracket && window.pronosticoBracket[f] ?
       Object.keys(window.pronosticoBracket[f]).length : 0;
     var total = (fixtureFinales[f] || []).length;
     var isDone = done === total && total > 0;
-    btnHtml += '<button class="fase-fin-btn" data-fase="' + f + '" style="'
-      + 'padding:10px 4px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all 0.15s;'
-      + (isActive ? 'background:#007aff;border-color:#007aff;color:#fff;'
-         : isDone  ? 'background:#e8f3ff;border-color:#007aff;color:#007aff;'
-         :           'background:#fff;border-color:#e5e5ea;color:#3c3c43;')
-      + '">' + faseLabels[f]
-      + (done > 0 && !isActive ? '<br><span style="font-size:10px;font-weight:400;opacity:0.8;">' + done + '/' + total + '</span>' : '')
+
+    var estilo = 'padding:10px 4px;border-radius:12px;font-size:12px;font-weight:700;border:1.5px solid;transition:all 0.15s;';
+    if (!habilitada) {
+      // Fase aún no disponible — gris, no clickeable
+      estilo += 'background:#f2f2f7;border-color:#e5e5ea;color:#c7c7cc;cursor:not-allowed;opacity:0.6;';
+    } else if (isActive) {
+      estilo += 'background:#007aff;border-color:#007aff;color:#fff;cursor:pointer;';
+    } else if (isDone) {
+      estilo += 'background:#e8f3ff;border-color:#007aff;color:#007aff;cursor:pointer;';
+    } else {
+      estilo += 'background:#fff;border-color:#e5e5ea;color:#3c3c43;cursor:pointer;';
+    }
+
+    btnHtml += '<button class="fase-fin-btn" data-fase="' + f + '" data-habilitada="' + (habilitada ? '1' : '0') + '" style="' + estilo + '">'
+      + faseLabels[f]
+      + (habilitada && done > 0 && !isActive ? '<br><span style="font-size:10px;font-weight:400;opacity:0.8;">' + done + '/' + total + '</span>' : '')
+      + (!habilitada ? '<br><span style="font-size:10px;font-weight:400;">desde ' + faseFechaInicio[f].slice(5).replace('-','/') + '</span>' : '')
       + '</button>';
   });
   btnHtml += '</div>';
@@ -2713,7 +2745,7 @@ function renderFinalMatch(p, fase, maxPts, ganadorPts, isFinal) {
     ? '<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#ff9500;color:#fff;">✓ Guardado</span>'
     : '<span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#34c759;color:#fff;">Abierta</span>';
 
-  var ptsBadge = '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">' + maxPts + ' pts</span>';
+  var ptsBadge = '<span class="badge-pts-naranja">' + maxPts + ' pts</span>';
 
   // Alargue selector - which team advances
   var e1name = p.e1.replace(/^[^\s]+\s/, ''); // strip prefix like "1A "
@@ -2730,8 +2762,8 @@ function renderFinalMatch(p, fase, maxPts, ganadorPts, isFinal) {
     + '">' + (p.f2 || '') + ' ' + p.e2 + '</button>'
     + '</div></div>';
 
-  var saveBtn = pron ? '' :
-    '<button class="pgc-save-btn finals-save-btn" data-pid="' + p.id + '" data-fase="' + fase + '" style="margin:10px 14px 14px;width:calc(100% - 28px);">Guardar pronóstico</button>';
+  var saveBtnLabel = pron ? '✏️ Actualizar' : '⚽ Guardar pronóstico';
+  var saveBtn = '<button class="pgc-save-btn finals-save-btn" data-pid="' + p.id + '" data-fase="' + fase + '" style="margin:10px 14px 14px;width:calc(100% - 28px);">' + saveBtnLabel + '</button>';
 
   var savedInfo = pron
     ? '<div style="padding:8px 14px 12px;font-size:12px;font-weight:600;color:#34c759;">✓ ' + p.e1 + ' ' + pron.s1 + ' — ' + pron.s2 + ' ' + p.e2 + (pron.avanza ? ' · Avanza: ' + pron.avanza : '') + '</div>'
@@ -2743,20 +2775,13 @@ function renderFinalMatch(p, fase, maxPts, ganadorPts, isFinal) {
     +   '<span style="font-size:11px;' + subCol + '">' + p.fecha + ' · ' + p.hora + ' · ' + p.estadio + '</span>'
     +   '<div style="display:flex;gap:6px;align-items:center;">' + ptsBadge + savedBadge + '</div>'
     + '</div>'
-    // Teams + score inputs
-    + '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;">'
-    +   '<div style="text-align:center;flex:1;">'
-    +     '<div style="font-size:22px;margin-bottom:4px;">' + (p.f1 || '⚽') + '</div>'
-    +     '<div style="font-size:13px;font-weight:600;' + textCol + '">' + p.e1 + '</div>'
-    +   '</div>'
-    +   '<div style="display:flex;align-items:center;gap:6px;">'
-    +     '<input class="pgc-score-inp" id="fs1-' + p.id + '" type="number" min="0" max="20" value="' + (pron ? pron.s1 : '') + '" placeholder="0" style="' + inputBg + 'width:44px;height:44px;border-radius:10px;text-align:center;font-size:20px;font-weight:700;outline:none;">'
-    +     '<span style="font-size:18px;font-weight:700;' + subCol + '">—</span>'
-    +     '<input class="pgc-score-inp" id="fs2-' + p.id + '" type="number" min="0" max="20" value="' + (pron ? pron.s2 : '') + '" placeholder="0" style="' + inputBg + 'width:44px;height:44px;border-radius:10px;text-align:center;font-size:20px;font-weight:700;outline:none;">'
-    +   '</div>'
-    +   '<div style="text-align:center;flex:1;">'
-    +     '<div style="font-size:22px;margin-bottom:4px;">' + (p.f2 || '⚽') + '</div>'
-    +     '<div style="font-size:13px;font-weight:600;' + textCol + '">' + p.e2 + '</div>'
+    // Teams + score inputs — grilla 2×2 con stepper iOS
+    + '<div class="pgc-body">'
+    +   '<div class="pgc-teams">'
+    +     '<div class="pgc-team-local"><span style="font-size:22px;">' + (p.f1 || '⚽') + '</span><span class="pgc-name-wrap" style="' + textCol + '">' + p.e1 + '</span></div>'
+    +     '<div class="pgc-team-visit"><span style="font-size:22px;">' + (p.f2 || '⚽') + '</span><span class="pgc-name-wrap" style="' + textCol + '">' + p.e2 + '</span></div>'
+    +     '<div class="pgc-stepper-local"><div class="pgc-stepper" id="stp-loc-' + p.id + '"><button class="pgc-stepper-btn fin-dec-loc" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp fin-inp-loc" id="fs1-' + p.id + '" type="number" min="0" max="20" value="' + (pron ? pron.s1 : 0) + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn fin-inc-loc" type="button">+</button></div></div>'
+    +     '<div class="pgc-stepper-visit"><div class="pgc-stepper" id="stp-vis-' + p.id + '"><button class="pgc-stepper-btn fin-dec-vis" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp fin-inp-vis" id="fs2-' + p.id + '" type="number" min="0" max="20" value="' + (pron ? pron.s2 : 0) + '" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn fin-inc-vis" type="button">+</button></div></div>'
     +   '</div>'
     + '</div>'
     // Alargue selector
@@ -2768,9 +2793,10 @@ function renderFinalMatch(p, fase, maxPts, ganadorPts, isFinal) {
 }
 
 function initBracketListeners(container) {
-  // Fase filter buttons
+  // Fase filter buttons — solo responde si está habilitada
   container.querySelectorAll('.fase-fin-btn').forEach(function(btn) {
     btn.onclick = function() {
+      if (this.dataset.habilitada === '0') return; // fase aún no disponible
       window.activeFaseFinalesFilter = this.dataset.fase;
       refreshBracket();
     };
@@ -2787,17 +2813,29 @@ function initBracketListeners(container) {
       refreshBracket();
     };
   });
+  // Wire steppers +/- de Las Finales
+  container.querySelectorAll('.bracket-match').forEach(function(card) {
+    var incLoc = card.querySelector('.fin-inc-loc');
+    var decLoc = card.querySelector('.fin-dec-loc');
+    var incVis = card.querySelector('.fin-inc-vis');
+    var decVis = card.querySelector('.fin-dec-vis');
+    if (!incLoc) return;
+    incLoc.onclick = function(){ var i=card.querySelector('.fin-inp-loc'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+    decLoc.onclick = function(){ var i=card.querySelector('.fin-inp-loc'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+    incVis.onclick = function(){ var i=card.querySelector('.fin-inp-vis'); i.value=Math.min(20,parseInt(i.value||0)+1); };
+    decVis.onclick = function(){ var i=card.querySelector('.fin-inp-vis'); i.value=Math.max(0,parseInt(i.value||0)-1); };
+  });
   // Save buttons
   container.querySelectorAll('.finals-save-btn').forEach(function(btn) {
     var pid = btn.dataset.pid;
     var fase = btn.dataset.fase;
     btn.onclick = function() {
-      var s1el = document.getElementById('fs1-' + pid);
-      var s2el = document.getElementById('fs2-' + pid);
+      var card = btn.closest('.bracket-match');
+      var s1el = card ? card.querySelector('.fin-inp-loc') : document.getElementById('fs1-' + pid);
+      var s2el = card ? card.querySelector('.fin-inp-vis') : document.getElementById('fs2-' + pid);
       if (!s1el || !s2el) { alert('Error: campos no encontrados'); return; }
-if (s1el.value === '') s1el.value = '0';
-if (s2el.value === '') s2el.value = '0';
-      var s1 = s1el.value, s2 = s2el.value;
+      var s1 = s1el.value || '0';
+      var s2 = s2el.value || '0';
       var faseConf = fasesFinalesConfig.find(function(f){ return f.key === fase; });
       var maxPts = faseConf ? parseInt(faseConf.pts) : 40;
       var partidos = fixtureFinales[fase] || [];
@@ -2813,6 +2851,8 @@ if (s2el.value === '') s2el.value = '0';
         onConfirm: function() {
           if (!pronosticoBracket[_fase]) pronosticoBracket[_fase] = {};
           pronosticoBracket[_fase][_pid] = { s1: parseInt(_s1), s2: parseInt(_s2), avanza: _avanza };
+          // ── API_PUT_PAR en Finales ──
+          guardarPronosticoPartido({ idPartidoVelneo: _pid, s1: _s1, s2: _s2 });
           refreshBracket();
         }
       });
@@ -3150,16 +3190,14 @@ function renderFinalesFasePanel(key) {
       '<div class="pgc-header">' +
         '<span class="pgc-info">' + p.fecha + ' · ' + p.hora + ' · ' + p.estadio + '</span>' +
         '<div style="display:flex;align-items:center;gap:6px;">' +
-        '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">' + faseConf.pts + '</span>' +
+        '<span class="badge-pts-naranja">' + faseConf.pts + '</span>' +
         '<span class="' + (saved ? 'pgc-badge-pending' : 'pgc-badge-open') + '">' + (saved ? '✓' : 'Abierta') + '</span>' +
         '</div>' +
       '</div>' +
       '<div class="pgc-body">' +
         '<div class="pgc-teams">' +
-          '<div class="pgc-team pgc-team-local"><div class="pgc-team-inner"><span class="pgc-flag" style="font-size:13px;background:#f2f2f7;border-radius:8px;padding:4px 6px;font-weight:600;color:#3c3c43;">' + p.e1 + '</span></div></div>' +
-        '<div class="pgc-teams">' +
-          '<div class="pgc-team-local"><span class="pgc-flag" style="font-size:13px;background:#f2f2f7;border-radius:8px;padding:4px 6px;font-weight:600;color:#3c3c43;">' + p.e1 + '</span></div>' +
-          '<div class="pgc-team-visit"><span class="pgc-flag" style="font-size:13px;background:#f2f2f7;border-radius:8px;padding:4px 6px;font-weight:600;color:#3c3c43;">' + p.e2 + '</span></div>' +
+          '<div class="pgc-team-local"><span class="pgc-flag-label">' + p.e1 + '</span></div>' +
+          '<div class="pgc-team-visit"><span class="pgc-flag-label">' + p.e2 + '</span></div>' +
           '<div class="pgc-stepper-local"><input class="pgc-score-inp" id="sf1-' + p.id + '" type="number" min="0" max="20" value="' + (saved ? saved.s1 : '') + '" placeholder="0"></div>' +
           '<div class="pgc-stepper-visit"><input class="pgc-score-inp" id="sf2-' + p.id + '" type="number" min="0" max="20" value="' + (saved ? saved.s2 : '') + '" placeholder="0"></div>' +
         '</div>' +
@@ -3486,7 +3524,7 @@ function renderGruposTabla() {
   return '<div class="tabla-grupo-selector">' + btns + '</div>' +
     '<div style="margin:0 16px 6px;display:flex;gap:8px;align-items:center;">' +
       '<div style="width:10px;height:10px;border-radius:50%;background:#34c759;flex-shrink:0;"></div>' +
-      '<span style="font-size:11px;color:#8e8e93;">Clasifica a Las Finales</span>' +
+      '<span class="txt-gris-sm">Clasifica a Las Finales</span>' +
     '</div>' +
     '<div class="pos-table">' +
       '<div class="pos-table-header">' +
@@ -3585,7 +3623,7 @@ function addGrupoMatchCards(k) {
       + '<div class="pgc-header"><span class="pgc-info">'+p.fecha+' - '+p.hora+' - '+p.estadio+'</span>'
       + '<div style="display:flex;align-items:center;gap:5px;">'
       + '<span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;'+vs+'">'+v+'</span>'
-      + '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">20 pts</span>'
+      + '<span class="badge-pts-naranja">20 pts</span>'
       + '</div></div>'
       + '<div class="pgc-body">'
       + '<div class="pgc-teams">'
@@ -3661,7 +3699,7 @@ function renderGrupoStandings(k) {
   panel.innerHTML =
     '<div style="margin:0 16px 6px;display:flex;gap:8px;align-items:center;">' +
       '<div style="width:10px;height:10px;border-radius:50%;background:#34c759;flex-shrink:0;"></div>' +
-      '<span style="font-size:11px;color:#8e8e93;">Clasifica a Las Finales</span>' +
+      '<span class="txt-gris-sm">Clasifica a Las Finales</span>' +
     '</div>' +
     '<div class="pos-table" style="margin:0 16px 16px;">' +
       '<div class="pos-table-header">' +
@@ -3692,7 +3730,7 @@ function renderGrupoFasePanel(k) {
       '<div class="pgc-header">' +
         '<span class="pgc-info">' + p.fecha + ' · ' + p.hora + ' · ' + p.estadio + '</span>' +
         '<div style="display:flex;align-items:center;gap:6px;">' +
-        '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">20 pts</span>' +
+        '<span class="badge-pts-naranja">20 pts</span>' +
         '<span class="' + (saved ? 'pgc-badge-pending' : 'pgc-badge-open') + '">' + (saved ? '✓' : 'Abierta') + '</span>' +
         '</div>' +
       '</div>' +
@@ -3849,13 +3887,12 @@ function goTo(screenId) {
 
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(screenId).classList.add('active');
-  // En home el scroll es .home-scroll, en el resto es .screen-content
-  var scrollEl = screenId === 's-home'
-    ? document.querySelector('.home-scroll')
-    : document.querySelector('.screen-content');
+  var scrollEl = document.getElementById('app-content-main');
   if (scrollEl) scrollEl.scrollTop = 0;
 
   var isAuth = (screenId === 's-login' || screenId === 's-cuentas');
+
+  // scroll bloqueado por arquitectura — app-content no scrollea en auth
 
   // Acciones específicas por pantalla
   if (screenId === 's-home') {
@@ -3884,7 +3921,7 @@ function goTo(screenId) {
   // Sidebar y top-bar (tablet/desktop)
   var sidebar = document.getElementById('sidebar');
   var topBar = document.getElementById('top-bar');
-  var appLayout = document.getElementById('app-layout');
+  var appLayout = document.getElementById('app-content-col') || document.querySelector('.app-content-col');
   if (sidebar) sidebar.style.display = isAuth ? 'none' : '';
   if (topBar)  topBar.style.display  = isAuth ? 'none' : '';
   if (appLayout) {
@@ -5551,6 +5588,12 @@ function simActualizar() {
   } else {
     cargarPartidosYResumen();
   }
+
+  // Refrescar bracket si Las Finales está activa
+  var tabFinales = document.getElementById('htab-content-finales');
+  if (tabFinales && tabFinales.style.display !== 'none') {
+    refreshBracket();
+  }
 }
 
 // ── Cargar fifa_ptd y renderizar ─────────────────────────────
@@ -5588,7 +5631,7 @@ function buildCardApostable(p, badgeHTML, containerEl) {
   }
   var s1init = pronGuardado ? pronGuardado.s1 : 0;
   var s2init = pronGuardado ? pronGuardado.s2 : 0;
-  var ptsTag = '<span style="font-size:11px;font-weight:700;color:#ff9500;background:#fff9ec;border:1px solid #ffd080;border-radius:20px;padding:3px 8px;">20 pts</span>';
+  var ptsTag = '<span class="badge-pts-naranja">20 pts</span>';
 
   var card = document.createElement('div');
   card.className = 'match-card';

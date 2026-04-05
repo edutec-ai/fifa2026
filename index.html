@@ -205,8 +205,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
   /* Ocultar el home-header botones PDF/Home (ya están en top-bar) */
   .home-header-actions { display: none; }
-  /* En desktop el sticky no aplica — el layout ya es fijo */
-  .home-sticky { position: static; }
 
   /* Grid 2 columnas para match-cards en desktop */
   .match-cards-grid {
@@ -288,8 +286,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
 /* ════ TORRE PARTIDOS — Home ════ */
 .home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; box-sizing: border-box; width: 100%; overflow: hidden; }
-.home-sticky { position: relative; z-index: 200; transition: box-shadow 0.2s; }
-.home-sticky.pinned { position: sticky; top: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.18); }
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
 .home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -990,7 +986,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
         <!-- ═══ TORRE PARTIDOS ═══ -->
         <div class="screen" id="s-home">
-          <div class="home-sticky">
           <div class="home-header">
             <div class="home-greeting">Buenas tardes</div>
             <div class="home-name" id="home-name">Carlos Rodríguez 👋</div>
@@ -1025,7 +1020,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
             <button class="home-tab" id="htab-grupos" onclick="switchHomeTab('grupos')">Grupos</button>
             <button class="home-tab" id="htab-finales" onclick="switchHomeTab('finales')">Las Finales</button>
           </div>
-          </div><!-- /home-sticky -->
 
           <!-- TAB: MI RESUMEN -->
           <div id="htab-content-resumen">
@@ -2115,19 +2109,6 @@ function consultarEstadios() {}
 // Auto-init laboratorio si ya está visible al cargar
 document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("lab-apis")) initLab();
-
-  // ── Sticky header via scroll listener (compatible iOS Safari) ──
-  var sc = document.getElementById('screen-content-main');
-  var hs = document.querySelector('.home-sticky');
-  if (sc && hs) {
-    sc.addEventListener('scroll', function() {
-      if (sc.scrollTop > 2) {
-        hs.classList.add('pinned');
-      } else {
-        hs.classList.remove('pinned');
-      }
-    }, { passive: true });
-  }
 });
 
 
@@ -3599,6 +3580,7 @@ function addGrupoMatchCards(k) {
       + '<div class="pgc-stepper-visit"><div class="pgc-stepper"><button class="pgc-stepper-btn pgc-btn-dec-vis" type="button">−</button><div class="pgc-stepper-divider"></div><input class="pgc-score-inp pgc-inp-vis" type="number" min="0" max="20" value="'+(pron?pron.s2:0)+'" readonly><div class="pgc-stepper-divider"></div><button class="pgc-stepper-btn pgc-btn-inc-vis" type="button">+</button></div></div>'
       + '</div>'
       + '<div class="pgc-time">'+(pron ? 'Check '+p.e1+' '+pron.s1+'-'+pron.s2+' '+p.e2 : 'Sin pronostico aun')+'</div></div>'
+      + '<button class="pgc-save-btn" data-pid="'+pid+'" data-grupo="'+k+'" data-e1="'+p.e1+'" data-f1="'+p.f1+'" data-e2="'+p.e2+'" data-f2="'+p.f2+'" data-j="'+p.j+'" data-fecha="'+p.fecha+'" data-hora="'+p.hora+'" data-estadio="'+p.estadio+'">' + (pron ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>'
       + '<button class="pgc-save-btn" data-pid="'+pid+'" data-grupo="'+k+'" data-e1="'+p.e1+'" data-f1="'+p.f1+'" data-e2="'+p.e2+'" data-f2="'+p.f2+'" data-j="'+p.j+'" data-fecha="'+p.fecha+'" data-hora="'+p.hora+'" data-estadio="'+p.estadio+'">' + (pron ? '✏️ Actualizar' : 'Guardar pronóstico') + '</button>'
       + '</div>';
   });

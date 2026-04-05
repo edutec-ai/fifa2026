@@ -1,6 +1,6 @@
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
-║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v90            ║
+║  LA POLLA MUNDIALISTA 2026 — ARQUITECTURA TORRES v91            ║
 ║                                                                  ║
 ║  PLANTA BAJA  ·  Login  ·  Selección de cuenta  ·  goTo()       ║
 ║  TORRE PARTIDOS ·  Home  ·  Grupos  ·  Finales/Bracket          ║
@@ -9,12 +9,12 @@
 ║  TORRE REGLAS  ·  Acordeón  ·  Taíno (AI)                       ║
 ║  BACKOFFICE    ·  Lab APIs  ·  Simulador de fecha               ║
 ║                                                                  ║
-║  NOVEDADES v78-v82:                                             ║
-║  [NEW-1]  Grilla 2×2 en todos los steppers de pronóstico        ║
-║  [NEW-2]  Header home sticky — layout flex propio de s-home     ║
-║  [FIX-1]  Overflow móvil — home-header y pgc-teams              ║
-║  [FIX-2]  Botón "Actualizar" duplicado en partidos grupos       ║
-║  [FIX-3]  scrollTop diferenciado home-scroll vs screen-content  ║
+║  NOVEDADES v91:                                                  ║
+║  [NEW-1]  v90: Refactor base UI — app-shell/app-content         ║
+║  [NEW-2]  Sesión persistida en sessionStorage — survives lock   ║
+║  [FIX-1]  Login autoajustable — ocupa 100dvh, sin gris arriba  ║
+║  [FIX-2]  Header sticky solo en torres (no en login/cuentas)   ║
+║  [FIX-3]  s-cuentas con scroll habilitado                      ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 <!DOCTYPE html>
@@ -97,17 +97,30 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 60px; /* altura tab-bar */
+  padding-bottom: 0;
 }
 .app-content::-webkit-scrollbar { display: none; }
+/* Padding inferior cuando tab-bar está visible */
+.app-content.with-tabbar { padding-bottom: 60px; }
 
 /* Pantallas: ocultas por defecto */
 .screen { display: none; }
 .screen.active { display: block; }
 
-/* Pantallas de auth: ocupan toda la altura del app-content */
+/* Pantallas de auth: ocupan toda la altura — scroll habilitado */
 #s-login.active, #s-cuentas.active {
-  min-height: calc(100dvh - 60px);
+  min-height: 100dvh;
+}
+/* Login: fondo llena todo desde arriba */
+.login-bg {
+  min-height: 100dvh;
+  background: var(--grad-login);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  box-sizing: border-box;
 }
 
 /* ════ Tab Bar (móvil) ════ */
@@ -279,7 +292,7 @@ body {
 }
 
 /* ════ PLANTA BAJA — Login ════ */
-.login-bg { height: 100%; min-height: 100dvh; background: var(--grad-login); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; overflow-y: auto; }
+.login-field::placeholder { color: rgba(255,255,255,0.75); }
 .login-logo { width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.25); }
 .login-title { font-size: 26px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 6px; }
 .login-sub { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 40px; }
@@ -3879,7 +3892,7 @@ var sidebarNavMap = {
 };
 
 function goTo(screenId) {
-  // ── [FIX] Validar sesión — sin login no se navega ──
+  // Validar sesión — sin login no se navega
   var authScreens = ['s-login', 's-cuentas'];
   if (authScreens.indexOf(screenId) === -1 && !sessionJugador) {
     screenId = 's-login';
@@ -3892,7 +3905,14 @@ function goTo(screenId) {
 
   var isAuth = (screenId === 's-login' || screenId === 's-cuentas');
 
-  // scroll bloqueado por arquitectura — app-content no scrollea en auth
+  // Tab bar visible solo fuera de auth — padding-bottom en app-content según estado
+  var tb = document.getElementById('tab-bar');
+  var ac = document.getElementById('app-content-main');
+  if (tb) tb.style.display = isAuth ? 'none' : 'flex';
+  if (ac) {
+    if (isAuth) { ac.classList.remove('with-tabbar'); }
+    else        { ac.classList.add('with-tabbar'); }
+  }
 
   // Acciones específicas por pantalla
   if (screenId === 's-home') {
@@ -3903,9 +3923,7 @@ function goTo(screenId) {
     initSimulador();
   }
 
-  // Tab bar (móvil)
-  var tb = document.getElementById('tab-bar');
-  tb.style.display = isAuth ? 'none' : 'flex';
+  // Tab bar — activar tab correspondiente
   document.querySelectorAll('.tab-item').forEach(function(t){
     t.classList.remove('active');
     t.removeAttribute('aria-current');
@@ -4187,7 +4205,15 @@ function toggleCatAcc(id) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // ── Precargar usuario recordado ──────────────────────────────
+  // Si hay sesión guardada, ir directo al home
+  if (sessionJugador) {
+    // Restaurar UI del jugador sin pasar por cuentas
+    selectCuenta(sessionJugador.name, 'id:'+sessionJugador.id, sessionJugador.ptr || 0, '#f0a500',
+      (sessionJugador.name || 'X').split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().substring(0,2));
+    goTo('s-home');
+  }
+
+  // Precargar usuario recordado
   (function() {
     var recordar = localStorage.getItem('siriin_recordar');
     var usuario  = localStorage.getItem('siriin_usuario');
@@ -5156,6 +5182,8 @@ function fetchJugadores(perfil) {
           item.onclick = function() {
             // ── [NEW-1] Guardar jugador activo en sesión ──
             sessionJugador = c;
+            // Persistir sesión — sobrevive bloqueo de pantalla en iOS
+            try { sessionStorage.setItem('polla_jugador', JSON.stringify(c)); } catch(e) {}
             selectCuenta(c.name, 'id:'+c.id, pts, color, iniciales);
             // ── [NEW-6] Pre-cargar datos existentes del jugador (especiales) ──
             precargarDatosJugador(c);
@@ -5192,6 +5220,16 @@ var equiposIdToBandera = {};
 // ╚══════════════════════════════════════════════════════
 // jugador activo: { id, name, reu, usr, grp_a_clf1 ... cam, sub, ter, cua }
 var sessionJugador = null;
+
+// Restaurar sesión desde sessionStorage — sobrevive bloqueo de pantalla iOS
+(function() {
+  try {
+    var saved = sessionStorage.getItem('polla_jugador');
+    if (saved) {
+      sessionJugador = JSON.parse(saved);
+    }
+  } catch(e) {}
+})();
 
 // ╔══════════════════════════════════════════════════════
 // ║ GLOBAL — Toast de notificación
@@ -5477,9 +5515,10 @@ function volverAlLogin() {
   // Ocultar error previo
   if (errEl) errEl.style.display = 'none';
 
-  // ── Resetear sesión completa ──
+  // Resetear sesión completa
   sessionJugador   = null;
   sessionPerfil    = null;
+  try { sessionStorage.removeItem('polla_jugador'); } catch(e) {}
   pronosticoGrupos = {};
   grupoSel         = {};
   finalistasSel    = { 'drop-campeon': null, 'drop-sub': null, 'drop-3ro': null, 'drop-4to': null };

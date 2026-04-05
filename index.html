@@ -285,10 +285,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 .btn-secondary { width: 100%; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 14px; padding: 15px; font-size: 17px; font-weight: 500; cursor: pointer; }
 
 /* ════ TORRE PARTIDOS — Home ════ */
-.home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; }
+.home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; box-sizing: border-box; width: 100%; overflow: hidden; }
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; }
+.home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Header universal torres ── */
 .torre-header { background: var(--grad-marca); padding: 16px 20px 20px; color: #fff; }
@@ -984,8 +984,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
           <div class="home-header">
             <div class="home-greeting">Buenas tardes</div>
             <div class="home-name" id="home-name">Carlos Rodríguez 👋</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;" class="home-header-actions-row">
-              <div class="home-cuenta-tag" id="home-cuenta-tag" style="margin-bottom:0;">📋 Cuenta 1 · @carlos1</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;min-width:0;width:100%;" class="home-header-actions-row">
+              <div class="home-cuenta-tag" id="home-cuenta-tag" style="margin-bottom:0;flex-shrink:1;">📋 Cuenta 1 · @carlos1</div>
               <div class="home-header-actions" style="display:flex;gap:6px;">
                 
                 <button onclick="generarExtractoPDF()" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">

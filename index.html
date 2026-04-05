@@ -205,8 +205,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
   /* Ocultar el home-header botones PDF/Home (ya están en top-bar) */
   .home-header-actions { display: none; }
-  /* En desktop el sticky no aplica — el layout ya es fijo */
-  .home-sticky { position: static; }
+  /* En desktop s-home usa el layout normal del screen-content */
+  #s-home { display: block; height: auto; overflow: visible; }
+  .home-scroll { overflow: visible; padding-bottom: 0; }
 
   /* Grid 2 columnas para match-cards en desktop */
   .match-cards-grid {
@@ -288,8 +289,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
 /* ════ TORRE PARTIDOS — Home ════ */
 .home-header { background: var(--grad-marca); padding: 16px 20px 28px; color: #fff; box-sizing: border-box; width: 100%; overflow: hidden; }
-.home-sticky { position: relative; z-index: 200; transition: box-shadow 0.2s; }
-.home-sticky.pinned { position: sticky; top: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.18); }
+/* ── s-home: layout propio — sticky arriba, scroll abajo ── */
+#s-home { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.home-sticky { flex-shrink: 0; z-index: 200; }
+.home-scroll { flex: 1; overflow-y: auto; padding-bottom: 70px; }
+.home-scroll::-webkit-scrollbar { display: none; }
 .home-greeting { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
 .home-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
 .home-cuenta-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 14px; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1027,6 +1031,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
           </div>
           </div><!-- /home-sticky -->
 
+          <!-- Contenido scrolleable -->
+          <div class="home-scroll">
+
           <!-- TAB: MI RESUMEN -->
           <div id="htab-content-resumen">
             <div class="section-title" id="resumen-hoy-title">Partidos de hoy</div>
@@ -1045,7 +1052,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro
 
           <!-- TAB: LAS FINALES -->
           <div id="htab-content-finales" style="display:none;padding-bottom:100px;"></div>
-        </div>
+
+          </div><!-- /home-scroll -->
+        </div><!-- /s-home -->
 
         <!-- REGLAS -->
 
@@ -2115,19 +2124,6 @@ function consultarEstadios() {}
 // Auto-init laboratorio si ya está visible al cargar
 document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("lab-apis")) initLab();
-
-  // ── Sticky header via scroll listener (compatible iOS Safari) ──
-  var sc = document.getElementById('screen-content-main');
-  var hs = document.querySelector('.home-sticky');
-  if (sc && hs) {
-    sc.addEventListener('scroll', function() {
-      if (sc.scrollTop > 2) {
-        hs.classList.add('pinned');
-      } else {
-        hs.classList.remove('pinned');
-      }
-    }, { passive: true });
-  }
 });
 
 
@@ -3853,7 +3849,11 @@ function goTo(screenId) {
 
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(screenId).classList.add('active');
-  document.querySelector('.screen-content').scrollTop = 0;
+  // En home el scroll es .home-scroll, en el resto es .screen-content
+  var scrollEl = screenId === 's-home'
+    ? document.querySelector('.home-scroll')
+    : document.querySelector('.screen-content');
+  if (scrollEl) scrollEl.scrollTop = 0;
 
   var isAuth = (screenId === 's-login' || screenId === 's-cuentas');
 

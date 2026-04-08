@@ -878,24 +878,25 @@
                 <button onclick="tainoPreguntar('Que son los microjuegos?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Microjuegos</button>
                 <button onclick="tainoPreguntar('Cuantos equipos hay en el Mundial 2026?')" style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:20px;padding:6px 12px;font-size:12px;color:#4f46e5;cursor:pointer;font-weight:600;">Mundial</button>
               </div>
-              <!-- Input area — contenida con padding explícito -->
-              <div style="padding:0 16px;max-width:100%;box-sizing:border-box;">
-                <div style="display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;margin-bottom:8px;">
-                  <input id="taino-input" type="text" placeholder="Preguntale a Taino..."
-                    aria-label="Pregunta para Taíno, el asistente de reglas"
-                    style="flex:1;min-width:0;width:0;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;box-sizing:border-box;"
-                    onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
-                    maxlength="200">
+              <!-- Input area -->
+              <div style="padding:0 16px;box-sizing:border-box;">
+                <!-- Fila 1: input solo, ancho completo -->
+                <input id="taino-input" type="text" placeholder="Preguntale a Taino..."
+                  aria-label="Pregunta para Taíno"
+                  style="display:block;width:100%;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;box-sizing:border-box;margin-bottom:8px;"
+                  onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
+                  maxlength="200">
+                <!-- Fila 2: dos botones iguales -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                   <button id="taino-btn" onclick="tainoEnviar()" type="button"
-                    aria-label="Enviar"
-                    style="background:#27ae60;color:#fff;border:none;border-radius:12px;width:44px;min-width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;">
-                    &gt;
+                    style="background:#27ae60;color:#fff;border:none;border-radius:12px;padding:11px 8px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;">
+                    📝 Respuesta texto
+                  </button>
+                  <button id="taino-voz-btn" onclick="tainoEnviarConVoz()" type="button"
+                    style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:11px 8px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;">
+                    🔊 Respuesta audio
                   </button>
                 </div>
-                <button id="taino-voz-btn" onclick="tainoEnviarConVoz()" type="button"
-                  style="width:100%;background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;">
-                  🔊 Respuesta en audio
-                </button>
               </div>
               <div style="font-size:10px;color:#c7c7cc;margin-top:8px;text-align:center;padding:0 16px;">Powered by Claude · Solo responde sobre reglas y el Mundial 2026</div>
             </div>

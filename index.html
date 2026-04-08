@@ -534,12 +534,14 @@
     }
 
     /* ── TORRE REGLAS ── */
-    .acc-btn { width:100%; display:flex; justify-content:space-between; align-items:center; background:var(--fondo-card, #fff); border:0.5px solid rgba(0,0,0,0.08); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; text-align:left; }
-    .acc-btn.open { border-radius:14px 14px 0 0; border-bottom-color:transparent; margin-bottom:0; }
+    .acc-btn { width:100%; display:flex; justify-content:space-between; align-items:center; background:#fff; border:0.5px solid rgba(0,0,0,0.08); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; text-align:left; transition: background 0.15s, border-color 0.15s; }
+    .acc-btn.open { background:#e8f5e9; border-color:#a5d6a7; border-radius:14px 14px 0 0; border-bottom-color:transparent; margin-bottom:0; }
+    .acc-btn.open .acc-title { color:#2e7d32; }
+    .acc-btn.open .acc-arrow { color:#43a047; }
     .acc-title { font-size:15px; font-weight:600; color:#000; }
     .acc-arrow { font-size:12px; color:#8e8e93; transition:transform 0.2s; }
     .acc-arrow.open { transform:rotate(180deg); }
-    .acc-body { background:#fff; border:0.5px solid rgba(0,0,0,0.08); border-top:none; border-radius:0 0 14px 14px; padding:0 0 4px; margin-bottom:8px; display:none; }
+    .acc-body { background:#fff; border:0.5px solid #a5d6a7; border-top:none; border-radius:0 0 14px 14px; padding:0 0 4px; margin-bottom:8px; display:none; }
     .acc-body.open { display:block; }
     .acc-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:0.5px solid rgba(0,0,0,0.06); }
     .acc-row:last-child { border-bottom:none; }
@@ -857,16 +859,17 @@
         <!-- TORRE REGLAS — acordeón limpio + botón Taíno -->
         <div class="screen-torre" id="s-reglas">
           <div class="lienzo active" id="lienzo-reglas-acordeon">
-            <div id="reglas-accordion"></div>
-            <!-- Botón para abrir modal de Taíno -->
-            <div style="padding:20px 0 80px;border-top:0.5px solid rgba(0,0,0,0.08);margin-top:16px;">
+            <!-- Botón Taíno — siempre visible arriba -->
+            <div style="padding:0 0 12px;">
               <button onclick="abrirTaino()" type="button"
-                style="width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;border:none;border-radius:16px;padding:16px 20px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 12px rgba(46,204,113,0.3);">
-                <span style="font-size:22px;">🐦</span>
+                style="width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;border:none;border-radius:16px;padding:14px 20px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 12px rgba(46,204,113,0.3);">
+                <span style="font-size:20px;">🐦</span>
                 Asistente Taíno
               </button>
-              <div style="font-size:11px;color:#8e8e93;text-align:center;margin-top:8px;">Preguntale a Taíno sobre las reglas o el Mundial 2026</div>
+              <div style="font-size:11px;color:#8e8e93;text-align:center;margin-top:6px;">Preguntale a Taíno sobre las reglas o el Mundial 2026</div>
             </div>
+            <!-- Acordeones de reglas -->
+            <div id="reglas-accordion"></div>
           </div>
         </div>
 

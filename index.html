@@ -49,13 +49,51 @@
     /* ① Header — NUNCA scrollea */
     .torres-header {
       flex-shrink: 0;
-      background: var(--glass-bg); backdrop-filter: var(--glass-blur);
-      border-bottom: 0.5px solid rgba(0,0,0,0.1);
-      padding: 12px 16px; display: flex; align-items: center;
-      justify-content: space-between; min-height: 56px;
+      background: linear-gradient(135deg, var(--color-azul) 0%, var(--color-rojo) 100%);
+      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 72px; gap: 12px;
     }
-    .torres-header-title { font-size: 17px; font-weight: 700; color: var(--texto-primario); }
-    .torres-header-sub   { font-size: 11px; color: var(--texto-terciario); margin-top: 2px; }
+    /* Lado izquierdo — jugador */
+    .th-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .th-saludo { font-size: 12px; color: rgba(255,255,255,0.75); font-weight: 400; }
+    .th-nombre { font-size: 20px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .th-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px; padding: 3px 10px 3px 8px;
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.92);
+      margin-top: 4px; max-width: fit-content;
+      animation: chipBlink 2.4s ease-in-out infinite;
+    }
+    .th-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: #34c759; flex-shrink: 0; }
+    @keyframes chipBlink {
+      0%, 100% { border-color: rgba(255,255,255,0.28); box-shadow: none; }
+      50%       { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+    }
+    /* Lado derecho — torre + acciones */
+    .th-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .th-torre-nombre { font-size: 18px; font-weight: 800; color: #fff; text-align: right; }
+    .th-actions { display: flex; align-items: center; gap: 6px; }
+    .th-btn {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 12px; padding: 7px 14px;
+      font-size: 14px; font-weight: 600; color: #fff;
+      cursor: pointer; white-space: nowrap; transition: background 0.15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .th-btn:active { background: rgba(255,255,255,0.32); }
+    .th-btn-icon { font-size: 18px; }
+    /* torres-header-title ahora es th-torre-nombre en th-right */
+    /* Stats row en Mi resumen */
+    .home-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 12px 16px 8px; }
+    .home-stat { background: #fff; border-radius: 12px; padding: 10px 8px; text-align: center; border: 0.5px solid rgba(0,0,0,0.08); }
+    .home-stat-num { font-size: 20px; font-weight: 700; color: #000; }
+    .home-stat-lbl { font-size: 10px; color: #8e8e93; margin-top: 2px; }
+    .home-stat-alert { background: #ff3b30; border-color: #ff3b30; }
+    .home-stat-alert .home-stat-num, .home-stat-alert .home-stat-lbl { color: #fff; }
+    .home-stat-orange { background: #ff9500; border-color: #ff9500; }
+    .home-stat-orange .home-stat-num, .home-stat-orange .home-stat-lbl { color: #fff; }
 
     /* ② Menu bar — NUNCA scrollea */
     /*    Vive entre header y torres-content            */
@@ -236,12 +274,167 @@
     .pgc-flag { font-size:20px; flex-shrink:0; }
     .pgc-name-wrap { font-size:12px; font-weight:600; color:#000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px; }
     .pgc-score-area { display:flex; align-items:center; gap:6px; }
-    .pgc-score-inp { width:40px; height:36px; border-radius:8px; border:1.5px solid #e5e5ea; text-align:center; font-size:18px; font-weight:700; background:#f2f2f7; color:#000; outline:none; }
-    .pgc-score-inp:focus { border-color:#007aff; background:#e8f3ff; }
-    .esp-finales-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    @media (max-width: 480px) { .esp-finales-grid { grid-template-columns:1fr; } }
+    /* ── Stepper iOS ── */
+    .pgc-stepper { display:flex; align-items:center; background:#fff; border:1.5px solid #e5e5ea; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.07); }
+    .pgc-stepper-btn { width:36px; height:42px; border:none; background:transparent; color:#1c1c1e; font-size:20px; font-weight:300; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; line-height:1; flex-shrink:0; }
+    .pgc-stepper-btn:active { background:#f2f2f7; }
+    .pgc-stepper-divider { width:1px; height:26px; background:#e5e5ea; flex-shrink:0; }
+    .pgc-score-inp { width:40px; height:42px; border:none; border-left:1px solid #e5e5ea; border-right:1px solid #e5e5ea; text-align:center; font-size:17px; font-weight:600; background:#fff; color:#1c1c1e; outline:none; -moz-appearance:textfield; flex-shrink:0; }
+    .pgc-score-inp::-webkit-inner-spin-button, .pgc-score-inp::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+    .pgc-sep { display:none; }
+    .pgc-time { font-size:11px; color:#8e8e93; text-align:center; margin-top:4px; }
+    .pgc-save-btn { width:calc(100% - 28px); margin:0 14px 12px; background:#007aff; color:#fff; border:none; border-radius:10px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .pgc-saved { display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 14px 10px; font-size:12px; color:#34c759; font-weight:600; }
+    /* ── Lista de partidos (plc) ── */
+    .partido-list-card { background:#fff; margin:0 16px 10px; border-radius:16px; padding:14px 16px; border:0.5px solid rgba(0,0,0,0.08); cursor:pointer; }
+    .plc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .plc-info { font-size:11px; color:#8e8e93; }
+    .plc-teams { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .plc-team { display:flex; align-items:center; gap:6px; flex:1; }
+    .plc-team.right { justify-content:flex-end; }
+    .plc-flag { font-size:20px; }
+    .plc-name { font-size:14px; font-weight:600; color:#000; }
+    .plc-score { font-size:16px; font-weight:700; color:#000; padding:0 8px; }
+    .plc-vs { font-size:12px; color:#c7c7cc; padding:0 8px; }
+    .plc-footer { display:flex; justify-content:space-between; align-items:center; }
+    .plc-pick { font-size:12px; color:#8e8e93; }
+    .plc-pick.done { color:#007aff; font-weight:600; }
+    .plc-pts { font-size:12px; color:#ff9500; font-weight:600; }
+    /* ── Tabla de posiciones de grupos ── */
+    .pos-table { margin:0 16px; background:#fff; border-radius:14px; overflow:hidden; border:0.5px solid rgba(0,0,0,0.08); }
+    .pos-table-header { display:grid; grid-template-columns:28px 1fr 28px 22px 22px 22px 28px 28px 34px; gap:2px; padding:8px 10px; background:#f2f2f7; border-bottom:0.5px solid rgba(0,0,0,0.08); }
+    .pos-table-header span { font-size:10px; font-weight:700; color:#8e8e93; text-align:center; }
+    .pos-table-header span.left { text-align:left; }
+    .pos-row-data { display:grid; grid-template-columns:28px 1fr 28px 22px 22px 22px 28px 28px 34px; gap:2px; padding:9px 10px; border-bottom:0.5px solid rgba(0,0,0,0.06); align-items:center; }
+    .pos-row-data:last-child { border-bottom:none; }
+    .pos-row-data span { font-size:12px; color:#000; text-align:center; }
+    .pos-row-data span.team-cell { display:flex; align-items:center; gap:5px; text-align:left; }
+    .pos-row-data span.pts-cell { font-weight:800; color:#007aff; }
+    .pos-row-data span.rank-cell { font-weight:700; color:#8e8e93; }
+    .pos-row-data.qualify span.rank-cell { color:#34c759; }
 
-    /* ── TORRE ADMIN ── */
+    /* ── TORRE ESPECIALES — componentes custom ── */
+    .fin-card { background: #fff; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; border: 0.5px solid rgba(0,0,0,0.08); }
+    .fin-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .fin-card-title { font-size: 15px; font-weight: 700; color: #000; }
+    .ventana-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8e8e93; margin-bottom: 10px; }
+    .vdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .pts-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #fff9ec; color: #c05a00; border: 1px solid #ffd080; white-space: nowrap; }
+    .custom-select { position: relative; }
+    .sel-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #f2f2f7; border: 1.5px solid #e5e5ea; border-radius: 12px; font-size: 14px; font-weight: 500; color: #000; cursor: pointer; }
+    .sel-btn.has-val { background: #e8f3ff; border-color: #007aff; color: #007aff; }
+    .sel-btn.gold-val { background: #fff9ec; border-color: #ff9500; color: #c05a00; }
+    .sel-arrow { font-size: 10px; color: #8e8e93; }
+    .esp-drop { display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border-radius: 14px; border: 0.5px solid rgba(0,0,0,0.12); z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.15); max-height: 200px; overflow-y: auto; }
+    .esp-drop.open { display: block; }
+    .esp-drop-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-size: 14px; cursor: pointer; border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+    .esp-drop-item:last-child { border-bottom: none; }
+    .esp-drop-item:hover { background: #f2f2f7; }
+    .esp-drop-item.sel { background: #e8f3ff; color: #007aff; font-weight: 600; }
+    .esp-drop-item.used { cursor: not-allowed; background: #fafafa; color: #c7c7cc; }
+    .grupos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+    .grupo-btn { padding: 10px 6px; background: #fff; border: 1.5px solid #e5e5ea; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; color: #3c3c43; }
+    .grupo-btn.open { background: #007aff; border-color: #007aff; color: #fff; }
+    .grupo-btn.done { background: #e8f3ff; border-color: #007aff; color: #007aff; }
+    .grupo-panel { background: #fff; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; border: 0.5px solid rgba(0,0,0,0.08); }
+    .grupo-pts-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: #fff9ec; color: #c05a00; border: 1px solid #ffd080; white-space: nowrap; }
+    .equipo-chip { font-size: 12px; padding: 4px 10px; background: #f2f2f7; border-radius: 20px; color: #3c3c43; }
+    .pos-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .pos-lbl { font-size: 13px; font-weight: 600; color: #8e8e93; width: 28px; flex-shrink: 0; }
+
+    /* ── TORRE TABLA ── */
+    .tabla-list { padding: 8px 0 100px; }
+    .tabla-row { display: flex; align-items: center; padding: 12px 20px; gap: 12px; border-bottom: 0.5px solid rgba(0,0,0,0.06); background: #fff; }
+    .tabla-row.me { background: #e8f3ff; }
+    .rank { width: 24px; text-align: center; font-size: 15px; font-weight: 700; color: #8e8e93; flex-shrink: 0; }
+    .rank.gold { color: #ff9500; }
+    .rank.silver { color: #8e8e93; }
+    .rank.bronze { color: #c8a062; }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .tabla-info { flex: 1; }
+    .tabla-name { font-size: 15px; font-weight: 600; color: #000; }
+    .tabla-detail { font-size: 12px; color: #8e8e93; margin-top: 1px; }
+    .tabla-pts { font-size: 17px; font-weight: 700; color: #000; text-align: right; }
+    .tabla-pts-lbl { font-size: 10px; color: #8e8e93; text-align: right; }
+    /* Categorías */
+    .cat-accordion { margin: 8px 16px; background: #fff; border-radius: 14px; border: 0.5px solid #e5e5ea; overflow: hidden; }
+    .cat-acc-btn { width: 100%; display: flex; align-items: center; gap: 8px; padding: 14px 16px; background: #fff; border: none; cursor: pointer; text-align: left; }
+    .cat-acc-btn span:first-child { font-size: 14px; font-weight: 700; color: #000; flex: 1; }
+    .cat-acc-note { font-size: 11px; color: #8e8e93; font-weight: 400; }
+    .cat-acc-arrow { font-size: 11px; color: #c7c7cc; transition: transform 0.2s; }
+    .cat-acc-arrow.open { transform: rotate(180deg); color: #007aff; }
+    .cat-acc-body { border-top: 0.5px solid #f0f0f0; }
+    .cat-row { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-bottom: 0.5px solid #f5f5f5; }
+    .cat-row:last-child { border-bottom: none; }
+    .cat-row-header { background: #f9f9fb; padding: 6px 14px; }
+    .cat-row-header span:first-child { font-size: 11px; font-weight: 600; color: #8e8e93; flex: 1; padding-left: 52px; }
+    .cat-row-header span:last-child { font-size: 11px; font-weight: 600; color: #8e8e93; min-width: 40px; text-align: right; }
+    .cat-rank { font-size: 13px; font-weight: 700; color: #c7c7cc; width: 20px; text-align: center; flex-shrink: 0; }
+    .cat-rank.gold { color: #ff9500; }
+    .cat-rank.silver { color: #8e8e93; }
+    .cat-rank.bronze { color: #c8a062; }
+    .cat-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .cat-name { font-size: 13px; font-weight: 600; flex: 1; color: #1c1c1e; }
+    .cat-pts { font-size: 15px; font-weight: 800; color: #000; min-width: 40px; text-align: right; }
+    .gold-row { background: #fffdf5; }
+    .me-row { background: #f0f6ff; }
+    /* Auditoría */
+    .audit-opt { padding: 12px 16px; font-size: 14px; font-weight: 600; color: #1c1c1e; cursor: pointer; border-bottom: 0.5px solid #f0f0f0; display: flex; align-items: center; gap: 8px; }
+    .audit-opt:last-child { border-bottom: none; }
+    .audit-opt:active { background: #f5f5f5; }
+    .audit-match-card { margin: 0 16px 8px; background: #fff; border-radius: 14px; border: 0.5px solid #e5e5ea; overflow: hidden; padding: 12px 14px; }
+    .audit-match-header { font-size: 12px; font-weight: 600; color: #1c1c1e; margin-bottom: 6px; }
+    .audit-match-date { font-size: 11px; color: #8e8e93; font-weight: 400; margin-left: 6px; }
+    .audit-match-result { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .audit-prediction { font-size: 13px; color: #3c3c43; flex: 1; }
+    .audit-pts { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; white-space: nowrap; }
+    .audit-pts.earned  { background: #eafaf1; color: #1e8449; }
+    .audit-pts.partial { background: #fff9ec; color: #c05a00; }
+    .audit-pts.pending { background: #f2f2f7; color: #8e8e93; }
+    .audit-pts.none    { background: #f2f2f7; color: #c7c7cc; font-style: italic; }
+
+    /* ── TORRE ADMIN v2 — pisos y configuración ── */
+    .adm-grilla { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px 0 12px; }
+    .adm-btn { display: flex; flex-direction: column; align-items: center; padding: 14px 6px 12px; border-radius: 10px; background: #fff; color: var(--texto-terciario); font-size: 12px; font-weight: 600; border: 1px solid rgba(0,0,0,0.08); transition: all 0.15s; line-height: 1.3; }
+    .adm-btn.active { background: #1c1c1e; color: #fff; border-color: transparent; }
+    .adm-btn-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+    .adm-sub { font-size: 10px; font-weight: 400; opacity: 0.7; display: block; margin-top: 2px; }
+    .adm-btn.active .adm-sub { opacity: 0.85; }
+    .adm-lienzo { display: none; }
+    .adm-lienzo.active { display: block; }
+    .adm-card { background: #fff; border-radius: 14px; border: 0.5px solid rgba(0,0,0,0.08); margin-bottom: 10px; overflow: hidden; }
+    .adm-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+    .adm-card-title { font-size: 14px; font-weight: 700; color: var(--texto-primario); }
+    .adm-card-badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; background: rgba(0,122,255,0.1); color: var(--color-accion); }
+    .adm-card-badge.danger { background: rgba(200,16,46,0.1); color: var(--color-rojo); }
+    .adm-card-body { padding: 14px 16px; }
+    .adm-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.05); }
+    .adm-row:last-child { border-bottom: none; }
+    .adm-row-label { font-size: 13px; color: var(--texto-secundario); font-weight: 500; }
+    .adm-row-value { font-size: 13px; color: var(--color-accion); font-weight: 600; }
+    .adm-toggle { width: 44px; height: 26px; border-radius: 13px; background: #e5e5ea; border: none; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+    .adm-toggle.on { background: var(--color-verde); }
+    .adm-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .adm-toggle.on::after { transform: translateX(18px); }
+    .adm-input { border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 6px 10px; font-size: 13px; font-family: inherit; color: var(--texto-primario); background: var(--fondo-app); width: 160px; text-align: right; }
+    .adm-personalidad-grilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
+    .adm-pers-btn { display: flex; flex-direction: column; align-items: center; padding: 10px 4px 8px; border-radius: 10px; background: var(--fondo-app); border: 1.5px solid transparent; font-size: 11px; font-weight: 600; color: var(--texto-terciario); cursor: pointer; transition: all 0.15s; }
+    .adm-pers-btn.active { background: #fff; border-color: var(--color-accion); color: var(--color-accion); }
+    .adm-pers-avatar { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; }
+    .adm-puerta { background: #1c1c1e; border-radius: 16px; padding: 24px 20px; margin-top: 8px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .adm-puerta-icon { font-size: 40px; }
+    .adm-puerta-title { font-size: 18px; font-weight: 800; color: #fff; }
+    .adm-puerta-sub { font-size: 13px; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.5; }
+    .adm-puerta-btn { padding: 12px 32px; background: var(--color-accion); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; }
+    .adm-puerta-warning { font-size: 11px; color: rgba(255,255,255,0.35); text-align: center; }
+    .adm-api-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #2c2c2e; border-radius: 10px; margin-bottom: 8px; }
+    .adm-api-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .adm-api-url  { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; font-family: monospace; }
+    .adm-api-status { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+    .adm-api-status.ok  { background: rgba(0,165,80,0.2); color: #00a550; }
+    .adm-api-status.off { background: rgba(200,16,46,0.15); color: var(--color-rojo); }
+
+    /* ── TORRE ADMIN (CSS legacy) ── */
     .admin-header { background: linear-gradient(135deg, #1c1c1e 0%, #3a3a3c 100%); padding: 16px 20px 20px; color: #fff; }
     .admin-title  { font-size: 22px; font-weight: 700; }
     .admin-sub    { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
@@ -460,13 +653,29 @@
     <!-- Área principal: ①header ②menubar ③scroll ④tabbar -->
     <div class="torres-main" id="torres-main">
 
-      <!-- ① Header -->
+      <!-- ① Header universal — gradiente, jugador izq, torre+acciones der -->
       <div class="torres-header" id="torres-header">
-        <div>
-          <div class="torres-header-title" id="torres-header-title">Partidos</div>
-          <div class="torres-header-sub"   id="torres-header-sub">Mi resumen · Grupos · Las Finales</div>
+        <!-- Izquierda: saludo + nombre + chip cuenta -->
+        <div class="th-left">
+          <div class="th-saludo" id="th-saludo">Bienvenido</div>
+          <div class="th-nombre" id="th-participante">—</div>
+          <div class="th-chip">
+            <span class="th-chip-dot"></span>
+            <span id="th-cuenta">—</span>
+          </div>
         </div>
-        <button onclick="confirmarSalidaCuentas()" style="background:#f2f2f7;border:none;border-radius:10px;padding:7px 14px;font-size:13px;font-weight:600;color:#3c3c43;">🏠</button>
+        <!-- Derecha: nombre torre + botones -->
+        <div class="th-right">
+          <div class="th-torre-nombre" id="torres-header-title">Partidos</div>
+          <div class="th-actions">
+            <button class="th-btn" onclick="generarExtractoPDF()" title="Descargar PDF">
+              <span class="th-btn-icon">⬇️</span> PDF
+            </button>
+            <button class="th-btn" onclick="confirmarSalidaCuentas()" title="Inicio">
+              <span class="th-btn-icon">🏠</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- ② Menu bar — FUERA del scroll -->
@@ -493,31 +702,19 @@
       <div class="torres-content" id="torres-content">
 
         <!-- TORRE PARTIDOS -->
-        <div class="screen-torre active" id="s-home">
+        <div class="screen-torre active" id="s-partidos">
           <div class="lienzo active" id="lienzo-partidos-resumen">
             <div style="padding-bottom:80px;">
-              <div class="home-header">
-                <div class="home-greeting" id="home-greeting">Hola</div>
-                <div class="home-name" id="home-name">—</div>
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;width:100%;" class="home-header-actions-row">
-                  <div class="home-cuenta-tag" id="home-cuenta-tag">📋 Cargando...</div>
-                  <div style="display:flex;gap:6px;">
-                    <button onclick="generarExtractoPDF()"
-                      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;">
-                      <span style="font-size:13px;">⬇️</span> PDF
-                    </button>
-                    <button onclick="confirmarSalidaCuentas()"
-                      style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;">
-                      🏠
-                    </button>
-                  </div>
-                </div>
-                <div class="pts-card" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;align-items:center;">
-                  <div class="pts-item"><div class="pts-num" id="home-pts">—</div><div class="pts-lbl">Mis puntos</div></div>
-                  <div class="pts-item"><div class="pts-num" id="home-pos">—</div><div class="pts-lbl">Posición</div></div>
-                  <div class="pts-item-alert-red"><div class="pts-alert-num" id="home-pendientes">—</div><div class="pts-alert-lbl">Pendientes</div></div>
-                  <div class="pts-item-alert-orange"><div class="pts-alert-num" id="home-especiales">—</div><div class="pts-alert-lbl">Especiales</div></div>
-                </div>
+              <!-- IDs ocultos para stats — se pueblan desde JS -->
+              <span id="home-greeting" style="display:none;"></span>
+              <span id="home-name"     style="display:none;"></span>
+              <span id="home-cuenta-tag" style="display:none;"></span>
+              <!-- Stats row visible -->
+              <div class="home-stats-row">
+                <div class="home-stat"><div class="home-stat-num" id="home-pts">—</div><div class="home-stat-lbl">Mis puntos</div></div>
+                <div class="home-stat"><div class="home-stat-num" id="home-pos">—</div><div class="home-stat-lbl">Posición</div></div>
+                <div class="home-stat home-stat-alert" id="home-stat-pend"><div class="home-stat-num" id="home-pendientes">—</div><div class="home-stat-lbl">Pendientes</div></div>
+                <div class="home-stat home-stat-orange" id="home-stat-esp"><div class="home-stat-num" id="home-especiales">—</div><div class="home-stat-lbl">Especiales</div></div>
               </div>
               <div class="section-title" id="resumen-hoy-title">Partidos de hoy</div>
               <div class="match-cards-grid" id="resumen-hoy-cards">
@@ -543,12 +740,18 @@
           <div class="lienzo active" id="lienzo-especiales-ciclo1">
             <div style="padding:12px 16px 100px;">
               <!-- CICLO 1 -->
-              <div style="background:linear-gradient(135deg,#003087 0%,#1565c0 100%);border-radius:16px;padding:12px 14px 6px;margin-bottom:12px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-                  <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.5px;">CICLO 1</div>
-                  <div style="font-size:16px;font-weight:800;color:#fff;">Fase de Grupos</div>
+              <div style="background:linear-gradient(135deg,#003087 0%,#1565c0 100%);border-radius:16px;padding:12px 14px 12px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.5px;">CICLO 1</div>
+                    <div style="font-size:16px;font-weight:800;color:#fff;">Fase de Grupos</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span id="esp-estado-badge" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.3);">Sin guardar</span>
+                    <button id="btn-guardar-especiales" onclick="guardarEspeciales()" style="background:#fff;color:#007aff;border:none;border-radius:12px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">Guardar ✓</button>
+                  </div>
                 </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:10px;padding-left:2px;">Pronostica quién clasifica en cada grupo</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.6);padding-left:2px;">Pronostica quién clasifica en cada grupo</div>
               </div>
               <div class="grupos-grid" id="grupos-grid"></div>
               <div id="grupo-panel"></div>
@@ -557,20 +760,18 @@
           <div class="lienzo" id="lienzo-especiales-ciclo2">
             <div style="padding:12px 16px 100px;">
               <!-- CICLO 2 -->
-              <div style="background:linear-gradient(135deg,#7b1fa2 0%,#c8102e 100%);border-radius:16px;padding:12px 14px 6px;margin-bottom:12px;">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-                  <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.5px;">CICLO 2</div>
-                  <div style="font-size:16px;font-weight:800;color:#fff;">Fase Final</div>
+              <div style="background:linear-gradient(135deg,#7b1fa2 0%,#c8102e 100%);border-radius:16px;padding:12px 14px 12px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.5px;">CICLO 2</div>
+                    <div style="font-size:16px;font-weight:800;color:#fff;">Fase Final</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.3);">Sin guardar</span>
+                    <button onclick="guardarEspeciales()" style="background:#fff;color:#7b1fa2;border:none;border-radius:12px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">Guardar ✓</button>
+                  </div>
                 </div>
-                <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:10px;padding-left:2px;">Pronostica los finalistas del torneo</div>
-              </div>
-              <!-- Badge de estado -->
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;">
-                <span id="esp-estado-badge" style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#fff9ec;color:#c05a00;border:1px solid #ffd080;">Sin guardar</span>
-                <button id="btn-guardar-especiales" onclick="guardarEspeciales()"
-                  style="background:#007aff;color:#fff;border:none;border-radius:12px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;">
-                  Guardar ✓
-                </button>
+                <div style="font-size:12px;color:rgba(255,255,255,0.6);padding-left:2px;">Pronostica los finalistas del torneo</div>
               </div>
               <div class="esp-finales-grid">
               <div class="fin-card">
@@ -696,26 +897,174 @@
 
         <!-- TORRE ADMIN -->
         <div class="screen-torre" id="s-admin">
-          <div style="padding:0 0 80px;">
-            <div class="admin-header">
-              <div class="admin-title">⚙️ Administración</div>
-              <div class="admin-sub">Resumen del torneo · La Polla Mundialista 2026</div>
+          <div class="lienzo active" id="lienzo-admin">
+            <!-- Grilla 2×2 de pisos -->
+            <div class="adm-grilla" id="adm-grilla">
+              <button class="adm-btn active" id="admbtn-generalidades" onclick="switchAdmin('generalidades')">
+                <span class="adm-btn-icon">⚙️</span>Generalidades<span class="adm-sub">App · Taíno · Plantillas</span>
+              </button>
+              <button class="adm-btn" id="admbtn-usuarios" onclick="switchAdmin('usuarios')">
+                <span class="adm-btn-icon">👥</span>Usuarios<span class="adm-sub">Cuentas · Roles · Estado</span>
+              </button>
+              <button class="adm-btn" id="admbtn-polla" onclick="switchAdmin('polla')">
+                <span class="adm-btn-icon">🏟️</span>La Polla<span class="adm-sub">Ventana · Puntos · Reglas</span>
+              </button>
+              <button class="adm-btn" id="admbtn-backoffice" onclick="switchAdmin('backoffice')">
+                <span class="adm-btn-icon">🚪</span>Backoffice<span class="adm-sub">Puerta Secreta</span>
+              </button>
             </div>
-            <div class="admin-stats">
-              <div class="admin-stat"><div class="admin-stat-num" id="admin-stat-jugadores">—</div><div class="admin-stat-lbl">Jugadores</div></div>
-              <div class="admin-stat"><div class="admin-stat-num" id="admin-stat-apuestas">—</div><div class="admin-stat-lbl">Apuestas</div></div>
-              <div class="admin-stat"><div class="admin-stat-num" id="admin-stat-partidos">—</div><div class="admin-stat-lbl">Partidos</div></div>
-            </div>
-            <div class="admin-section-title">🏆 Podio actual</div>
-            <div class="admin-podio" id="admin-podio">
-              <div style="padding:20px;text-align:center;color:#8e8e93;font-size:13px;width:100%;">⟳ Cargando podio...</div>
-            </div>
-            <div class="admin-section-title">⚽ Últimos partidos cargados</div>
-            <div id="admin-ultimos" style="padding:0 16px 16px;">
-              <div style="padding:20px;text-align:center;color:#8e8e93;font-size:13px;">⟳ Cargando...</div>
-            </div>
-          </div>
-        </div>
+
+            <div id="adm-contenido">
+
+              <!-- PISO: GENERALIDADES -->
+              <div class="adm-lienzo active" id="admlienzo-generalidades">
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">🏷️ Identidad de la App</span>
+                    <span class="adm-card-badge">App</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Nombre de la app</span><input class="adm-input" type="text" value="La Polla Mundialista"></div>
+                    <div class="adm-row"><span class="adm-row-label">Edición</span><input class="adm-input" type="text" value="FIFA World Cup 2026"></div>
+                    <div class="adm-row"><span class="adm-row-label">Versión</span><span class="adm-row-value">v21</span></div>
+                  </div>
+                </div>
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">🤖 Asistente AI</span>
+                    <span class="adm-card-badge">Taíno</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Nombre del asistente</span><input class="adm-input" type="text" value="Taíno"></div>
+                    <div class="adm-row"><span class="adm-row-label">Activo en Reglas</span><button class="adm-toggle on" onclick="this.classList.toggle('on')"></button></div>
+                    <div class="adm-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+                      <span class="adm-row-label">Personalidad activa</span>
+                      <div class="adm-personalidad-grilla">
+                        <button class="adm-pers-btn active" onclick="selectPersonalidad(this)">
+                          <div class="adm-pers-avatar" style="background:#e8f5e9;">
+                            <svg viewBox="0 0 40 40" width="36" height="36"><circle cx="20" cy="20" r="18" fill="#00a550"/><circle cx="15" cy="18" r="2.5" fill="#fff"/><circle cx="25" cy="18" r="2.5" fill="#fff"/><path d="M14 25 Q20 30 26 25" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 16 Q20 8 30 16" stroke="#fff" stroke-width="2.5" fill="none"/></svg>
+                          </div>Parcero
+                        </button>
+                        <button class="adm-pers-btn" onclick="selectPersonalidad(this)">
+                          <div class="adm-pers-avatar" style="background:#e3f2fd;">
+                            <svg viewBox="0 0 40 40" width="36" height="36"><circle cx="20" cy="20" r="18" fill="#003087"/><circle cx="15" cy="18" r="2.5" fill="#fff"/><circle cx="25" cy="18" r="2.5" fill="#fff"/><path d="M15 25 Q20 28 25 25" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="15" cy="18" r="4" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.6"/><circle cx="25" cy="18" r="4" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.6"/></svg>
+                          </div>Experto
+                        </button>
+                        <button class="adm-pers-btn" onclick="selectPersonalidad(this)">
+                          <div class="adm-pers-avatar" style="background:#fce4ec;">
+                            <svg viewBox="0 0 40 40" width="36" height="36"><circle cx="20" cy="20" r="18" fill="#c8102e"/><circle cx="15" cy="18" r="2.5" fill="#fff"/><circle cx="25" cy="18" r="2.5" fill="#fff"/><line x1="14" y1="26" x2="26" y2="26" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                          </div>Serio
+                        </button>
+                      </div>
+                    </div>
+                    <div class="adm-row"><span class="adm-row-label">Respuesta por voz</span><button class="adm-toggle on" onclick="this.classList.toggle('on')"></button></div>
+                  </div>
+                </div>
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">🎨 Plantillas de la App</span>
+                    <span class="adm-card-badge">Personalización</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Plantilla activa</span><span class="adm-row-value">Estándar</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Modo adulto mayor</span><button class="adm-toggle" onclick="this.classList.toggle('on')"></button></div>
+                  </div>
+                </div>
+              </div><!-- /admlienzo-generalidades -->
+
+              <!-- PISO: USUARIOS -->
+              <div class="adm-lienzo" id="admlienzo-usuarios">
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">👥 Participantes activos</span>
+                    <span class="adm-card-badge">Estado</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Total participantes</span><span class="adm-row-value" id="adm-total-jugadores">—</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Total cuentas</span><span class="adm-row-value" id="adm-total-cuentas">—</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Total reuniones</span><span class="adm-row-value">—</span></div>
+                  </div>
+                </div>
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">🎰 Cuentas múltiples</span>
+                    <span class="adm-card-badge">Bingo mode</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Máx. cuentas por usuario</span><input class="adm-input" type="number" value="4" style="width:70px;"></div>
+                    <div class="adm-row"><span class="adm-row-label">Costo por cuenta extra</span><input class="adm-input" type="text" value="$ 20.000" style="width:100px;"></div>
+                  </div>
+                </div>
+              </div><!-- /admlienzo-usuarios -->
+
+              <!-- PISO: LA POLLA -->
+              <div class="adm-lienzo" id="admlienzo-polla">
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">⏱️ Ventana de apuesta</span>
+                    <span class="adm-card-badge">Activa</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Cierre antes del partido</span><input class="adm-input" type="text" value="5 min" style="width:80px;"></div>
+                    <div class="adm-row"><span class="adm-row-label">Ventana 2do tiempo</span><input class="adm-input" type="text" value="50%" style="width:80px;"></div>
+                    <div class="adm-row"><span class="adm-row-label">Permitir edición</span><button class="adm-toggle on" onclick="this.classList.toggle('on')"></button></div>
+                  </div>
+                </div>
+                <div class="adm-card">
+                  <div class="adm-card-header">
+                    <span class="adm-card-title">🏆 Puntos base (fase grupos)</span>
+                    <span class="adm-card-badge">Configuración</span>
+                  </div>
+                  <div class="adm-card-body">
+                    <div class="adm-row"><span class="adm-row-label">Ganador / Empate</span><span class="adm-row-value">6 pts</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Diferencia de goles</span><span class="adm-row-value">6 pts</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Goles exactos (c/equipo)</span><span class="adm-row-value">4 pts</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Marcador exacto</span><span class="adm-row-value">20 pts</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Clasificados orden exacto</span><span class="adm-row-value">60 pts</span></div>
+                    <div class="adm-row"><span class="adm-row-label">Campeón del torneo</span><span class="adm-row-value">720 pts</span></div>
+                  </div>
+                </div>
+              </div><!-- /admlienzo-polla -->
+
+              <!-- PISO: BACKOFFICE -->
+              <div class="adm-lienzo" id="admlienzo-backoffice">
+                <div class="adm-puerta">
+                  <div class="adm-puerta-icon">🚪</div>
+                  <div class="adm-puerta-title">Backoffice</div>
+                  <div class="adm-puerta-sub">Datacenter del complejo.<br>APIs, objetos registrados y lógica de negocio.</div>
+                  <button class="adm-puerta-btn" onclick="toggleBackoffice()">Entrar al Backoffice</button>
+                  <div class="adm-puerta-warning">⚠️ Solo para administradores con acceso autorizado</div>
+                </div>
+                <div id="backoffice-contenido" style="display:none;margin-top:12px;">
+                  <div style="font-size:10px;font-weight:700;color:#8e8e93;letter-spacing:0.5px;margin-bottom:8px;">APIs REGISTRADAS</div>
+                  <div class="adm-api-item">
+                    <div><div class="adm-api-name">Velneo · Backend</div><div class="adm-api-url">sion.cloud.a01.hysintegrar.com/fifa2026/</div></div>
+                    <span class="adm-api-status ok">● Activa</span>
+                  </div>
+                  <div class="adm-api-item">
+                    <div><div class="adm-api-name">Anthropic · Taíno</div><div class="adm-api-url">api.anthropic.com/v1/messages</div></div>
+                    <span class="adm-api-status ok">● Activa</span>
+                  </div>
+                  <div class="adm-api-item">
+                    <div><div class="adm-api-name">Cloudflare · Proxy Taíno</div><div class="adm-api-url">nameless-pine-80e6.hfhoyos.workers.dev</div></div>
+                    <span class="adm-api-status ok">● Activa</span>
+                  </div>
+                  <div style="font-size:10px;font-weight:700;color:#8e8e93;letter-spacing:0.5px;margin:16px 0 8px;">OBJETOS REGISTRADOS</div>
+                  <div class="adm-card" style="background:#2c2c2e;border-color:transparent;">
+                    <div class="adm-card-body" style="padding:12px 16px;">
+                      <div class="adm-row" style="border-color:rgba(255,255,255,0.06);"><span class="adm-row-label" style="color:rgba(255,255,255,0.6);">Torres activas</span><span class="adm-row-value">7 torres</span></div>
+                      <div class="adm-row" style="border-color:rgba(255,255,255,0.06);"><span class="adm-row-label" style="color:rgba(255,255,255,0.6);">Partidos en fixture</span><span class="adm-row-value" id="adm-total-partidos">—</span></div>
+                      <div class="adm-row" style="border-color:rgba(255,255,255,0.06);"><span class="adm-row-label" style="color:rgba(255,255,255,0.6);">Equipos registrados</span><span class="adm-row-value" id="adm-total-equipos">—</span></div>
+                      <div class="adm-row" style="border-color:none;"><span class="adm-row-label" style="color:rgba(255,255,255,0.6);">Assets binarios</span><span class="adm-row-value" style="color:#00a550;">0 — todo en código</span></div>
+                    </div>
+                  </div>
+                  <button class="adm-puerta-btn" style="margin-top:12px;background:#3a3a3c;" onclick="toggleBackoffice()">Cerrar Backoffice</button>
+                </div>
+              </div><!-- /admlienzo-backoffice -->
+
+            </div><!-- /adm-contenido -->
+          </div><!-- /lienzo-admin -->
+        </div><!-- /s-admin -->
 
         <!-- TORRE SOCIAL -->
         <div class="screen-torre" id="s-social">
@@ -744,6 +1093,11 @@
         <!-- TORRE LAB -->
         <div class="screen-torre" id="s-lab">
           <div style="padding:16px 16px 100px;">
+            <!-- BOTÓN ACTUALIZAR TODAS LAS APIS -->
+            <button onclick="labRefrescarTodo(this)"
+              style="width:100%;background:#1c1c1e;color:#fff;border:none;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:background 0.15s;">
+              <span style="font-size:18px;">⚙️</span> Actualizar todas las APIs
+            </button>
             <!-- SIMULADOR DE FECHA/HORA -->
             <div style="background:#fff;border:1px solid #e5e5ea;border-radius:14px;padding:14px 16px;margin-bottom:10px;">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
@@ -852,12 +1206,12 @@
   };
 
   var TORRES_CONFIG = {
-    'partidos':  { title: 'Partidos',   sub: 'Mi resumen · Grupos · Las Finales', screen: 's-home',       tab: 'tab-partidos',   snav: 'snav-partidos',   menu: 'menu-partidos'   },
+    'partidos':  { title: 'Partidos',   sub: 'Mi resumen · Grupos · Las Finales', screen: 's-partidos',       tab: 'tab-partidos',   snav: 'snav-partidos',   menu: 'menu-partidos'   },
     'especiales':{ title: 'Especiales', sub: 'Ciclo 1 · Ciclo 2',                 screen: 's-especiales', tab: 'tab-especiales', snav: 'snav-especiales', menu: 'menu-especiales' },
     'tabla':     { title: 'Tabla',      sub: 'General · Categorías · Auditoría',  screen: 's-tabla',      tab: 'tab-tabla',      snav: 'snav-tabla',      menu: 'menu-tabla'      },
     'reglas':    { title: 'Reglas',     sub: 'Cómo funciona la polla',            screen: 's-reglas',     tab: 'tab-reglas',     snav: 'snav-reglas',     menu: null              },
     'social':    { title: 'Social',     sub: 'Muro · Comentarios · Emojis',       screen: 's-social',     tab: 'tab-social',     snav: 'snav-social',     menu: null              },
-    'lab':       { title: '<span id="lab-gear" onclick="labRefrescarTodo(this)" style="cursor:pointer;user-select:none;" title="Refrescar todas las APIs">⚙️</span> Laboratorio APIs', sub: 'APIs · Simulador de fecha',         screen: 's-lab',        tab: 'tab-lab',        snav: 'snav-lab',        menu: null              },
+    'lab':       { title: 'Laboratorio APIs', sub: 'APIs · Simulador de fecha', screen: 's-lab', tab: 'tab-lab', snav: 'snav-lab', menu: null },
     'admin':     { title: 'Admin',      sub: 'Resumen del torneo',                screen: 's-admin',      tab: 'tab-admin',      snav: 'snav-admin',      menu: null              },
   };
 
@@ -907,13 +1261,11 @@
 
     document.getElementById('torres-content').scrollTop = 0;
 
-    document.getElementById('torres-header-title').innerHTML  = cfg.title;
-    document.getElementById('torres-header-sub').textContent   = cfg.sub;
-    // Chip jugador activo — persiste en todas las torres
-    if (sessionJugador && sessionJugador.name) {
-      var subEl = document.getElementById('torres-header-sub');
-      if (subEl) subEl.textContent = cfg.sub + ' · ' + sessionJugador.name;
-    }
+    document.getElementById('torres-header-title').innerHTML = cfg.title;
+    // torres-header-sub ya no existe — el nombre de la torre ahora va en th-right
+    // Actualizar saludo por si cambió la hora
+    var thSaludo = document.getElementById('th-saludo');
+    if (thSaludo) thSaludo.textContent = getSaludoHora();
 
     // Menu bar — activar el correcto, ocultar los demás
     document.querySelectorAll('.torre-menu').forEach(function(m) { m.classList.remove('active'); });
@@ -956,6 +1308,9 @@
   var grupoSel        = {};
   var pronosticoGrupos = {};
   var finalistasSel   = { 'drop-campeon': null, 'drop-sub': null, 'drop-3ro': null, 'drop-4to': null };
+  var finalistasDrops = ['drop-campeon','drop-sub','drop-3ro','drop-4to'];
+  var activeGrupo     = null;
+  var openDropId      = null;
   var activeGrupoStandings = null;
   var equiposIdToNombre  = {};
   var equiposNombreToId  = {};
@@ -1007,10 +1362,10 @@
           + '<tr><td style="' + tdL + '">Dif. de goles</td><td style="' + td + '">6</td><td style="' + td + '">12</td><td style="' + td + '">18</td><td style="' + td + '">24</td><td style="' + td + '">30</td><td style="' + td + '">30</td><td style="' + td + '">60</td></tr>'
           + '<tr><td style="' + tdL + '">Goles equipo 1</td><td style="' + td + '">4</td><td style="' + td + '">8</td><td style="' + td + '">12</td><td style="' + td + '">16</td><td style="' + td + '">20</td><td style="' + td + '">20</td><td style="' + td + '">40</td></tr>'
           + '<tr><td style="' + tdL + '">Goles equipo 2</td><td style="' + td + '">4</td><td style="' + td + '">8</td><td style="' + td + '">12</td><td style="' + td + '">16</td><td style="' + td + '">20</td><td style="' + td + '">20</td><td style="' + td + '">40</td></tr>'
-          + '<tr><td style="' + tdL + '">Marcador inverso</td><td style="' + td + '">4</td><td style="' + td + '">8</td><td style="' + td + '">12</td><td style="' + td + '">16</td><td style="' + td + '">20</td><td style="' + td + '">20</td><td style="' + td + '">40</td></tr>'
+          + '<tr><td style="' + tdL + '">Marcador inverso *</td><td style="' + td + '">6</td><td style="' + td + '">12</td><td style="' + td + '">18</td><td style="' + td + '">24</td><td style="' + td + '">30</td><td style="' + td + '">30</td><td style="' + td + '">60</td></tr>'
           + '<tr><td style="' + tdL + '">✅ Marcador exacto</td><td style="' + tdH + '">20</td><td style="' + tdH + '">40</td><td style="' + tdH + '">60</td><td style="' + tdH + '">80</td><td style="' + tdH + '">100</td><td style="' + tdH + '">100</td><td style="' + tdH + '">200</td></tr>'
           + '</tbody></table>'
-          + '<div style="font-size:10px;color:#8e8e93;margin:6px 0 2px;">✅ Marcador exacto activa los 4 microjuegos anteriores automáticamente</div>'
+          + '<div style="font-size:10px;color:#8e8e93;margin:6px 0 2px;">✅ Marcador exacto activa los 4 microjuegos anteriores automáticamente</div>' + '<div style="font-size:10px;color:#8e8e93;margin:0 0 4px;">* Marcador inverso: acertás los números pero al revés (ej: pronosticás 2-1, queda 1-2) → solo suma el factor Dif. de goles</div>'
           + '</div>';
         var ventana =
           '<div style="padding:10px 14px 2px;">'
@@ -1078,8 +1433,8 @@
           + '</div>';
         return ciclo1Header
           + '<div class="acc-row"><div><div class="acc-row-label">Los 2 clasificados en orden exacto (x12 grupos)</div><div class="acc-row-sub">Solo antes del primer partido del torneo</div></div><span class="acc-row-val">60 pts c/u</span></div>'
-          + '<div class="acc-row"><div><div class="acc-row-label">Los 2 clasificados en desorden (x12 grupos)</div><div class="acc-row-sub">Solo antes del primer partido del torneo</div></div><span class="acc-row-val">30 pts c/u</span></div>'
-          + '<div class="acc-note">⚠️ Orden y desorden son excluyentes: si aplica desorden, no hay premio por posición individual.</div>'
+          + '<div class="acc-row"><div><div class="acc-row-label">Los 2 clasificados con posiciones intercambiadas (x12 grupos)</div><div class="acc-row-sub">Pronosticás ambos equipos pero 1° y 2° están invertidos</div></div><span class="acc-row-val">30 pts c/u</span></div>'
+          + '<div class="acc-note">⚠️ Orden exacto (60 pts) y posiciones intercambiadas (30 pts) son excluyentes — solo aplica uno. Máximo teórico Ciclo 1: 12 grupos × 60 pts = 720 pts.</div>'
           + '<div style="height:1px;background:#e5e5ea;margin:4px 14px;"></div>'
           + ciclo2Header
           + '<div class="acc-row"><div><div class="acc-row-label">🥇 Campeón</div><div class="acc-row-sub">100% antes del torneo · 50% hasta 16avos</div></div><span class="acc-row-val">720 pts</span></div>'
@@ -1089,7 +1444,7 @@
           + '<div class="acc-row" style="background:#fff9ec;"><div><div class="acc-row-label">Los 4 en orden exacto</div><div class="acc-row-sub">720+360+180+90 — suma automática</div></div><span class="acc-row-val big">1.350 pts</span></div>'
           + '<div class="acc-row"><div><div class="acc-row-label">Los 4 equipos · ninguna posición</div><div class="acc-row-sub">Acertaste los 4 finalistas pero ningún puesto exacto</div></div><span class="acc-row-val">720 pts</span></div>'
           + '<div class="acc-row"><div><div class="acc-row-label">3 equipos · ninguna posición</div><div class="acc-row-sub">Acertaste 3 finalistas pero ningún puesto exacto · excluyente con la categoría anterior</div></div><span class="acc-row-val">360 pts</span></div>'
-          + '<div class="acc-note orange">⚠️ Las categorías especiales solo aplican al Campeón de la Polla. Orden e individual vs desorden son excluyentes.</div>';
+          + '<div class="acc-note orange">⚠️ Los premios de posición exacta (720+360+180+90) y los premios emergentes (720 o 360) son mutuamente excluyentes — solo aplica el mayor.</div>';
       }
     },
     {
@@ -1704,6 +2059,13 @@
     'COLOMBIA':'🇨🇴','INGLATERRA':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','CROACIA':'🇭🇷','GHANA':'🇬🇭',
     'PANAMA':'🇵🇦',
   };
+
+  function getSaludoHora() {
+    var h = new Date().getHours();
+    if (h >= 5  && h < 12) return 'Buenos días';
+    if (h >= 12 && h < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  }
 
   function bandera(nombre) {
     var n = (nombre || '').toUpperCase().trim();
@@ -2592,11 +2954,6 @@
 
   /* ── FASE 5: TORRE ESPECIALES ── */
 
-  var activeGrupo = null;
-  var openDropId  = null;
-  var finalistasSel     = { 'drop-campeon': null, 'drop-sub': null, 'drop-3ro': null, 'drop-4to': null };
-  var finalistasDrops   = ['drop-campeon','drop-sub','drop-3ro','drop-4to'];
-
   function getFlag(name) {
     var e = equipos.find(function(x){ return x.name === name; });
     return e ? e.flag : '🔄';
@@ -2618,7 +2975,12 @@
 
   function marcarEspPendiente() {
     var badge = document.getElementById('esp-estado-badge');
-    if (badge) { badge.textContent = 'Sin guardar'; badge.className = 'esp-estado-badge pendiente'; }
+    if (badge) {
+      badge.textContent = 'Sin guardar';
+      badge.style.background = 'rgba(255,255,255,0.15)';
+      badge.style.color = 'rgba(255,255,255,0.85)';
+      badge.style.border = '1px solid rgba(255,255,255,0.3)';
+    }
   }
 
   function buildDrop(dropId, btnId, valId, currentVal, isGold) {
@@ -3339,18 +3701,16 @@
     if (sidebarUser) sidebarUser.style.display = 'flex';
     var sidebarName = document.getElementById('sidebar-user-name');
     if (sidebarName) sidebarName.textContent = nombre;
-    // Header sub — "Jugando como"
-    var headerSub = document.getElementById('torres-header-sub');
-    if (headerSub) headerSub.textContent = 'Jugando como ' + nombre;
-    // Torre Partidos — home header
-    var homeGreeting = document.getElementById('home-greeting');
-    var homeName     = document.getElementById('home-name');
-    var homeCuentaTag = document.getElementById('home-cuenta-tag');
-    var homePts      = document.getElementById('home-pts');
-    if (homeGreeting) homeGreeting.textContent = 'Hola,';
-    if (homeName)     homeName.textContent     = nombre;
-    if (homeCuentaTag) homeCuentaTag.textContent = '📋 ' + usuario;
-    if (homePts)      homePts.textContent      = pts || 0;
+    // Header universal — saludo + nombre + chip cuenta
+    var thSaludo      = document.getElementById('th-saludo');
+    var thParticipante = document.getElementById('th-participante');
+    var thCuenta       = document.getElementById('th-cuenta');
+    if (thSaludo)       thSaludo.textContent       = getSaludoHora();
+    if (thParticipante) thParticipante.textContent  = nombre + ' 👋';
+    if (thCuenta)       thCuenta.textContent        = usuario;
+    // Stats de Mi resumen
+    var homePts = document.getElementById('home-pts');
+    if (homePts) homePts.textContent = pts || 0;
   }
 
   /* ══════════════════════════════════════════════════
@@ -3640,6 +4000,104 @@
   /* ══════════════════════════════════════════════════
      FASE P4 — TORRE ADMIN
      ══════════════════════════════════════════════════ */
+
+  /* ── TORRE ADMIN v2 ── */
+  // ── Variables de configuración global (editables desde Backoffice) ──
+  var APP_CONFIG = {
+    nombre:       'La Polla Mundialista',
+    edicion:      'FIFA World Cup 2026',
+    version:      'v22',
+    mundialInicio: '2026-06-11',
+    tainoProxy:   'https://nameless-pine-80e6.hfhoyos.workers.dev',
+    ventanaPct1:  100,
+    ventanaPct2:  50,
+  };
+
+  var ADM_PISOS = ['generalidades', 'usuarios', 'polla', 'backoffice'];
+
+  function switchAdmin(piso) {
+    ADM_PISOS.forEach(function(p) {
+      var btn = document.getElementById('admbtn-' + p);
+      var lnz = document.getElementById('admlienzo-' + p);
+      if (btn) btn.classList.remove('active');
+      if (lnz) lnz.classList.remove('active');
+    });
+    var activeBtn = document.getElementById('admbtn-' + piso);
+    var activeLnz = document.getElementById('admlienzo-' + piso);
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activeLnz) activeLnz.classList.add('active');
+    document.getElementById('torres-content').scrollTop = 0;
+    // Poblar datos dinámicos en Usuarios y Backoffice
+    if (piso === 'usuarios' || piso === 'backoffice') admPoblarDatos();
+  }
+
+  function toggleBackoffice() {
+    var contenido = document.getElementById('backoffice-contenido');
+    if (!contenido) return;
+    if (contenido.style.display === 'none') {
+      contenido.style.display = 'block';
+      admPoblarDatos();
+      document.getElementById('torres-content').scrollTop = 0;
+    } else {
+      contenido.style.display = 'none';
+    }
+  }
+
+  function selectPersonalidad(btn) {
+    var grilla = btn.parentElement;
+    grilla.querySelectorAll('.adm-pers-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    // Sincronizar con el perfil de Taíno si está disponible
+    var idx = Array.from(grilla.querySelectorAll('.adm-pers-btn')).indexOf(btn);
+    var perfiles = ['parcero', 'experto', 'serio'];
+    if (perfiles[idx] && typeof tainoSetPerfil === 'function') tainoSetPerfil(perfiles[idx]);
+  }
+
+
+  // Calcula los microjuegos de un partido dado marcador y fase
+  function calcMicrojuegos(s1, s2, maxPts) {
+    var ptsPerUnit = maxPts / 20;
+    var diff = Math.abs(s1 - s2);
+    return [
+      { label: 'Ganador / empate',                pts: Math.round(6 * ptsPerUnit) },
+      { label: 'Diferencia de goles (' + diff + ')', pts: Math.round(6 * ptsPerUnit) },
+      { label: 'Goles equipo 1 (' + s1 + ')',     pts: Math.round(4 * ptsPerUnit) },
+      { label: 'Goles equipo 2 (' + s2 + ')',     pts: Math.round(4 * ptsPerUnit) },
+    ];
+  }
+
+  // Retorna label de ventana de apuesta según estado del partido
+  function getVentanaLabel(est) {
+    if (est === 0) return '<span class="match-badge badge-open" style="font-size:11px;padding:3px 9px;">100%</span>';
+    if (est === 1) return '<span class="match-badge badge-live" style="font-size:11px;padding:3px 9px;">50%</span>';
+    return '<span class="match-badge badge-closed" style="font-size:11px;padding:3px 9px;">CERRADA</span>';
+  }
+
+  // Fallback: construye standings desde equipos/grupos cuando fifa_equ no devuelve stats
+  function buildStandingsFromFixture() {
+    var st = {};
+    var flags = {};
+    equipos.forEach(function(e) { flags[e.name] = e.flag || '🏳️'; });
+    Object.keys(grupos).forEach(function(k) {
+      st[k] = grupos[k].map(function(name, i) {
+        return { pos: i+1, flag: flags[name]||'🏳️', name: name,
+                 pj:0, g:0, e:0, p:0, gf:0, gc:0, gd:0, pts:0 };
+      });
+    });
+    return st;
+  }
+
+  function admPoblarDatos() {
+    // Jugadores y cuentas
+    var elJug = document.getElementById('adm-total-jugadores');
+    var elCtas = document.getElementById('adm-total-cuentas');
+    var elPar  = document.getElementById('adm-total-partidos');
+    var elEqu  = document.getElementById('adm-total-equipos');
+    if (elJug)  elJug.textContent  = Object.keys(standings).length > 0 ? Object.keys(standings).length + ' grupos' : (equipos.length || '—');
+    if (elCtas) elCtas.textContent = '—';
+    if (elPar)  elPar.textContent  = partidosCache.length > 0 ? partidosCache.length : '—';
+    if (elEqu)  elEqu.textContent  = equipos.length > 0 ? equipos.length : '—';
+  }
 
   function initAdmin() {
     var statPar = document.getElementById('admin-stat-partidos');

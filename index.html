@@ -844,57 +844,60 @@
 
         <!-- TORRE REGLAS — acordeón + Taíno en scroll único (sin pestañas) -->
         <div class="screen-torre" id="s-reglas">
-          <div class="lienzo active" id="lienzo-reglas-acordeon">
+          <div class="lienzo active" id="lienzo-reglas-acordeon" style="padding:16px 0 0;">
             <div style="padding:12px 0 0;">
-              <div id="reglas-accordion"></div>
+              <div id="reglas-accordion" style="padding:0 16px;"></div>
             </div>
             <!-- Taíno al final del mismo scroll — sin pestaña separada -->
-            <div id="taino-section" style="margin:24px 0 0;border-top:0.5px solid rgba(0,0,0,0.08);padding-top:20px;padding-bottom:80px;overflow-x:hidden;">
-              <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:16px;">
-                <div id="taino-avatar" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#2ecc71,#27ae60);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 2px 8px rgba(46,204,113,0.4);transition:transform .2s;">
+            <div id="taino-section" style="margin-top:24px;border-top:0.5px solid rgba(0,0,0,0.08);padding:20px 0 80px;max-width:100%;overflow:hidden;box-sizing:border-box;">
+              <!-- Avatar + burbuja -->
+              <div style="display:flex;align-items:flex-start;gap:10px;padding:0 16px;max-width:100%;box-sizing:border-box;margin-bottom:16px;">
+                <div id="taino-avatar" style="width:44px;height:44px;min-width:44px;max-width:44px;border-radius:50%;background:linear-gradient(135deg,#2ecc71,#27ae60);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 8px rgba(46,204,113,0.4);">
                   &#x1F426;
                 </div>
-                <div style="flex:1;min-width:0;overflow:hidden;">
+                <div style="flex:1;width:0;min-width:0;overflow:hidden;">
                   <div style="font-size:11px;font-weight:700;color:#27ae60;margin-bottom:4px;">TAINO - Mascota Oficial</div>
-                  <div id="taino-chat-wrap" style="width:100%;max-width:100%;overflow:hidden;">
+                  <div id="taino-chat-wrap" style="max-width:100%;overflow:hidden;word-break:break-word;">
                     <div id="taino-bubble" style="background:#f0faf4;border:1px solid #d5f0e0;border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;color:#1a1a1a;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">
                       Hola! Soy Taino. Preguntame sobre las reglas de la polla o el Mundial 2026.
                     </div>
-                  </div><!-- /taino-chat-wrap -->
-                </div><!-- /flex:1 -->
-              </div><!-- /flex avatar+bubble -->
-              <div id="taino-silencio-wrap" style="display:none;margin-bottom:10px;">
+                  </div>
+                </div>
+              </div>
+              <!-- Silenciar -->
+              <div id="taino-silencio-wrap" style="display:none;padding:0 16px;margin-bottom:10px;">
                 <button onclick="tainoSilenciar()" type="button"
-                  style="width:100%;padding:10px;background:#ff3b30;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  style="width:100%;padding:10px;background:#ff3b30;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;">
                   ⏹ Silenciar a Taíno
                 </button>
               </div>
-              <div id="taino-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+              <!-- Chips de preguntas rápidas -->
+              <div id="taino-chips" style="display:flex;gap:8px;flex-wrap:wrap;padding:0 16px;margin-bottom:14px;max-width:100%;box-sizing:border-box;">
                 <button onclick="tainoPreguntar('Como funciona la ventana de apuesta?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Ventana</button>
                 <button onclick="tainoPreguntar('Cuantos puntos gano si acierto el marcador exacto?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Puntos</button>
                 <button onclick="tainoPreguntar('Que son los microjuegos?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Microjuegos</button>
                 <button onclick="tainoPreguntar('Cuantos equipos hay en el Mundial 2026?')" style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:20px;padding:6px 12px;font-size:12px;color:#4f46e5;cursor:pointer;font-weight:600;">Mundial</button>
               </div>
-              <div style="display:flex;flex-direction:column;gap:8px;">
-                <div style="display:flex;gap:8px;align-items:center;">
+              <!-- Input area — contenida con padding explícito -->
+              <div style="padding:0 16px;max-width:100%;box-sizing:border-box;">
+                <div style="display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;margin-bottom:8px;">
                   <input id="taino-input" type="text" placeholder="Preguntale a Taino..."
                     aria-label="Pregunta para Taíno, el asistente de reglas"
-                    style="flex:1;min-width:0;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;box-sizing:border-box;"
+                    style="flex:1;min-width:0;width:0;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;box-sizing:border-box;"
                     onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
                     maxlength="200">
                   <button id="taino-btn" onclick="tainoEnviar()" type="button"
-                    aria-label="Enviar pregunta a Taíno"
-                    style="background:#27ae60;color:#fff;border:none;border-radius:12px;width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;">
+                    aria-label="Enviar"
+                    style="background:#27ae60;color:#fff;border:none;border-radius:12px;width:44px;min-width:44px;height:44px;font-size:20px;cursor:pointer;flex-shrink:0;">
                     &gt;
                   </button>
                 </div>
                 <button id="taino-voz-btn" onclick="tainoEnviarConVoz()" type="button"
-                  aria-label="Enviar y escuchar respuesta en voz"
-                  style="width:100%;background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;transition:background 0.2s;">
+                  style="width:100%;background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;">
                   🔊 Respuesta en audio
                 </button>
               </div>
-              <div style="font-size:10px;color:#c7c7cc;margin-top:6px;text-align:center;">Powered by Claude - Solo responde sobre reglas y el Mundial 2026</div>
+              <div style="font-size:10px;color:#c7c7cc;margin-top:8px;text-align:center;padding:0 16px;">Powered by Claude · Solo responde sobre reglas y el Mundial 2026</div>
             </div>
           </div>
         </div>

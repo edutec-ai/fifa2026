@@ -114,14 +114,15 @@
       flex: 1; overflow-y: auto; overflow-x: hidden;
       -webkit-overflow-scrolling: touch; min-height: 0;
       background: var(--fondo-app);
+      width: 100%; max-width: 100%;
     }
     .torres-content::-webkit-scrollbar { display: none; }
 
-    .screen-torre { display: none; min-height: 100%; padding: 0 0 80px; overflow-x: hidden; }
+    .screen-torre { display: none; min-height: 100%; padding: 0 0 80px; overflow-x: hidden; width: 100%; max-width: 100%; box-sizing: border-box; }
     .screen-torre.active { display: block; }
 
     /* Lienzos [2][3][4] */
-    .lienzo { display: none; padding: 16px 16px 0; overflow-x: hidden; }
+    .lienzo { display: none; padding: 16px 16px 0; overflow-x: hidden; width: 100%; max-width: 100%; box-sizing: border-box; }
     .lienzo.active { display: block; }
 
     /* ④ Tab bar — NUNCA scrollea */
@@ -855,11 +856,13 @@
                 </div>
                 <div style="flex:1;min-width:0;overflow:hidden;">
                   <div style="font-size:11px;font-weight:700;color:#27ae60;margin-bottom:4px;">TAINO - Mascota Oficial</div>
-                  <div id="taino-bubble" style="background:#f0faf4;border:1px solid #d5f0e0;border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;color:#1a1a1a;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">
-                    Hola! Soy Taino. Preguntame sobre las reglas de la polla o el Mundial 2026.
-                  </div>
-                </div>
-              </div>
+                  <div id="taino-chat-wrap" style="width:100%;max-width:100%;overflow:hidden;">
+                    <div id="taino-bubble" style="background:#f0faf4;border:1px solid #d5f0e0;border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;color:#1a1a1a;line-height:1.5;word-break:break-word;overflow-wrap:break-word;">
+                      Hola! Soy Taino. Preguntame sobre las reglas de la polla o el Mundial 2026.
+                    </div>
+                  </div><!-- /taino-chat-wrap -->
+                </div><!-- /flex:1 -->
+              </div><!-- /flex avatar+bubble -->
               <div id="taino-silencio-wrap" style="display:none;margin-bottom:10px;">
                 <button onclick="tainoSilenciar()" type="button"
                   style="width:100%;padding:10px;background:#ff3b30;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
@@ -872,10 +875,10 @@
                 <button onclick="tainoPreguntar('Que son los microjuegos?')" style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:20px;padding:6px 12px;font-size:12px;color:#27ae60;cursor:pointer;font-weight:600;">Microjuegos</button>
                 <button onclick="tainoPreguntar('Cuantos equipos hay en el Mundial 2026?')" style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:20px;padding:6px 12px;font-size:12px;color:#4f46e5;cursor:pointer;font-weight:600;">Mundial</button>
               </div>
-              <div style="display:flex;gap:8px;align-items:center;">
+              <div style="display:flex;gap:8px;align-items:center;width:100%;box-sizing:border-box;">
                 <input id="taino-input" type="text" placeholder="Preguntale a Taino..."
                   aria-label="Pregunta para Taíno, el asistente de reglas"
-                  style="flex:1;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;"
+                  style="flex:1;min-width:0;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:14px;color:#1a1a1a;outline:none;box-sizing:border-box;"
                   onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
                   maxlength="200">
                 <button id="taino-btn" onclick="tainoEnviar()" type="button"
@@ -1543,15 +1546,20 @@
   }
 
   function tainoMostrarUsuario(texto) {
+    var wrap = document.getElementById('taino-chat-wrap');
     var bubble = document.getElementById('taino-bubble');
     if (!bubble) return;
     var d = document.createElement('div');
-    d.style.cssText = 'text-align:right;margin-bottom:10px;';
+    d.style.cssText = 'text-align:right;margin-bottom:10px;max-width:100%;overflow:hidden;';
     var span = document.createElement('span');
-    span.style.cssText = 'display:inline-block;background:#007aff;color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14px;max-width:85%;';
+    span.style.cssText = 'display:inline-block;background:#007aff;color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14px;max-width:85%;word-break:break-word;overflow-wrap:break-word;box-sizing:border-box;';
     span.textContent = texto;
     d.appendChild(span);
-    bubble.parentNode.insertBefore(d, bubble);
+    if (wrap) {
+      wrap.insertBefore(d, bubble);
+    } else {
+      bubble.parentNode.insertBefore(d, bubble);
+    }
   }
 
   function tainoMostrarPensando() {

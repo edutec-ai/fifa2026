@@ -1721,32 +1721,46 @@ var PESTANAS_CONFIG = {
     if (!window.speechSynthesis) return;
     if (!tainoUltimaRespuesta) return;
     tainoSilenciar();
-    var utter = new SpeechSynthesisUtterance(tainoUltimaRespuesta);
-    var voces = window.speechSynthesis.getVoices();
-    var voz = tainoVozSeleccionada
-      || voces.find(function(v){ return v.lang === 'es-CO'; })
-      || voces.find(function(v){ return v.name === 'Paulina'; })
-      || voces.find(function(v){ return v.lang === 'es-MX'; })
-      || voces.find(function(v){ return v.lang === 'es-US'; })
-      || voces.find(function(v){ return v.lang.startsWith('es'); });
-    if (voz) utter.voice = voz;
-    utter.lang  = 'es-CO';
-    utter.rate  = 1.05;
-    utter.pitch = 1.1;
-    utter.onstart = function() {
-      tainoHablando = true;
-      tainoSilenciarWrap(true);
-      var av = document.getElementById('taino-avatar');
-      if (av) av.style.boxShadow = '0 0 0 6px rgba(39,174,96,0.3)';
-    };
-    utter.onend = function() {
-      tainoHablando = false;
-      tainoSilenciarWrap(false);
-      var av = document.getElementById('taino-avatar');
-      if (av) av.style.boxShadow = '0 2px 8px rgba(46,204,113,0.4)';
-    };
-    utter.onerror = function() { tainoHablando = false; tainoSilenciarWrap(false); };
-    window.speechSynthesis.speak(utter);
+
+    function hablar() {
+      var utter = new SpeechSynthesisUtterance(tainoUltimaRespuesta);
+      var voces = window.speechSynthesis.getVoices();
+      var voz = tainoVozSeleccionada
+        || voces.find(function(v){ return v.lang === 'es-CO'; })
+        || voces.find(function(v){ return v.name === 'Paulina'; })
+        || voces.find(function(v){ return v.lang === 'es-MX'; })
+        || voces.find(function(v){ return v.lang === 'es-US'; })
+        || voces.find(function(v){ return v.lang.startsWith('es'); });
+      if (voz) utter.voice = voz;
+      utter.lang  = 'es-CO';
+      utter.rate  = 1.05;
+      utter.pitch = 1.1;
+      utter.onstart = function() {
+        tainoHablando = true;
+        tainoSilenciarWrap(true);
+        var av = document.getElementById('taino-avatar');
+        if (av) av.style.boxShadow = '0 0 0 6px rgba(39,174,96,0.3)';
+      };
+      utter.onend = function() {
+        tainoHablando = false;
+        tainoSilenciarWrap(false);
+        var av = document.getElementById('taino-avatar');
+        if (av) av.style.boxShadow = '0 2px 8px rgba(46,204,113,0.4)';
+      };
+      utter.onerror = function() { tainoHablando = false; tainoSilenciarWrap(false); };
+      window.speechSynthesis.speak(utter);
+    }
+
+    // Voces ya disponibles → hablar de inmediato (localhost, visitas siguientes)
+    if (window.speechSynthesis.getVoices().length > 0) {
+      hablar();
+    } else {
+      // Voces aún no cargadas → esperar evento (GitHub Pages, primera visita)
+      window.speechSynthesis.addEventListener('voiceschanged', function handler() {
+        window.speechSynthesis.removeEventListener('voiceschanged', handler);
+        hablar();
+      });
+    }
   }
 
   function tainoSilenciar() {

@@ -1210,14 +1210,10 @@ document.getElementById('app-root').innerHTML = `<div class="app-shell" id="app-
         style="display:block;width:100%;background:#f5f5f7;border:none;border-radius:12px;padding:11px 14px;font-size:16px;color:#1a1a1a;outline:none;box-sizing:border-box;margin-bottom:8px;"
         onkeydown="if(event.key==='Enter'){ tainoEnviar(); }"
         maxlength="200">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button id="taino-btn" onclick="tainoEnviar()" type="button"
-          style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:11px 8px;font-size:13px;font-weight:700;cursor:pointer;">
-          📝 Respuesta texto
-        </button>
-        <button id="taino-voz-btn" onclick="tainoEnviarConVoz()" type="button"
-          style="background:#f0faf4;color:#27ae60;border:1.5px solid #b7e4c7;border-radius:12px;padding:11px 8px;font-size:13px;font-weight:700;cursor:pointer;">
-          🔊 Respuesta audio
+      <div style="display:grid;grid-template-columns:1fr;gap:8px;">
+        <button id="taino-btn" onclick="tainoEnviarConVoz()" type="button"
+          style="background:#27ae60;color:#fff;border:none;border-radius:12px;padding:11px 8px;font-size:13px;font-weight:700;cursor:pointer;">
+          📨 Respuesta
         </button>
       </div>
       <div style="font-size:10px;color:#c7c7cc;margin-top:6px;text-align:center;">Powered by Claude · Solo responde sobre reglas y el Mundial 2026</div>

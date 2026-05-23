@@ -1715,16 +1715,23 @@ var PESTANAS_CONFIG = {
       tainoAudioActual = null;
     }
 
+    // Detectar si es iOS/Safari
+    var esIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+    // ── EN iPHONE: Web Speech API (funciona nativamente) ──────
+    if (esIOS) {
+      tainoVoz();  // Web Speech API directo
+      return;
+    }
+
+    // ── EN DESKTOP: OpenAI TTS vía Cloudflare ────────────────
     try {
       tainoHablando = true;
       tainoSilenciarWrap(true);
       var av = document.getElementById('taino-avatar');
       if (av) av.style.boxShadow = '0 0 0 6px rgba(39,174,96,0.3)';
 
-      // Detectar si es iOS/Safari
-      var esIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-
-      // Intentar Cloudflare Worker (OpenAI TTS)
+      // Llamar al Cloudflare Worker (API Key protegida ahí)
       var response = await fetch(CLOUDFLARE_WORKER_URL, {
         method: "POST",
         headers: {
@@ -1738,7 +1745,7 @@ var PESTANAS_CONFIG = {
 
       if (!response.ok) {
         console.warn("Error Cloudflare TTS — fallback a Web Speech API");
-        tainoVoz();  // ← Fallback a Web Speech API
+        tainoVoz();
         return;
       }
 
@@ -1762,20 +1769,6 @@ var PESTANAS_CONFIG = {
         tainoSilenciarWrap(false);
         tainoVoz();  // ← Fallback a Web Speech API
       };
-      
-      // Para iOS: crear un audio dummy que desbloquee Safari
-      if (esIOS) {
-        var dummyAudio = new Audio();
-        try {
-          await dummyAudio.play();
-          dummyAudio.pause();
-        } catch(e) {
-          // Safari bloqueó el autoplay — fallback
-          console.warn("iOS bloqueó autoplay — fallback a Web Speech API");
-          tainoVoz();
-          return;
-        }
-      }
       
       await audio.play();
     } catch (e) {

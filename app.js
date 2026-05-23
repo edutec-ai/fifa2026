@@ -615,7 +615,7 @@ document.getElementById('app-root').innerHTML = `<div class="app-shell" id="app-
         </div>
         <div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);">Voz de Taino</div>
+            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);">Voz de Colé</div>
             <div id="taino-voz-activa-label" style="font-size:11px;color:rgba(255,255,255,0.55);">Automatica</div>
           </div>
           <button onclick="tainoToggleVocesCuentas()" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;cursor:pointer;text-align:left;">
@@ -680,6 +680,9 @@ document.getElementById('app-root').innerHTML = `<div class="app-shell" id="app-
         <div class="th-right">
           <div class="th-torre-nombre" id="torres-header-title">Partidos</div>
           <div class="th-actions">
+            <button class="th-btn" onclick="abrirTaino()" title="Asistente de Fútbol">
+              <span class="th-btn-icon">🐦</span> COLÉ
+            </button>
             <button class="th-btn" onclick="generarExtractoPDF()" title="Descargar PDF">
               <span class="th-btn-icon">⬇️</span> PDF
             </button>
@@ -856,15 +859,6 @@ document.getElementById('app-root').innerHTML = `<div class="app-shell" id="app-
         <!-- TORRE REGLAS — acordeón limpio + botón Taíno -->
         <div class="screen-torre" id="s-reglas">
           <div class="lienzo active" id="lienzo-reglas-acordeon">
-            <!-- Botón Taíno — siempre visible arriba -->
-            <div style="padding:0 0 12px;">
-              <button onclick="abrirTaino()" type="button"
-                style="width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;border:none;border-radius:16px;padding:14px 20px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 12px rgba(46,204,113,0.3);">
-                <span style="font-size:20px;">🐦</span>
-                Asistente Taíno
-              </button>
-              <div style="font-size:11px;color:#8e8e93;text-align:center;margin-top:6px;">Preguntale a Taíno sobre las reglas o el Mundial 2026</div>
-            </div>
             <!-- Acordeones de reglas -->
             <div id="reglas-accordion"></div>
           </div>
@@ -1199,7 +1193,7 @@ document.getElementById('app-root').innerHTML = `<div class="app-shell" id="app-
     <div id="taino-silencio-wrap" style="display:none;padding:0 16px 8px;flex-shrink:0;">
       <button onclick="tainoSilenciar()" type="button"
         style="width:100%;padding:10px;background:#ff3b30;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;">
-        ⏹ Silenciar a Taíno
+        ⏹ Silenciar a Colé
       </button>
     </div>
     <!-- Chips -->
@@ -1595,7 +1589,7 @@ var PESTANAS_CONFIG = {
   function tainoMostrarPensando() {
     var bubble = document.getElementById('taino-bubble');
     if (!bubble) return;
-    bubble.textContent = 'Taino esta pensando...';
+    bubble.textContent = 'Colé esta pensando...';
     bubble.style.color = '#27ae60';
     bubble.style.fontStyle = 'italic';
   }
@@ -1681,7 +1675,7 @@ var PESTANAS_CONFIG = {
 
     var key = window.TAINO_API_KEY || '';
     if (!key || key.indexOf('REEMPLAZA') > -1) {
-      tainoMostrarRespuesta('Falta configurar el API key de Taino.');
+      tainoMostrarRespuesta('Falta configurar el API key de Colé.');
       tainoPensando = false;
       return;
     }

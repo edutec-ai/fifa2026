@@ -1721,7 +1721,10 @@ var PESTANAS_CONFIG = {
       var av = document.getElementById('taino-avatar');
       if (av) av.style.boxShadow = '0 0 0 6px rgba(39,174,96,0.3)';
 
-      // Llamar al Cloudflare Worker (API Key protegida ahí)
+      // Detectar si es iOS/Safari
+      var esIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+      // Intentar Cloudflare Worker (OpenAI TTS)
       var response = await fetch(CLOUDFLARE_WORKER_URL, {
         method: "POST",
         headers: {
@@ -1734,9 +1737,8 @@ var PESTANAS_CONFIG = {
       });
 
       if (!response.ok) {
-        console.error("Error Cloudflare TTS:", response.status);
-        tainoHablando = false;
-        tainoSilenciarWrap(false);
+        console.warn("Error Cloudflare TTS — fallback a Web Speech API");
+        tainoVoz();  // ← Fallback a Web Speech API
         return;
       }
 
@@ -1754,17 +1756,35 @@ var PESTANAS_CONFIG = {
       };
       
       audio.onerror = function() {
+        console.warn("Error reproduciendo audio — fallback a Web Speech API");
         tainoHablando = false;
         tainoAudioActual = null;
         tainoSilenciarWrap(false);
+        tainoVoz();  // ← Fallback a Web Speech API
       };
+      
+      // Para iOS: crear un audio dummy que desbloquee Safari
+      if (esIOS) {
+        var dummyAudio = new Audio();
+        try {
+          await dummyAudio.play();
+          dummyAudio.pause();
+        } catch(e) {
+          // Safari bloqueó el autoplay — fallback
+          console.warn("iOS bloqueó autoplay — fallback a Web Speech API");
+          tainoVoz();
+          return;
+        }
+      }
       
       await audio.play();
     } catch (e) {
       console.error("Falla en Voz Premium:", e);
+      console.warn("Fallback a Web Speech API");
       tainoHablando = false;
       tainoAudioActual = null;
       tainoSilenciarWrap(false);
+      tainoVoz();  // ← Fallback a Web Speech API
     }
   }
 

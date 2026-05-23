@@ -1328,8 +1328,8 @@ var PESTANAS_CONFIG = {
      FASE 1 — VARIABLES GLOBALES DE SESIÓN Y CREDENCIALES
      ══════════════════════════════════════════════════ */
 
-  var BASE    = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
-  var BASE_V2 = 'https://sion.cloud.a01.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
+  var BASE    = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
+  var BASE_V2 = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
   var KEY     = 'SuzvTp4qwXQtAVFJbdzP';
 
   var sessionPerfil   = null;  // { usr, nombre } — del login

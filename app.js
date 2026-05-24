@@ -2646,17 +2646,61 @@ var PESTANAS_CONFIG = {
     var grid = document.getElementById('grupos-fase-grid');
     if (!grid) return;
     grid.innerHTML = '';
+    
+    // Datos de los 12 grupos con banderas y equipos
+    var gruposData = {
+      'A': { equipos: ['🇲🇽 México', '🇿🇦 Sudáfrica', '🇰🇷 Corea Sur', '🇨🇿 Chequia'] },
+      'B': { equipos: ['🇨🇦 Canadá', '🇧🇦 Bosnia', '🇶🇦 Catar', '🇨🇭 Suiza'] },
+      'C': { equipos: ['🇧🇷 Brasil', '🇲🇦 Marruecos', '🇭🇹 Haití', '🇬🇧 Escocia'] },
+      'D': { equipos: ['🇺🇸 EE.UU.', '🇵🇾 Paraguay', '🇦🇺 Australia', '🇹🇷 Turquía'] },
+      'E': { equipos: ['🇩🇪 Alemania', '🇨🇼 Curazao', '🇨🇮 CT-Marfil', '🇪🇨 Ecuador'] },
+      'F': { equipos: ['🇳🇱 Países Bajos', '🇯🇵 Japón', '🇸🇪 Suecia', '🇹🇳 Túnez'] },
+      'G': { equipos: ['🇧🇪 Bélgica', '🇪🇬 Egipto', '🇮🇷 Irán', '🇳🇿 NewZelanda'] },
+      'H': { equipos: ['🇪🇸 España', '🇨🇻 Cabo Verde', '🇸🇦 Arab Saudí', '🇺🇾 Uruguay'] },
+      'I': { equipos: ['🇫🇷 Francia', '🇸🇳 Senegal', '🇮🇶 Irak', '🇳🇴 Noruega'] },
+      'J': { equipos: ['🇦🇷 Argentina', '🇩🇿 Argelia', '🇦🇹 Austria', '🇯🇴 Jordania'] },
+      'K': { equipos: ['🇵🇹 Portugal', '🇨🇩 RD Congo', '🇺🇿 Uzbekistán', '🇨🇴 Colombia'] },
+      'L': { equipos: ['🇬🇧 Inglaterra', '🇭🇷 Croacia', '🇬🇭 Ghana', '🇵🇦 Panamá'] }
+    };
+
+    // Crear grid CSS 3x4
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    grid.style.gap = '12px';
+    grid.style.padding = '16px';
+
     ['A','B','C','D','E','F','G','H','I','J','K','L'].forEach(function(k) {
-      var btn = document.createElement('button');
-      btn.className = 'grupo-fase-btn' + (activeGrupoStandings === k ? ' sel' : '');
-      btn.textContent = 'Grupo ' + k;
-      btn.addEventListener('click', function() {
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#fff;border:1.5px solid #e5e5ea;border-radius:16px;padding:14px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;gap:8px;' + (activeGrupoStandings === k ? 'background:#f0faf4;border-color:#27ae60;' : '');
+      card.onmouseover = function() { this.style.borderColor = '#27ae60'; };
+      card.onmouseout = function() { this.style.borderColor = activeGrupoStandings === k ? '#27ae60' : '#e5e5ea'; };
+      
+      var title = document.createElement('div');
+      title.style.cssText = 'font-size:15px;font-weight:700;color:#000;text-align:center;';
+      title.textContent = 'GRUPO ' + k;
+      
+      var equiposDiv = document.createElement('div');
+      equiposDiv.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+      var datos = gruposData[k] || {};
+      (datos.equipos || []).forEach(function(eq) {
+        var eqSpan = document.createElement('div');
+        eqSpan.style.cssText = 'font-size:12px;color:#3c3c43;text-align:center;';
+        eqSpan.textContent = eq;
+        equiposDiv.appendChild(eqSpan);
+      });
+      
+      card.appendChild(title);
+      card.appendChild(equiposDiv);
+      
+      card.addEventListener('click', function() {
         activeGrupoStandings = k;
         initGruposFase();
         renderGrupoStandings(k);
       });
-      grid.appendChild(btn);
+      
+      grid.appendChild(card);
     });
+    
     renderGrupoStandings(activeGrupoStandings);
   }
 
@@ -3200,18 +3244,69 @@ var PESTANAS_CONFIG = {
     var grid = document.getElementById('grupos-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    Object.keys(grupos).forEach(function(k) {
+    
+    // Datos de los 12 grupos (mismo que en Grupos/Fase)
+    var gruposData = {
+      'A': { equipos: ['🇲🇽 México', '🇿🇦 Sudáfrica', '🇰🇷 Corea Sur', '🇨🇿 Chequia'] },
+      'B': { equipos: ['🇨🇦 Canadá', '🇧🇦 Bosnia', '🇶🇦 Catar', '🇨🇭 Suiza'] },
+      'C': { equipos: ['🇧🇷 Brasil', '🇲🇦 Marruecos', '🇭🇹 Haití', '🇬🇧 Escocia'] },
+      'D': { equipos: ['🇺🇸 EE.UU.', '🇵🇾 Paraguay', '🇦🇺 Australia', '🇹🇷 Turquía'] },
+      'E': { equipos: ['🇩🇪 Alemania', '🇨🇼 Curazao', '🇨🇮 CT-Marfil', '🇪🇨 Ecuador'] },
+      'F': { equipos: ['🇳🇱 Países Bajos', '🇯🇵 Japón', '🇸🇪 Suecia', '🇹🇳 Túnez'] },
+      'G': { equipos: ['🇧🇪 Bélgica', '🇪🇬 Egipto', '🇮🇷 Irán', '🇳🇿 NewZelanda'] },
+      'H': { equipos: ['🇪🇸 España', '🇨🇻 Cabo Verde', '🇸🇦 Arab Saudí', '🇺🇾 Uruguay'] },
+      'I': { equipos: ['🇫🇷 Francia', '🇸🇳 Senegal', '🇮🇶 Irak', '🇳🇴 Noruega'] },
+      'J': { equipos: ['🇦🇷 Argentina', '🇩🇿 Argelia', '🇦🇹 Austria', '🇯🇴 Jordania'] },
+      'K': { equipos: ['🇵🇹 Portugal', '🇨🇩 RD Congo', '🇺🇿 Uzbekistán', '🇨🇴 Colombia'] },
+      'L': { equipos: ['🇬🇧 Inglaterra', '🇭🇷 Croacia', '🇬🇭 Ghana', '🇵🇦 Panamá'] }
+    };
+    
+    // Crear grid CSS 3x4
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    grid.style.gap = '12px';
+    grid.style.padding = '16px';
+
+    Object.keys(grupos).sort().forEach(function(k) {
       var sel  = grupoSel[k] || {};
       var done = sel['1'] && sel['2'];
-      var btn  = document.createElement('button');
-      btn.className = 'grupo-btn' + (activeGrupo === k ? ' open' : (done ? ' done' : ''));
-      btn.textContent = 'Grupo ' + k;
-      btn.addEventListener('click', function() {
+      var card = document.createElement('div');
+      card.style.cssText = 'background:#fff;border:1.5px solid #e5e5ea;border-radius:16px;padding:14px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;gap:8px;' + (activeGrupo === k ? 'background:#f0faf4;border-color:#27ae60;' : (done ? 'background:#f9f9fb;border-color:#34c759;' : ''));
+      card.onmouseover = function() { this.style.borderColor = '#27ae60'; };
+      card.onmouseout = function() { this.style.borderColor = activeGrupo === k ? '#27ae60' : (done ? '#34c759' : '#e5e5ea'); };
+      
+      var title = document.createElement('div');
+      title.style.cssText = 'font-size:15px;font-weight:700;color:#000;text-align:center;';
+      title.textContent = 'GRUPO ' + k;
+      
+      var equiposDiv = document.createElement('div');
+      equiposDiv.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+      var datos = gruposData[k] || {};
+      (datos.equipos || []).forEach(function(eq) {
+        var eqSpan = document.createElement('div');
+        eqSpan.style.cssText = 'font-size:12px;color:#3c3c43;text-align:center;';
+        eqSpan.textContent = eq;
+        equiposDiv.appendChild(eqSpan);
+      });
+      
+      // Badge de completado
+      if (done) {
+        var badge = document.createElement('div');
+        badge.style.cssText = 'font-size:10px;color:#34c759;text-align:center;font-weight:700;margin-top:4px;';
+        badge.textContent = '✓ Completado';
+        equiposDiv.appendChild(badge);
+      }
+      
+      card.appendChild(title);
+      card.appendChild(equiposDiv);
+      
+      card.addEventListener('click', function() {
         activeGrupo = activeGrupo === k ? null : k;
         buildGruposGrid();
         renderGrupoPanel(activeGrupo);
       });
-      grid.appendChild(btn);
+      
+      grid.appendChild(card);
     });
   }
 

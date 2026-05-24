@@ -2663,9 +2663,9 @@ var PESTANAS_CONFIG = {
       'L': { equipos: ['🇬🇧 Inglaterra', '🇭🇷 Croacia', '🇬🇭 Ghana', '🇵🇦 Panamá'] }
     };
 
-    // Crear grid CSS 3x4
+    // Crear grid CSS 3 columnas x 4 filas
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
     grid.style.gap = '12px';
     grid.style.padding = '16px';
 
@@ -2676,7 +2676,7 @@ var PESTANAS_CONFIG = {
       card.onmouseout = function() { this.style.borderColor = activeGrupoStandings === k ? '#27ae60' : '#e5e5ea'; };
       
       var title = document.createElement('div');
-      title.style.cssText = 'font-size:15px;font-weight:700;color:#000;text-align:center;';
+      title.style.cssText = 'font-size:14px;font-weight:700;color:#000;text-align:center;';
       title.textContent = 'GRUPO ' + k;
       
       var equiposDiv = document.createElement('div');
@@ -3261,9 +3261,9 @@ var PESTANAS_CONFIG = {
       'L': { equipos: ['🇬🇧 Inglaterra', '🇭🇷 Croacia', '🇬🇭 Ghana', '🇵🇦 Panamá'] }
     };
     
-    // Crear grid CSS 3x4
+    // Crear grid CSS 3 columnas x 4 filas
     grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
     grid.style.gap = '12px';
     grid.style.padding = '16px';
 
@@ -3276,7 +3276,7 @@ var PESTANAS_CONFIG = {
       card.onmouseout = function() { this.style.borderColor = activeGrupo === k ? '#27ae60' : (done ? '#34c759' : '#e5e5ea'); };
       
       var title = document.createElement('div');
-      title.style.cssText = 'font-size:15px;font-weight:700;color:#000;text-align:center;';
+      title.style.cssText = 'font-size:14px;font-weight:700;color:#000;text-align:center;';
       title.textContent = 'GRUPO ' + k;
       
       var equiposDiv = document.createElement('div');
@@ -3284,7 +3284,7 @@ var PESTANAS_CONFIG = {
       var datos = gruposData[k] || {};
       (datos.equipos || []).forEach(function(eq) {
         var eqSpan = document.createElement('div');
-        eqSpan.style.cssText = 'font-size:12px;color:#3c3c43;text-align:center;';
+        eqSpan.style.cssText = 'font-size:11px;color:#3c3c43;text-align:center;';
         eqSpan.textContent = eq;
         equiposDiv.appendChild(eqSpan);
       });

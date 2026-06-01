@@ -674,7 +674,7 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-grupo-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; }
         .esp-equipos-lista { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; }
         .esp-equipo-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .esp-equipo-item .esp-bandera { font-size: 40px; }
+        .esp-equipo-item .esp-bandera { font-size: 30px; }
         .esp-equipo-item .esp-nombre { font-size: 10px; font-weight: 500; color: #1c1c1e; text-align: center; max-width: 100px; }
         .esp-posicion-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .esp-posicion-label { width: 32px; font-size: 14px; font-weight: 700; color: #8e8e93; }

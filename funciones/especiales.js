@@ -374,25 +374,25 @@ function cambiarTab(tabId) {
   if (contenidoGuardar) contenidoGuardar.style.display = tabId === 'guardar' ? 'block' : 'none';
   
   const badgeExplicativo = document.getElementById('esp-badge-explicativo');
-const badgePulso = document.getElementById('esp-badge-pulso');
-
-if (badgeExplicativo) {
-  if (tabId === 'ciclo1') {
-    badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>';
-    badgeExplicativo.style.display = 'block';
-    if (badgePulso) badgePulso.style.display = 'none';
-  } else if (tabId === 'ciclo2') {
-    badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS CUATRO FINALISTAS</strong>💡 Pronostique los finalistas del torneo. Puntos según posición: Campeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">720 pts</span> · Subcampeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">360 pts</span> · Tercero <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">180 pts</span> · Cuarto <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">90 pts</span>';
-    badgeExplicativo.style.display = 'block';
-    if (badgePulso) {
-      badgePulso.innerHTML = getBadgePulsoHTML();
-      badgePulso.style.display = 'block';
+  const badgePulso = document.getElementById('esp-badge-pulso');
+  
+  if (badgeExplicativo) {
+    if (tabId === 'ciclo1') {
+      badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>';
+      badgeExplicativo.style.display = 'block';
+      if (badgePulso) badgePulso.style.display = 'none';
+    } else if (tabId === 'ciclo2') {
+      badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS CUATRO FINALISTAS</strong>💡 Pronostique los finalistas del torneo. Puntos según posición: Campeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">720 pts</span> · Subcampeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">360 pts</span> · Tercero <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">180 pts</span> · Cuarto <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">90 pts</span>';
+      badgeExplicativo.style.display = 'block';
+      if (badgePulso) {
+        badgePulso.innerHTML = getBadgePulsoHTML();
+        badgePulso.style.display = 'block';
+      }
+    } else if (tabId === 'guardar') {
+      badgeExplicativo.style.display = 'none';
+      if (badgePulso) badgePulso.style.display = 'none';
     }
-  } else if (tabId === 'guardar') {
-    badgeExplicativo.style.display = 'none';
-    if (badgePulso) badgePulso.style.display = 'none';
   }
-}
 }
 
 function actualizarPuntuacion() {
@@ -651,7 +651,7 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
   }
   
   contenedor.innerHTML = `
-    <div style="width:100%; background: #ffffff; border-radius: 20px; padding: 20px;">
+    <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; padding: 20px; overflow-x: hidden; overflow-y: auto; box-sizing: border-box;">
       <style>
         .esp-tabs-container { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #e5e5ea; padding-bottom: 8px; }
         .esp-tab { flex: 1; padding: 12px 8px; background: none; border: 1px solid #d1d1d6; border-radius: 12px; font-size: 13px; font-weight: 600; color: #8e8e93; cursor: pointer; transition: all 0.2s; text-align: center; white-space: normal; }
@@ -667,31 +667,8 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-bloqueo-aviso { background: #fff2f2; border: 1px solid #ffd0d0; border-radius: 12px; padding: 10px 14px; margin-bottom: 20px; font-size: 12px; font-weight: 600; color: #c0392b; text-align: center; }
         
         .esp-seccion-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
-        
-        .esp-grupos-tabs {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 16px;
-          max-width: 300px;
-          justify-content: center;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        
-        .esp-grupo-tab {
-          width: 38px;
-          height: 38px;
-          border-radius: 24px;
-          background: #f2f2f7;
-          border: 1px solid #e5e5ea;
-          color: #3c3c43;
-          font-size: 16px;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
+        .esp-grupos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; max-width: 300px; justify-content: center; margin-left: auto; margin-right: auto; }
+        .esp-grupo-tab { width: 38px; height: 38px; border-radius: 19px; background: #f2f2f7; border: 1px solid #e5e5ea; color: #3c3c43; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .esp-grupo-tab.active { background: #007aff; border-color: #007aff; color: #fff; }
         .esp-grupo-panel { background: #f9f9fb; border: 1px solid #e5e5ea; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
         .esp-grupo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
@@ -700,17 +677,17 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-equipo-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .esp-equipo-item .esp-bandera { font-size: 40px; }
         .esp-equipo-item .esp-nombre { font-size: 12px; font-weight: 500; color: #1c1c1e; text-align: center; max-width: 70px; word-break: break-word; white-space: normal; line-height: 1.3; }
-        .esp-posicion-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .esp-posicion-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; width: 100%; overflow: hidden; }
         .esp-posicion-label { width: 32px; font-size: 14px; font-weight: 700; color: #8e8e93; }
-        .esp-selector { flex: 1; position: relative; }
-        .esp-selector-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #ffffff; border: 1.5px solid #e5e5ea; border-radius: 12px; font-size: 14px; font-weight: 500; color: #1c1c1e; cursor: pointer; transition: all 0.2s; }
+        .esp-selector { flex: 1; position: relative; min-width: 0; max-width: 100%; }
+        .esp-selector-btn { width: 100%; max-width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #ffffff; border: 1.5px solid #e5e5ea; border-radius: 12px; font-size: 14px; font-weight: 500; color: #1c1c1e; cursor: pointer; transition: all 0.2s; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .esp-selector-btn:disabled { background: #f2f2f7; cursor: not-allowed; opacity: 0.7; }
         .esp-selector-btn.has-value { border-color: #34c759; background: #eafaf1; }
-        .esp-selector-value { text-align: left; }
-        .esp-selector-arrow { font-size: 10px; color: #8e8e93; transition: transform 0.2s; }
+        .esp-selector-value { text-align: left; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
+        .esp-selector-arrow { font-size: 10px; color: #8e8e93; transition: transform 0.2s; flex-shrink: 0; }
         .esp-dropdown-menu { position: absolute; top: 100%; left: 0; right: 0; background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; margin-top: 4px; z-index: 100; display: none; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .esp-dropdown-menu.open { display: block; }
-        .esp-dropdown-item { padding: 10px 14px; font-size: 13px; color: #1c1c1e; cursor: pointer; transition: background 0.2s; }
+        .esp-dropdown-item { padding: 10px 14px; font-size: 13px; color: #1c1c1e; cursor: pointer; transition: background 0.2s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .esp-dropdown-item:hover { background: #f2f2f7; }
         .esp-dropdown-item.selected { background: #e8f3ff; color: #007aff; font-weight: 600; }
         .esp-dropdown-item.used { opacity: 0.5; cursor: not-allowed; background: #f2f2f7; }

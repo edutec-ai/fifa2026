@@ -379,18 +379,15 @@ function cambiarTab(tabId) {
   
   if (badgeExplicativo) {
     if (tabId === 'ciclo1') {
-      badgeExplicativo.innerHTML = '💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: 60 pts. En desorden: 30 pts.';
-      if (badgePulso) badgePulso.style.display = 'none';
-    } else if (tabId === 'ciclo2') {
-      badgeExplicativo.innerHTML = '💡 Pronostique los finalistas del torneo. Puntos según posición: Campeón 720, Subcampeón 360, Tercero 180, Cuarto 90.';
-      if (badgePulso) {
-        badgePulso.innerHTML = getBadgePulsoHTML();
-        badgePulso.style.display = 'block';
-      }
-    } else {
-      badgeExplicativo.innerHTML = '';
-      if (badgePulso) badgePulso.style.display = 'none';
-    }
+  badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>';
+  if (badgePulso) badgePulso.style.display = 'none';
+} else if (tabId === 'ciclo2') {
+  badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS CUATRO FINALISTAS</strong>💡 Pronostique los finalistas del torneo. Puntos según posición: Campeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">720 pts</span> · Subcampeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">360 pts</span> · Tercero <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">180 pts</span> · Cuarto <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">90 pts</span>';
+  if (badgePulso) {
+    badgePulso.innerHTML = getBadgePulsoHTML();
+    badgePulso.style.display = 'block';
+  }
+}
   }
 }
 
@@ -730,7 +727,7 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
       </div>
       
       <div id="esp-badge-explicativo" class="esp-badge-explicativo">
-        💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: 60 pts. En desorden: 30 pts.
+        <strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>
       </div>
       
       <div id="esp-badge-pulso" class="esp-pulso-badge pulso-100" style="display: none;"></div>

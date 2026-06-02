@@ -4,7 +4,7 @@
 // Los equipos se cargan dinámicamente desde la API
 
 import { onSimuladorCambio, simGetFechaStr, simGetHoraStr } from './lab.js';
-import { getBandera } from './banderas.js';
+import { getBandera, getNombreVisual } from './banderas.js';
 
 // Configuración de APIs
 const BASE = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
@@ -248,7 +248,7 @@ function renderGrupoSelector(grupo) {
         ${equipos.map(eq => `
           <div class="esp-equipo-item">
             <div class="esp-bandera">${getBandera(eq)}</div>
-            <div class="esp-nombre">${eq}</div>
+            <div class="esp-nombre">${getNombreVisual(eq)}</div>
           </div>
         `).join('')}
       </div>
@@ -257,11 +257,11 @@ function renderGrupoSelector(grupo) {
         <div class="esp-posicion-label">1°</div>
         <div class="esp-selector" data-grupo="${grupo}" data-pos="1">
           <button class="esp-selector-btn ${sel[1] ? 'has-value' : ''}" id="esp-btn-${grupo}-1" ${bloqueado ? 'disabled' : ''}>
-            <span class="esp-selector-value" id="esp-val-${grupo}-1">${sel[1] ? getBandera(sel[1]) + ' ' + sel[1] : '<span style="color:#8e8e93;">Seleccionar 1° clasificado...</span>'}</span>
+            <span class="esp-selector-value" id="esp-val-${grupo}-1">${sel[1] ? getBandera(sel[1]) + ' ' + getNombreVisual(sel[1]) : '<span style="color:#8e8e93;">Seleccionar 1° clasificado...</span>'}</span>
             ${!bloqueado ? '<span class="esp-selector-arrow">▼</span>' : ''}
           </button>
           ${!bloqueado ? `<div class="esp-dropdown-menu" id="esp-drop-${grupo}-1">
-            ${equipos.map(eq => `<div class="esp-dropdown-item ${sel[1] === eq ? 'selected' : ''}" data-value="${eq}" data-grupo="${grupo}" data-pos="1">${getBandera(eq)} ${eq}</div>`).join('')}
+            ${equipos.map(eq => `<div class="esp-dropdown-item ${sel[1] === eq ? 'selected' : ''}" data-value="${eq}" data-grupo="${grupo}" data-pos="1">${getBandera(eq)} ${getNombreVisual(eq)}</div>`).join('')}
           </div>` : ''}
         </div>
       </div>
@@ -270,11 +270,11 @@ function renderGrupoSelector(grupo) {
         <div class="esp-posicion-label">2°</div>
         <div class="esp-selector" data-grupo="${grupo}" data-pos="2">
           <button class="esp-selector-btn ${sel[2] ? 'has-value' : ''}" id="esp-btn-${grupo}-2" ${bloqueado ? 'disabled' : ''}>
-            <span class="esp-selector-value" id="esp-val-${grupo}-2">${sel[2] ? getBandera(sel[2]) + ' ' + sel[2] : '<span style="color:#8e8e93;">Seleccionar 2° clasificado...</span>'}</span>
+            <span class="esp-selector-value" id="esp-val-${grupo}-2">${sel[2] ? getBandera(sel[2]) + ' ' + getNombreVisual(sel[2]) : '<span style="color:#8e8e93;">Seleccionar 2° clasificado...</span>'}</span>
             ${!bloqueado ? '<span class="esp-selector-arrow">▼</span>' : ''}
           </button>
           ${!bloqueado ? `<div class="esp-dropdown-menu" id="esp-drop-${grupo}-2">
-            ${equipos.map(eq => `<div class="esp-dropdown-item ${sel[2] === eq ? 'selected' : ''}" data-value="${eq}" data-grupo="${grupo}" data-pos="2">${getBandera(eq)} ${eq}</div>`).join('')}
+            ${equipos.map(eq => `<div class="esp-dropdown-item ${sel[2] === eq ? 'selected' : ''}" data-value="${eq}" data-grupo="${grupo}" data-pos="2">${getBandera(eq)} ${getNombreVisual(eq)}</div>`).join('')}
           </div>` : ''}
         </div>
       </div>
@@ -297,7 +297,7 @@ function renderFinalistaSelector(titulo, key, pts, icon) {
       <div class="esp-selector" data-finalista="${key}">
         <button class="esp-selector-btn ${valor ? 'has-value' : ''}" id="esp-btn-final-${key}" ${bloqueado ? 'disabled' : ''}>
           <span class="esp-selector-value" id="esp-val-final-${key}">
-            ${valor ? getBandera(valor) + ' ' + valor : '<span style="color:#8e8e93;">Seleccionar equipo...</span>'}
+            ${valor ? getBandera(valor) + ' ' + getNombreVisual(valor) : '<span style="color:#8e8e93;">Seleccionar equipo...</span>'}
           </span>
           ${!bloqueado ? '<span class="esp-selector-arrow">▼</span>' : ''}
         </button>
@@ -305,7 +305,7 @@ function renderFinalistaSelector(titulo, key, pts, icon) {
           ${equipos.map(eq => {
             const isUsed = Object.entries(finalistasSeleccion).some(([k, v]) => k !== key && v === eq);
             const isCurrent = valor === eq;
-            return `<div class="esp-dropdown-item ${isCurrent ? 'selected' : ''} ${isUsed ? 'used' : ''}" data-value="${eq}" data-finalista="${key}" style="${isUsed && !isCurrent ? 'opacity:0.5;cursor:not-allowed;' : ''}">${getBandera(eq)} ${eq} ${isUsed && !isCurrent ? '⚠️ ya seleccionado' : ''}</div>`;
+            return `<div class="esp-dropdown-item ${isCurrent ? 'selected' : ''} ${isUsed ? 'used' : ''}" data-value="${eq}" data-finalista="${key}" style="${isUsed && !isCurrent ? 'opacity:0.5;cursor:not-allowed;' : ''}">${getBandera(eq)} ${getNombreVisual(eq)} ${isUsed && !isCurrent ? '⚠️ ya seleccionado' : ''}</div>`;
           }).join('')}
         </div>` : ''}
       </div>
@@ -424,7 +424,7 @@ function seleccionarEquipoGrupo(grupo, pos, valor) {
   
   const valSpan = document.getElementById(`esp-val-${grupo}-${pos}`);
   const btnEl = document.getElementById(`esp-btn-${grupo}-${pos}`);
-  if (valSpan) valSpan.innerHTML = getBandera(valor) + ' ' + valor;
+  if (valSpan) valSpan.innerHTML = getBandera(valor) + ' ' + getNombreVisual(valor);
   if (btnEl) btnEl.classList.add('has-value');
   
   actualizarPuntuacion();
@@ -442,7 +442,7 @@ function seleccionarFinalista(key, valor) {
   
   const valSpan = document.getElementById(`esp-val-final-${key}`);
   const btnEl = document.getElementById(`esp-btn-final-${key}`);
-  if (valSpan) valSpan.innerHTML = getBandera(valor) + ' ' + valor;
+  if (valSpan) valSpan.innerHTML = getBandera(valor) + ' ' + getNombreVisual(valor);
   if (btnEl) btnEl.classList.add('has-value');
   
   actualizarPuntuacion();
@@ -672,23 +672,10 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-grupo-panel { background: #f9f9fb; border: 1px solid #e5e5ea; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
         .esp-grupo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
         .esp-grupo-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-        .esp-equipos-lista { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; }
+        .esp-equipos-lista { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 20px; }
         .esp-equipo-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        
-        .esp-equipo-item .esp-bandera { 
-          font-size: 40px; 
-        }
-        
-        .esp-equipo-item .esp-nombre {
-          font-size: 12px;
-          font-weight: 500;
-          color: #1c1c1e;
-          text-align: center;
-          max-width: 70px;
-          word-break: break-word;
-          white-space: normal;
-          line-height: 1.3;
-        }
+        .esp-equipo-item .esp-bandera { font-size: 40px; }
+        .esp-equipo-item .esp-nombre { font-size: 12px; font-weight: 500; color: #1c1c1e; text-align: center; max-width: 70px; word-break: break-word; white-space: normal; line-height: 1.3; }
         .esp-posicion-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .esp-posicion-label { width: 32px; font-size: 14px; font-weight: 700; color: #8e8e93; }
         .esp-selector { flex: 1; position: relative; }

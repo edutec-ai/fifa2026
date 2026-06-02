@@ -669,8 +669,8 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-grupos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
         
         .esp-grupo-tab {
-          width: 40px;
-          height: 40px;
+          width: 36px;
+          height: 36px;
           border-radius: 24px;
           background: #f2f2f7;
           border: 1px solid #e5e5ea;

@@ -667,7 +667,20 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         
         .esp-seccion-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
         .esp-grupos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .esp-grupo-tab { width: 48px; height: 48px; border-radius: 24px; background: #f2f2f7; border: 1px solid #e5e5ea; color: #3c3c43; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        
+        .esp-grupo-tab {
+          width: 40px;
+          height: 40px;
+          border-radius: 24px;
+          background: #f2f2f7;
+          border: 1px solid #e5e5ea;
+          color: #3c3c43;
+          font-size: 16px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
         .esp-grupo-tab.active { background: #007aff; border-color: #007aff; color: #fff; }
         .esp-grupo-panel { background: #f9f9fb; border: 1px solid #e5e5ea; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
         .esp-grupo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }

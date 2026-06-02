@@ -50,6 +50,7 @@ export const BANDERAS = {
   // Grupo H
   'España': '🇪🇸',
   'Islas de Cabo Verde': '🇨🇻',
+  'Cabo Verde': '🇨🇻',      // Alias para nombre corto
   'Arabia Saudí': '🇸🇦',
   'Uruguay': '🇺🇾',
   
@@ -81,6 +82,21 @@ export const BANDERAS = {
   'Playoff UEFA': '🏆'
 };
 
+// Nombres cortos para visualización (no afecta la lógica de negocio)
+export const NOMBRES_VISUALES = {
+  'República de Corea': 'Corea del Sur',
+  'Islas de Cabo Verde': 'Cabo Verde'
+};
+
+// Obtener nombre corto para visualización
+export function getNombreVisual(nombre) {
+  return NOMBRES_VISUALES[nombre] || nombre;
+}
+
 export function getBandera(nombre) {
-  return BANDERAS[nombre] || '🏳️';
+  // Primero buscar el nombre original, luego el alias
+  if (BANDERAS[nombre]) return BANDERAS[nombre];
+  const alias = NOMBRES_VISUALES[nombre];
+  if (alias && BANDERAS[alias]) return BANDERAS[alias];
+  return '🏳️';
 }

@@ -666,7 +666,17 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-bloqueo-aviso { background: #fff2f2; border: 1px solid #ffd0d0; border-radius: 12px; padding: 10px 14px; margin-bottom: 20px; font-size: 12px; font-weight: 600; color: #c0392b; text-align: center; }
         
         .esp-seccion-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
-        .esp-grupos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        
+        .esp-grupos-tabs {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 16px;
+          max-width: 300px;
+          justify-content: center;
+          margin-left: auto;
+          margin-right: auto;
+        }
         
         .esp-grupo-tab {
           width: 38px;

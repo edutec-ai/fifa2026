@@ -110,7 +110,8 @@ export function cargarFrontpage(datosCuenta) {
         display: flex; 
         gap: 12px; 
         padding: 12px; 
-        overflow: hidden; 
+        overflow: hidden;
+        min-height: 0;
       }
       
       @media (min-width: 769px) {
@@ -130,7 +131,8 @@ export function cargarFrontpage(datosCuenta) {
           padding: 0px; 
           border: 2px solid #fff; 
           border-radius: 20px; 
-          overflow-y: auto; 
+          overflow-y: auto;
+          overflow-x: hidden;
         }
         .mobile-tab-bar {
           display: none !important;
@@ -153,7 +155,8 @@ export function cargarFrontpage(datosCuenta) {
           padding: 0px; 
           border: 2px solid #fff; 
           border-radius: 20px; 
-          overflow-y: auto; 
+          overflow-y: auto;
+          overflow-x: hidden;
         }
         .mobile-tab-bar {
           display: flex !important;
@@ -186,10 +189,19 @@ export function cargarFrontpage(datosCuenta) {
         .mobile-tab-label { font-size: 9px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; }
       }
       
-      .fp-body-zone-contenido > div { width: 100%; height: 100%; }
+      .fp-body-zone-contenido > div { 
+        width: 100%; 
+        height: 100%;
+      }
       
-      @keyframes fadeOutContent { from { opacity: 1; } to { opacity: 0; transform: scale(0.98); } }
-      @keyframes fadeInContent { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+      @keyframes fadeOutContent { 
+        from { opacity: 1; } 
+        to { opacity: 0; transform: scale(0.98); } 
+      }
+      @keyframes fadeInContent { 
+        from { opacity: 0; transform: scale(0.98); } 
+        to { opacity: 1; transform: scale(1); } 
+      }
     </style>
     
     <header class="fp-header-premium">

@@ -469,6 +469,7 @@ function refrescarEspecialesPorFecha() {
   const panel = document.getElementById('esp-grupo-panel');
   if (panel && GRUPOS_EQUIPOS[grupoActivo]) {
     panel.innerHTML = renderGrupoSelector(grupoActivo);
+    setupEventListeners();
   }
   
   const finalistasContainer = document.getElementById('esp-finalistas-container');
@@ -519,29 +520,36 @@ function setupEventListeners() {
     };
   });
   
-  document.querySelectorAll('.esp-selector[data-grupo]').forEach(selector => {
-    const btn = selector.querySelector('.esp-selector-btn');
-    const dropdown = selector.querySelector('.esp-dropdown-menu');
-    const grupo = selector.dataset.grupo;
-    const pos = parseInt(selector.dataset.pos);
+  // ========== VERSIÓN CORREGIDA PARA SELECTORES DE GRUPO ==========
+document.querySelectorAll('.esp-selector[data-grupo]').forEach(selector => {
+  const btn = selector.querySelector('.esp-selector-btn');
+  const dropdown = selector.querySelector('.esp-dropdown-menu');
+  const grupo = selector.dataset.grupo;
+  const pos = parseInt(selector.dataset.pos);
+  
+  // Limpiar eventos anteriores para evitar duplicados
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  const newDropdown = dropdown.cloneNode(true);
+  dropdown.parentNode.replaceChild(newDropdown, dropdown);
+  
+  if (newBtn && newDropdown && !estadoVentanas.ciclo1Bloqueado) {
+    newBtn.onclick = (e) => {
+      e.stopPropagation();
+      cerrarTodosDropdowns();
+      newDropdown.classList.add('open');
+    };
     
-    if (btn && dropdown && !estadoVentanas.ciclo1Bloqueado) {
-      btn.onclick = (e) => {
+    newDropdown.querySelectorAll('.esp-dropdown-item').forEach(item => {
+      item.onclick = (e) => {
         e.stopPropagation();
+        const valor = item.dataset.value;
+        seleccionarEquipoGrupo(grupo, pos, valor);
         cerrarTodosDropdowns();
-        dropdown.classList.add('open');
       };
-      
-      dropdown.querySelectorAll('.esp-dropdown-item').forEach(item => {
-        item.onclick = (e) => {
-          e.stopPropagation();
-          const valor = item.dataset.value;
-          seleccionarEquipoGrupo(grupo, pos, valor);
-          cerrarTodosDropdowns();
-        };
-      });
-    }
-  });
+    });
+  }
+});
   
   document.querySelectorAll('.esp-selector[data-finalista]').forEach(selector => {
     const btn = selector.querySelector('.esp-selector-btn');

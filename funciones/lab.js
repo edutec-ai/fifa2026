@@ -278,12 +278,10 @@ function labMostrar(api, data) {
   if (jsonEl) jsonEl.textContent = JSON.stringify(data, null, 2);
   
   if (resultadoEl) {
-      resultadoEl.style.display = 'block';
-      // Hacer scroll hasta el visor para que sea visible
-      setTimeout(() => {
-          resultadoEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-  }
+    resultadoEl.style.display = 'block';
+    // Hacer scroll hasta el visor para que sea visible
+    resultadoEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
   
   labRenderTablaInterna(registros, campos);
 }

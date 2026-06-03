@@ -1,6 +1,7 @@
 // funciones/lab.js
 // Laboratorio de APIs, Simulador de Fecha y Visor JSON
 // Con persistencia de fecha/hora en localStorage y variable global
+// ESTRUCTURA MODIFICADA: igual que partidos.js (contenedor con scroll)
 
 const BASE    = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
 const KEY     = 'SuzvTp4qwXQtAVFJbdzP';
@@ -252,7 +253,7 @@ export function labRefrescarTodo(btnElement) {
   LAB_APIS.forEach(api => labFetch(api, true));
 }
 
-// ========== labMostrar DEFINIDA ANTES DE renderizarLab ==========
+// ========== labMostrar ==========
 function labMostrar(api, data) {
   const key = api.url ? 'fifa_ptd' : api.id;
   const registros = data[key] || data[Object.keys(data).find(k => Array.isArray(data[k]))] || [];
@@ -278,10 +279,18 @@ function labMostrar(api, data) {
   if (jsonEl) jsonEl.textContent = JSON.stringify(data, null, 2);
   
   if (resultadoEl) {
-    resultadoEl.style.display = 'block';
-    // Hacer scroll hasta el visor para que sea visible
-    resultadoEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+      resultadoEl.style.display = 'block';
+      // Hacer scroll hasta el visor dentro del contenedor con scroll
+      setTimeout(() => {
+          const scrollContainer = document.getElementById('lab-contenido-scroll');
+          if (scrollContainer && resultadoEl) {
+              scrollContainer.scrollTo({
+                  top: resultadoEl.offsetTop - 20,
+                  behavior: 'smooth'
+              });
+          }
+      }, 100);
+  }
   
   labRenderTablaInterna(registros, campos);
 }
@@ -373,11 +382,11 @@ export function cerrarResultado() {
   visorState.campos = null;
 }
 
-// ========== RENDERIZADO PRINCIPAL ==========
+// ========== RENDERIZADO PRINCIPAL (con estructura igual a partidos.js) ==========
 export function renderizarLab(contenedor, datosCuenta) {
   if (!contenedor) return;
   
-  // Exponer funciones globalmente (labMostrar YA está definida)
+  // Exponer funciones globalmente
   window.labPaginar = labPaginar;
   window.labCambiarPorPagina = labCambiarPorPagina;
   window.cerrarResultado = cerrarResultado;
@@ -391,107 +400,53 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.labMostrar = labMostrar;
   window.LAB_APIS = LAB_APIS;
   
+  // ESTRUCTURA: igual que partidos.js - con flex y overflow-y:auto
   contenedor.innerHTML = `
-    <div style="width:100%;">
-      <button id="btn-refrescar-todo" onclick="labRefrescarTodo(this)"
-        style="width:100%;background:#1c1c1e;color:#fff;border:none;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
-        <span style="font-size:18px;display:inline-block;">⚙️</span> Actualizar todas las APIs
-      </button>
-      
-      <div style="background:rgba(0,0,0,0.3);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:14px 16px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <span style="font-size:16px;">🕐</span>
-          <span style="font-size:13px;font-weight:700;color:#fff;">Simulador de fecha y hora</span>
-          <span style="font-size:11px;color:rgba(255,255,255,0.5);margin-left:auto;">Afecta la pantalla de Partidos y Especiales</span>
+    <div style="width:100%; height:100%; display:flex; flex-direction:column; background:#fff; border-radius:16px; overflow:hidden;">
+      <!-- CABECERA FIJA (sin scroll) -->
+      <div style="flex-shrink:0; padding:16px;">
+        <button id="btn-refrescar-todo" onclick="labRefrescarTodo(this)"
+          style="width:100%; background:#1c1c1e; color:#fff; border:none; border-radius:14px; padding:14px 16px; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;">
+          <span style="font-size:18px; display:inline-block;">⚙️</span> Actualizar todas las APIs
+        </button>
+        
+        <div style="background:#f2f2f7; border-radius:14px; padding:14px 16px; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="font-size:16px;">🕐</span>
+            <span style="font-size:13px; font-weight:700; color:#1c1c1e;">Simulador de fecha y hora</span>
+            <span style="font-size:11px; color:#8e8e93; margin-left:auto;">Afecta a Partidos y Especiales</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <input type="datetime-local" id="sim-datetime"
+              style="flex:1; min-width:180px; padding:8px 12px; border:1.5px solid #e5e5ea; border-radius:10px; font-size:14px; color:#1c1c1e; background:#fff; outline:none;">
+            <button id="sim-reset-btn" style="padding:8px 14px; background:#fff; border:1px solid #e5e5ea; border-radius:10px; font-size:12px; font-weight:600; color:#007aff; cursor:pointer;">↺ Ahora</button>
+            <button id="sim-aplicar-btn" style="padding:8px 14px; background:#007aff; color:#fff; border:none; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer;">▶ Aplicar</button>
+          </div>
+          <div id="sim-status" style="margin-top:8px; font-size:11px; color:#8e8e93;"></div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <input type="datetime-local" id="sim-datetime"
-            style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid rgba(255,255,255,0.2);border-radius:10px;font-size:14px;color:#fff;background:rgba(0,0,0,0.5);outline:none;">
-          <button id="sim-reset-btn" style="padding:8px 14px;background:rgba(255,255,255,0.1);border:none;border-radius:10px;font-size:12px;font-weight:600;color:#fff;cursor:pointer;">↺ Ahora</button>
-          <button id="sim-aplicar-btn" style="padding:8px 14px;background:#007aff;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;">▶ Aplicar</button>
-        </div>
-        <div id="sim-status" style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.5);"></div>
+        
+        <div id="lab-apis" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
       
-      <div id="lab-apis" style="display:flex;flex-direction:column;gap:10px;"></div>
-      
-      <div id="lab-resultado" style="margin-top:20px;display:none;text-align:left;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <div id="lab-titulo" style="font-size:14px;font-weight:700;color:#fff;"></div>
-          <button id="lab-cerrar-resultado" style="background:rgba(255,255,255,0.1);border:none;border-radius:20px;width:28px;height:28px;font-size:16px;color:rgba(255,255,255,0.7);cursor:pointer;">✕</button>
+      <!-- CONTENIDO CON SCROLL (igual que partidos.js) -->
+      <div id="lab-contenido-scroll" style="flex:1; overflow-y:auto; padding:0 16px 16px 16px;">
+        <div id="lab-resultado" style="margin-top:20px; display:none; text-align:left;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+            <div id="lab-titulo" style="font-size:14px; font-weight:700; color:#1c1c1e;"></div>
+            <button id="lab-cerrar-resultado" style="background:#f2f2f7; border:none; border-radius:20px; width:28px; height:28px; font-size:16px; color:#8e8e93; cursor:pointer;">✕</button>
+          </div>
+          <div id="lab-meta" style="font-size:11px; color:#8e8e93; margin-bottom:10px;"></div>
+          <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">JSON crudo</div>
+          <pre id="lab-json" style="background:#1e1e1e; color:#d4d4d4; border-radius:12px; padding:12px; font-size:11px; overflow-x:auto; white-space:pre-wrap; max-height:300px; margin:0 0 14px; text-align:left;"></pre>
+          <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">Tabla resumen</div>
+          <div id="lab-tabla" style="overflow-x:auto; border-radius:8px;"></div>
+          <div id="lab-paginacion-controls" style="margin-top:8px;"></div>
         </div>
-        <div id="lab-meta" style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:10px;"></div>
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:6px;">JSON crudo</div>
-        <pre id="lab-json" style="background:rgba(0,0,0,0.5);color:#e5e5ea;border-radius:12px;padding:12px;font-size:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:220px;margin:0 0 14px;text-align:left;"></pre>
-        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:6px;">Tabla resumen</div>
-        <div id="lab-tabla" style="overflow-x:auto;border-radius:8px;"></div>
-        <div id="lab-paginacion-controls" style="margin-top:8px;"></div>
       </div>
     </div>
   `;
   
-  // ========== CORRECCIÓN DE VISIBILIDAD DEL VISOR ==========
-  const styleVisor = document.createElement('style');
-  styleVisor.textContent = `
-    #lab-resultado {
-      background: #ffffff !important;
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 20px;
-      border: 1px solid #e5e5ea;
-    }
-    #lab-titulo {
-      color: #1c1c1e !important;
-      font-size: 16px;
-      font-weight: 700;
-    }
-    #lab-meta {
-      color: #8e8e93 !important;
-      font-size: 11px;
-      margin-bottom: 12px;
-    }
-    #lab-json {
-      background: #1e1e1e !important;
-      color: #d4d4d4 !important;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 11px;
-      font-family: monospace;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      max-height: 300px;
-    }
-    #lab-tabla {
-      background: #ffffff !important;
-      border: 1px solid #e5e5ea;
-      border-radius: 12px;
-      overflow-x: auto;
-      margin-top: 8px;
-    }
-    #lab-tabla table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    #lab-tabla th {
-      background: #f2f2f7;
-      color: #3c3c43;
-      padding: 10px 8px;
-      text-align: left;
-      font-weight: 700;
-      border-bottom: 1px solid #e5e5ea;
-    }
-    #lab-tabla td {
-      color: #1c1c1e;
-      padding: 8px;
-      border-bottom: 0.5px solid #f0f0f0;
-    }
-    #lab-paginacion-controls {
-      margin-top: 12px;
-    }
-  `;
-  document.head.appendChild(styleVisor);
-  
+  // Inicializar componentes
   initSimulador();
   
   const simResetBtn = document.getElementById('sim-reset-btn');
@@ -505,26 +460,27 @@ export function renderizarLab(contenedor, datosCuenta) {
   const cerrarBtn = document.getElementById('lab-cerrar-resultado');
   if (cerrarBtn) cerrarBtn.onclick = () => cerrarResultado();
   
+  // Cargar las cards de APIs
   const container = document.getElementById('lab-apis');
   if (container) {
     container.innerHTML = '';
     LAB_APIS.forEach(api => {
       const card = document.createElement('div');
       card.id = 'lab-card-' + api.id;
-      card.style.cssText = 'display:flex;align-items:center;gap:12px;background:rgba(30,30,35,0.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;transition:all 0.2s;cursor:pointer;';
+      card.style.cssText = 'display:flex; align-items:center; gap:12px; background:#f9f9fb; border:1px solid #e5e5ea; border-radius:14px; padding:14px; transition:all 0.2s; cursor:pointer;';
       const cached = datosCache[api.id];
       const badgeText = cached ? cached.count + ' reg ✓' : '...';
-      const badgeBg = cached ? '#d4edda' : 'rgba(255,255,255,0.15)';
-      const badgeColor = cached ? '#155724' : 'rgba(255,255,255,0.6)';
+      const badgeBg = cached ? '#d4edda' : '#f2f2f7';
+      const badgeColor = cached ? '#155724' : '#8e8e93';
       card.innerHTML = `
-        <div style="width:40px;height:40px;border-radius:10px;background:${api.color}22;display:flex;align-items:center;justify-content:center;font-size:20px;">${api.icon}</div>
+        <div style="width:40px; height:40px; border-radius:10px; background:${api.color}22; display:flex; align-items:center; justify-content:center; font-size:20px;">${api.icon}</div>
         <div style="flex:1;">
-          <div style="font-size:14px;font-weight:700;color:#fff;">${api.label}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.5);">${api.desc}</div>
+          <div style="font-size:14px; font-weight:700; color:#1c1c1e;">${api.label}</div>
+          <div style="font-size:11px; color:#8e8e93;">${api.desc}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div id="lab-badge-${api.id}" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:${badgeBg};color:${badgeColor};">${badgeText}</div>
-          <button id="lab-refresh-${api.id}" onclick="event.stopPropagation(); labConsultar('${api.id}')" style="background:${api.color};color:#fff;border:none;border-radius:10px;width:32px;height:32px;font-size:16px;cursor:pointer;">↻</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div id="lab-badge-${api.id}" style="font-size:10px; font-weight:600; padding:3px 8px; border-radius:6px; background:${badgeBg}; color:${badgeColor};">${badgeText}</div>
+          <button id="lab-refresh-${api.id}" onclick="event.stopPropagation(); labConsultar('${api.id}')" style="background:${api.color}; color:#fff; border:none; border-radius:10px; width:32px; height:32px; font-size:16px; cursor:pointer;">↻</button>
         </div>
       `;
       if (cached) { card._data = cached.data; card._api = api; }
@@ -535,15 +491,18 @@ export function renderizarLab(contenedor, datosCuenta) {
       };
       container.appendChild(card);
     });
+    
+    // Configuración especial para Partidos est=2
     const card2 = document.getElementById('lab-card-fifa_ptd_est2');
     if (card2) {
       const descEl = card2.querySelector('div > div:last-child');
       if (descEl) {
-        descEl.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="font-size:11px;color:rgba(255,255,255,0.5);">est=</span><input id="lab-filtro-est" type="number" value="2" min="0" max="9" style="width:44px;padding:3px 6px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:12px;color:#fff;background:rgba(0,0,0,0.5);text-align:center;" onclick="event.stopPropagation()" /><span style="font-size:11px;color:rgba(255,255,255,0.5);">· toca ↻ para consultar</span></div>';
+        descEl.innerHTML = '<div style="display:flex; align-items:center; gap:6px; margin-top:4px;"><span style="font-size:11px; color:#8e8e93;">est=</span><input id="lab-filtro-est" type="number" value="2" min="0" max="9" style="width:44px; padding:3px 6px; border:1px solid #e5e5ea; border-radius:6px; font-size:12px; color:#1c1c1e; background:#fff; text-align:center;" onclick="event.stopPropagation()" /><span style="font-size:11px; color:#8e8e93;">· toca ↻ para consultar</span></div>';
       }
     }
   }
   
+  // Cargar datos iniciales si no existen
   LAB_APIS.forEach(api => { if (!datosCache[api.id]) labFetch(api, false); });
   if (visorState.visible && visorState.apiId && visorState.data) {
     const api = LAB_APIS.find(a => a.id === visorState.apiId);

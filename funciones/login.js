@@ -1,9 +1,23 @@
+// funciones/login.js
+// Módulo de autenticación - Versión compatible con GitHub
+
 var BASE    = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
 var BASE_V2 = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
 var KEY     = 'SuzvTp4qwXQtAVFJbdzP';
 var NOMBRES_USUARIOS = { '1': 'Henry', '3': 'Héctor' };
 
 let callbackFrontpage = null;
+
+// Función hash simple si sha3_256 no está disponible
+function generarHashSimple(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16);
+}
 
 export function configurarLogin(fnCargarFrontpage) {
   const form = document.getElementById('formLogin');
@@ -13,7 +27,6 @@ export function configurarLogin(fnCargarFrontpage) {
 
   callbackFrontpage = fnCargarFrontpage;
 
-  // AJUSTE ESTRICTO DE PIEL: Logo a escala 2x y Título en color blanco nítido (#ffffff)
   const estiloLocalLogin = document.createElement('style');
   estiloLocalLogin.textContent = `
     .logo-login-card { 
@@ -22,14 +35,13 @@ export function configurarLogin(fnCargarFrontpage) {
       margin-bottom: 20px !important; 
     }
     #loginForm h2 {
-      color: #ffffff !important; /* Retorno al color Blanco Limpio para máxima legibilidad */
+      color: #ffffff !important;
       font-weight: 700 !important;
       letter-spacing: -0.5px !important;
     }
   `;
   document.head.appendChild(estiloLocalLogin);
 
-  // Mantenemos el texto personalizado solicitado
   const tituloLogin = document.querySelector('#loginForm h2');
   if (tituloLogin) {
     tituloLogin.textContent = 'Polla Mundialista 2026';
@@ -62,8 +74,10 @@ export function configurarLogin(fnCargarFrontpage) {
       const loginCard = document.getElementById('loginForm');
       const cuentascCard = document.getElementById('cuentasForm');
       
-      document.getElementById('inputPassword').value = '';
-      document.getElementById('cuenta-list').innerHTML = '<div class="loader">⟳ Consultando Velneo...</div>';
+      const inputPass = document.getElementById('inputPassword');
+      if (inputPass) inputPass.value = '';
+      const cuentaList = document.getElementById('cuenta-list');
+      if (cuentaList) cuentaList.innerHTML = '<div class="loader">⟳ Consultando Velneo...</div>';
       
       if (chkRecordar && !chkRecordar.checked && inputUsuario) {
         inputUsuario.value = '';
@@ -81,28 +95,38 @@ export function configurarLogin(fnCargarFrontpage) {
 }
 
 function ejecutarAutenticacion() {
-  var usuario = document.getElementById('inputUsuario').value.trim().toLowerCase();
-  var pass    = document.getElementById('inputPassword').value.trim();
-  var errEl   = document.getElementById('loginError');
-  var btn     = document.getElementById('btnIngresar');
-  var chkRecordar = document.getElementById('chkRecordar');
+  const usuario = document.getElementById('inputUsuario').value.trim().toLowerCase();
+  const pass = document.getElementById('inputPassword').value.trim();
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('btnIngresar');
+  const chkRecordar = document.getElementById('chkRecordar');
   
   if (errEl) errEl.style.display = 'none';
   if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
   
-  var hashCompleto = (typeof sha3_256 !== 'undefined') ? sha3_256(pass) : btoa(pass);
-  var hash50 = hashCompleto.substring(0, 50);
+  // Usar sha3_256 si está disponible, sino usar hash simple
+  let hash50;
+  if (typeof sha3_256 !== 'undefined') {
+    hash50 = sha3_256(pass).substring(0, 50);
+  } else {
+    // Fallback para cuando no hay sha3_256
+    hash50 = generarHashSimple(pass + KEY).substring(0, 50);
+    console.warn('⚠️ Usando hash simple (sha3_256 no disponible)');
+  }
   
   fetch(BASE_V2 + '/_process/API_VLD_USR?api_key=' + KEY, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ USR_NOM: usuario, HASH: hash50 })
   })
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error('Error HTTP: ' + r.status);
+    return r.json();
+  })
   .then(data => {
     if (btn) { btn.disabled = false; btn.textContent = 'Ingresar'; }
     
-    var usrId = data.ID || data.usr || data.USR || data.id || null;
+    const usrId = data.ID || data.usr || data.USR || data.id || null;
     if (!usrId) {
       if (errEl) {
         errEl.textContent = '⚠️ Usuario o contraseña incorrectos';
@@ -116,8 +140,9 @@ function ejecutarAutenticacion() {
       localStorage.setItem('polla_usuario', usuario);
     }
     
-    var nombre = NOMBRES_USUARIOS[String(usrId)] || usuario;
-    document.getElementById('cuenta-saludo').textContent = '¡Hola, ' + nombre + '!';
+    const nombre = NOMBRES_USUARIOS[String(usrId)] || usuario;
+    const saludoEl = document.getElementById('cuenta-saludo');
+    if (saludoEl) saludoEl.textContent = '¡Hola, ' + nombre + '!';
     
     const loginCard = document.getElementById('loginForm');
     const cuentascCard = document.getElementById('cuentasForm');
@@ -131,7 +156,8 @@ function ejecutarAutenticacion() {
       }, 400);
     }
   })
-  .catch(() => {
+  .catch((error) => {
+    console.error('Error de conexión:', error);
     if (btn) { btn.disabled = false; btn.textContent = 'Ingresar'; }
     if (errEl) {
       errEl.textContent = '⚠️ Error de conexión con Velneo';
@@ -141,15 +167,18 @@ function ejecutarAutenticacion() {
 }
 
 function renderizarCardsCuentas(usrId) {
-  var listEl = document.getElementById('cuenta-list');
-  var subEl  = document.getElementById('cuenta-sub');
+  const listEl = document.getElementById('cuenta-list');
+  const subEl = document.getElementById('cuenta-sub');
   
   fetch(BASE + '/fifa_jug?api_key=' + KEY)
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error('Error HTTP: ' + r.status);
+      return r.json();
+    })
     .then(data => {
-      var todos = data.fifa_jug || [];
-      var cuentas = todos.filter(j => Number(j.usr) === usrId && j.off !== true);
-      var colores = ['#f0a500', '#34c759', '#af52de', '#007aff', '#ff3b30'];
+      const todos = data.fifa_jug || [];
+      const cuentas = todos.filter(j => Number(j.usr) === usrId && j.off !== true);
+      const colores = ['#f0a500', '#34c759', '#af52de', '#007aff', '#ff3b30'];
       
       if (!cuentas.length) {
         if (subEl) subEl.textContent = 'No tienes cuentas configuradas.';
@@ -161,8 +190,8 @@ function renderizarCardsCuentas(usrId) {
       if (listEl) {
         listEl.innerHTML = '';
         cuentas.forEach((c, i) => {
-          var iniciales = (c.name || 'X').split(' ').map(w => w[0]).join('').toUpperCase().substring(0,2);
-          var card = document.createElement('div');
+          const iniciales = (c.name || 'X').split(' ').map(w => w[0]).join('').toUpperCase().substring(0,2);
+          const card = document.createElement('div');
           
           card.className = 'cuenta-item-static';
           card.style.cursor = 'pointer';
@@ -171,7 +200,7 @@ function renderizarCardsCuentas(usrId) {
           card.innerHTML = `
             <div class="cuenta-avatar" style="background:${colores[i % colores.length]};color:#fff;">${iniciales}</div>
             <div class="cuenta-info">
-              <div class="cuenta-nombre">${c.name || '—'}</div>
+              <div class="cuenta-nombre">${escapeHtml(c.name || '—')}</div>
               <div class="cuenta-tag">Cuenta ${i+1} · ID: ${c.id}</div>
             </div>
             <div class="cuenta-pts">${c.ptr || c.pun || 0} pts</div>
@@ -199,8 +228,16 @@ function renderizarCardsCuentas(usrId) {
         });
       }
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error('Error cargando cuentas:', error);
       if (subEl) subEl.textContent = 'Error de sincronización.';
       if (listEl) listEl.innerHTML = '<div class="loader" style="color:#ff453a;">⚠️ Error de datos</div>';
     });
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }

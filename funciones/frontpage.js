@@ -4,6 +4,7 @@ import { renderizarLab, onSimuladorCambio } from './lab.js';
 import { renderizarEspeciales } from './especiales.js';
 import { renderizarPartidos } from './partidos.js';
 import { renderizarAdmin, getAdminConfig } from './admin.js';
+import { renderizarPolla } from './polla.js';
 
 export function cargarFrontpage(datosCuenta) {
   const frontpageCard = document.getElementById('frontpageForm');
@@ -26,7 +27,7 @@ export function cargarFrontpage(datosCuenta) {
         case 'partidos': if (adminConfig.habilitarPartidos || esAdmin) renderizarPartidos(contenidoContainer, datosCuenta); break;
         case 'especiales': if (adminConfig.habilitarEspeciales || esAdmin) renderizarEspeciales(contenidoContainer, datosCuenta); break;
         case 'tabla': if (adminConfig.habilitarTabla || esAdmin) contenidoContainer.innerHTML = `<div style="text-align:center;color:white;padding:40px;"><h3>📊 Tabla de Posiciones</h3><p>Próximamente...</p></div>`; break;
-        case 'la-polla': if (adminConfig.habilitarLaPolla || esAdmin) { const puntos = cuenta.ptr || cuenta.pun || 0; contenidoContainer.innerHTML = `<div style="text-align:center;color:white;padding:40px;"><h3>🏆 Mis Pronósticos</h3><p style="font-size:2rem;color:#ffd700;">${puntos} pts</p></div>`; } break;
+        case 'la-polla': if (adminConfig.habilitarLaPolla || esAdmin) renderizarPolla(contenidoContainer, datosCuenta); break;
         case 'lab': if (adminConfig.habilitarLab || esAdmin) renderizarLab(contenidoContainer, datosCuenta); break;
         case 'admin': if (esAdmin) renderizarAdmin(contenidoContainer, datosCuenta); break;
         default: contenidoContainer.innerHTML = `<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;"><p>Selecciona una opción del menú</p></div>`;

@@ -13,8 +13,6 @@
             --line-white: rgba(255, 255, 255, 0.85);
             --cancha-width: 100%;
             --cancha-ratio: calc(105 / 68);
-            --card-scale: 1;
-            --font-scale: 1;
         }
 
         * {
@@ -42,86 +40,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-            transform: scale(var(--card-scale));
-        }
-
-        /* Panel de control para pruebas */
-        .dev-panel {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .dev-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #ffd700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
-        .dev-controls {
-            display: none;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .dev-controls.visible {
-            display: flex;
-        }
-
-        .dev-group {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .dev-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        .dev-slider {
-            width: 100%;
-            height: 4px;
-            -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .dev-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #ffd700;
-            cursor: pointer;
-        }
-
-        .dev-value {
-            font-size: 12px;
-            color: #ffd700;
-            margin-top: 4px;
-            display: inline-block;
-        }
-
-        .dev-badge {
-            background: rgba(255, 59, 48, 0.3);
-            color: #ffd700;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
         }
 
         /* ========== CANCHA DE FÚTBOL ========== */
@@ -194,8 +112,14 @@
             align-items: center;
         }
 
-        .area-completa.izquierda { border-left: none; }
-        .area-completa.derecha { border-right: none; justify-content: flex-end; }
+        .area-completa.izquierda {
+            border-left: none;
+        }
+
+        .area-completa.derecha {
+            border-right: none;
+            justify-content: flex-end;
+        }
 
         .area-chica {
             height: 40%;
@@ -203,8 +127,13 @@
             border: 3px solid var(--line-white);
         }
 
-        .izquierda .area-chica { border-left: none; }
-        .derecha .area-chica { border-right: none; }
+        .izquierda .area-chica {
+            border-left: none;
+        }
+
+        .derecha .area-chica {
+            border-right: none;
+        }
 
         .bomba-area {
             position: absolute;
@@ -275,7 +204,7 @@
         .bottom-left  { bottom: -3px; left: -3px; clip-path: inset(0 0 50% 50%); }
         .bottom-right { bottom: -3px; right: -3px; clip-path: inset(0 50% 50% 0); }
 
-        /* Badge PARTIDO EN VIVO flotante sobre la cancha */
+        /* Badge PARTIDO EN VIVO flotante sobre la cancha (sin blink) */
         .badge-partido-en-vivo {
             position: absolute;
             top: 10px;
@@ -308,17 +237,22 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .flotante-local { left: 3%; }
-        .flotante-visita { right: 3%; }
+        .flotante-local {
+            left: 3%;
+        }
+
+        .flotante-visita {
+            right: 3%;
+        }
 
         .bandera {
-            font-size: calc(36px * var(--font-scale));
+            font-size: 36px;
             margin-bottom: 6px;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         .equipo-nombre {
-            font-size: calc(14px * var(--font-scale));
+            font-size: 10px;
             font-weight: 700;
             color: #fff;
             text-transform: uppercase;
@@ -330,7 +264,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 2px;
         }
 
         .control-goles button {
@@ -338,9 +272,9 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 14px;
-            width: calc(44px * var(--font-scale));
-            height: calc(44px * var(--font-scale));
-            font-size: calc(22px * var(--font-scale));
+            width: 30px;
+            height: 30px;
+            font-size: 22px;
             font-weight: 700;
             color: #fff;
             cursor: pointer;
@@ -357,7 +291,7 @@
         }
 
         .goles-valor {
-            font-size: calc(32px * var(--font-scale));
+            font-size: 20px;
             font-weight: 800;
             color: #ffd700;
             min-width: 55px;
@@ -365,75 +299,77 @@
         }
 
         /* ========== SIMULADOR DE PUNTOS ========== */
-        .resultado-real-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
+.resultado-real-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
 
-        .resultado-real-selector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
+.resultado-real-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;              /* ← reducido de 30px a 8px (más pegado al VS) */
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
 
-        .resultado-equipo {
-            text-align: center;
-            flex: 1;
-            min-width: 120px;
-        }
+.resultado-equipo {
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+}
 
-        .resultado-equipo-nombre {
-            font-size: calc(12px * var(--font-scale));
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
+.resultado-equipo-nombre {
+    font-size: 10px;        /* ← igual que .equipo-nombre (10px) */
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-        .resultado-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+.resultado-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;              /* ← cambiado de 10px a 0px (pegados) */
+}
 
-        .resultado-controls button {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 12px;
-            width: calc(40px * var(--font-scale));
-            height: calc(40px * var(--font-scale));
-            font-size: calc(20px * var(--font-scale));
-            font-weight: 700;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+.resultado-controls button {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-        .resultado-controls button:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-        }
+.resultado-controls button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
 
-        .resultado-goles {
-            font-size: calc(28px * var(--font-scale));
-            font-weight: 800;
-            color: #fff;
-            min-width: 50px;
-            text-align: center;
-        }
+.resultado-goles {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    min-width: 45px;       /* ← reducido de 50px */
+    text-align: center;
+}
 
-        .resultado-vs {
-            font-size: calc(18px * var(--font-scale));
-            font-weight: 700;
-            color: #ffd700;
-        }
+.resultado-vs {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffd700;
+    margin: 0 4px;         /* ← margen mínimo alrededor del VS */
+}
 
         .badge-pronostico {
             background: rgba(255, 215, 0, 0.15);
@@ -444,7 +380,7 @@
         }
 
         .badge-pronostico span {
-            font-size: calc(15px * var(--font-scale));
+            font-size: 15px;
             font-weight: 700;
             color: #ffd700;
         }
@@ -468,7 +404,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 8px 12px;
-            font-size: calc(13px * var(--font-scale));
+            font-size: 13px;
             font-weight: 600;
             color: #fff;
             cursor: pointer;
@@ -507,15 +443,16 @@
         }
 
         .tabla-header h3 {
-            font-size: calc(16px * var(--font-scale));
+            font-size: 16px;
             font-weight: 600;
             color: #fff;
         }
 
+        /* Badge rojo en la tabla de puntos */
         .badge-base-rojo {
             background-color: #ff3b30;
             color: white;
-            font-size: calc(11px * var(--font-scale));
+            font-size: 11px;
             font-weight: 700;
             padding: 4px 10px;
             border-radius: 20px;
@@ -536,12 +473,12 @@
         }
 
         .categoria-nombre {
-            font-size: calc(14px * var(--font-scale));
+            font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
         }
 
         .categoria-puntos {
-            font-size: calc(14px * var(--font-scale));
+            font-size: 14px;
             font-weight: 600;
             color: #fff;
         }
@@ -560,13 +497,13 @@
         }
 
         .total-nombre {
-            font-size: calc(18px * var(--font-scale));
+            font-size: 18px;
             font-weight: 700;
             color: #fff;
         }
 
         .total-puntos {
-            font-size: calc(28px * var(--font-scale));
+            font-size: 28px;
             font-weight: 800;
             color: #fff;
         }
@@ -578,50 +515,12 @@
 </head>
 <body>
     <div class="simulador-card">
-        <!-- PANEL DE CONTROL PARA PRUEBAS (DEV TOOLS) -->
-        <div class="dev-panel">
-            <div class="dev-title" id="dev-toggle">
-                <span>🛠️ PANEL DE PRUEBAS (DESARROLLADOR)</span>
-                <span class="dev-badge">▼</span>
-            </div>
-            <div class="dev-controls" id="dev-controls">
-                <div class="dev-group">
-                    <label class="dev-label">📐 Escalar interfaz</label>
-                    <input type="range" id="scale-slider" class="dev-slider" min="0.5" max="1.5" step="0.01" value="1">
-                    <span class="dev-value" id="scale-value">100%</span>
-                </div>
-                <div class="dev-group">
-                    <label class="dev-label">🔤 Tamaño de fuente</label>
-                    <input type="range" id="font-slider" class="dev-slider" min="0.7" max="1.5" step="0.01" value="1">
-                    <span class="dev-value" id="font-value">100%</span>
-                </div>
-                <div class="dev-group">
-                    <label class="dev-label">⚽ Slider EQUIPO A</label>
-                    <input type="range" id="slider-local" class="dev-slider" min="0" max="20" step="1" value="3">
-                    <span class="dev-value" id="slider-local-value">3</span>
-                </div>
-                <div class="dev-group">
-                    <label class="dev-label">⚽ Slider EQUIPO B</label>
-                    <input type="range" id="slider-visita" class="dev-slider" min="0" max="20" step="1" value="2">
-                    <span class="dev-value" id="slider-visita-value">2</span>
-                </div>
-                <div class="dev-group">
-                    <label class="dev-label">🎯 Resultado EQUIPO A</label>
-                    <input type="range" id="slider-real-local" class="dev-slider" min="0" max="20" step="1" value="0">
-                    <span class="dev-value" id="slider-real-local-value">0</span>
-                </div>
-                <div class="dev-group">
-                    <label class="dev-label">🎯 Resultado EQUIPO B</label>
-                    <input type="range" id="slider-real-visita" class="dev-slider" min="0" max="20" step="1" value="0">
-                    <span class="dev-value" id="slider-real-visita-value">0</span>
-                </div>
-            </div>
-        </div>
-
         <!-- CANCHA DE FÚTBOL -->
         <div class="cancha-wrapper">
             <div class="cancha-contenedor" id="cancha">
+                <!-- Badge PARTIDO EN VIVO (esquina superior derecha, sin blink) -->
                 <div class="badge-partido-en-vivo">🔴 PARTIDO EN VIVO</div>
+                
                 <div class="corner top-left"></div>
                 <div class="corner top-right"></div>
                 <div class="corner bottom-left"></div>
@@ -642,6 +541,7 @@
                     <div class="area-chica"></div>
                 </div>
 
+                <!-- Placeholders flotantes -->
                 <div class="flotante-local">
                     <div class="bandera" id="bandera-local">🏳️</div>
                     <div class="equipo-nombre">EQUIPO A</div>
@@ -664,10 +564,12 @@
             </div>
         </div>
 
+        <!-- SIMULADOR DE PUNTOS -->
         <div class="badge-pronostico">
             <span>MI PRONÓSTICO</span>
         </div>
 
+        <!-- SELECTOR DINÁMICO DE RESULTADO REAL -->
         <div class="resultado-real-container">
             <div class="resultado-real-selector">
                 <div class="resultado-equipo">
@@ -690,30 +592,32 @@
             </div>
         </div>
 
+        <!-- BOTONES PREDEFINIDOS -->
         <div class="botones-grid">
             <div class="fila-botones">
                 <button class="btn-resultado" data-local="3" data-visita="0">3 - 0</button>
                 <button class="btn-resultado" data-local="3" data-visita="1">3 - 1</button>
                 <button class="btn-resultado" data-local="3" data-visita="2">3 - 2</button>
                 <button class="btn-resultado" data-local="3" data-visita="3">3 - 3</button>
-                <button class="btn-resultado" data-local="3" data-visita="4">3 - 4</button>
+                
             </div>
             <div class="fila-botones">
                 <button class="btn-resultado" data-local="2" data-visita="0">2 - 0</button>
                 <button class="btn-resultado" data-local="2" data-visita="1">2 - 1</button>
                 <button class="btn-resultado" data-local="2" data-visita="2">2 - 2</button>
                 <button class="btn-resultado" data-local="2" data-visita="3">2 - 3</button>
-                <button class="btn-resultado" data-local="2" data-visita="4">2 - 4</button>
+                
             </div>
             <div class="fila-botones">
                 <button class="btn-resultado" data-local="0" data-visita="0">0 - 0</button>
                 <button class="btn-resultado" data-local="1" data-visita="0">1 - 0</button>
                 <button class="btn-resultado" data-local="1" data-visita="1">1 - 1</button>
                 <button class="btn-resultado" data-local="1" data-visita="2">1 - 2</button>
-                <button class="btn-resultado" data-local="1" data-visita="3">1 - 3</button>
+                
             </div>
         </div>
 
+        <!-- TABLA DE PUNTOS -->
         <div class="tabla-puntos">
             <div class="tabla-header">
                 <h3>📋 Detalle de puntos</h3>
@@ -752,51 +656,6 @@
         
         document.getElementById('bandera-local').textContent = BANDERAS[Math.floor(Math.random() * BANDERAS.length)];
         document.getElementById('bandera-visita').textContent = BANDERAS[Math.floor(Math.random() * BANDERAS.length)];
-
-        // Elementos DOM
-        const root = document.documentElement;
-        const scaleSlider = document.getElementById('scale-slider');
-        const fontSlider = document.getElementById('font-slider');
-        const scaleValue = document.getElementById('scale-value');
-        const fontValue = document.getElementById('font-value');
-        const devToggle = document.getElementById('dev-toggle');
-        const devControls = document.getElementById('dev-controls');
-
-        // Sliders
-        const sliderLocal = document.getElementById('slider-local');
-        const sliderVisita = document.getElementById('slider-visita');
-        const sliderRealLocal = document.getElementById('slider-real-local');
-        const sliderRealVisita = document.getElementById('slider-real-visita');
-        const sliderLocalValue = document.getElementById('slider-local-value');
-        const sliderVisitaValue = document.getElementById('slider-visita-value');
-        const sliderRealLocalValue = document.getElementById('slider-real-local-value');
-        const sliderRealVisitaValue = document.getElementById('slider-real-visita-value');
-
-        // Toggle panel de desarrollo
-        let devVisible = false;
-        devToggle.addEventListener('click', () => {
-            devVisible = !devVisible;
-            if (devVisible) {
-                devControls.classList.add('visible');
-                devToggle.querySelector('.dev-badge').textContent = '▲';
-            } else {
-                devControls.classList.remove('visible');
-                devToggle.querySelector('.dev-badge').textContent = '▼';
-            }
-        });
-
-        // Sliders de escala
-        scaleSlider.addEventListener('input', () => {
-            const val = parseFloat(scaleSlider.value);
-            root.style.setProperty('--card-scale', val);
-            scaleValue.textContent = Math.round(val * 100) + '%';
-        });
-
-        fontSlider.addEventListener('input', () => {
-            const val = parseFloat(fontSlider.value);
-            root.style.setProperty('--font-scale', val);
-            fontValue.textContent = Math.round(val * 100) + '%';
-        });
 
         const PUNTOS = {
             GANADOR: 8,
@@ -900,20 +759,12 @@
         function actualizarPronosticoEnUI() {
             document.getElementById('gol-local').textContent = pronosticoLocal;
             document.getElementById('gol-visita').textContent = pronosticoVisita;
-            sliderLocal.value = pronosticoLocal;
-            sliderVisita.value = pronosticoVisita;
-            sliderLocalValue.textContent = pronosticoLocal;
-            sliderVisitaValue.textContent = pronosticoVisita;
             actualizarUI();
         }
 
         function actualizarResultadoEnUI() {
             document.getElementById('real-gol-local').textContent = resultadoRealLocal;
             document.getElementById('real-gol-visita').textContent = resultadoRealVisita;
-            sliderRealLocal.value = resultadoRealLocal;
-            sliderRealVisita.value = resultadoRealVisita;
-            sliderRealLocalValue.textContent = resultadoRealLocal;
-            sliderRealVisitaValue.textContent = resultadoRealVisita;
             actualizarUI();
         }
 
@@ -957,37 +808,17 @@
             actualizarResultadoEnUI();
         }
 
-        // Eventos de pronóstico
+        // Eventos de pronóstico (sobre la cancha)
         document.getElementById('btn-inc-local').addEventListener('click', () => cambiarPronosticoLocal(1));
         document.getElementById('btn-dec-local').addEventListener('click', () => cambiarPronosticoLocal(-1));
         document.getElementById('btn-inc-visita').addEventListener('click', () => cambiarPronosticoVisita(1));
         document.getElementById('btn-dec-visita').addEventListener('click', () => cambiarPronosticoVisita(-1));
 
-        // Eventos de resultado real
+        // Eventos de resultado real (selectores dinámicos)
         document.getElementById('btn-real-inc-local').addEventListener('click', () => cambiarResultadoLocal(1));
         document.getElementById('btn-real-dec-local').addEventListener('click', () => cambiarResultadoLocal(-1));
         document.getElementById('btn-real-inc-visita').addEventListener('click', () => cambiarResultadoVisita(1));
         document.getElementById('btn-real-dec-visita').addEventListener('click', () => cambiarResultadoVisita(-1));
-
-        // Sliders de desarrollo
-        sliderLocal.addEventListener('input', () => {
-            pronosticoLocal = parseInt(sliderLocal.value);
-            actualizarPronosticoEnUI();
-        });
-        sliderVisita.addEventListener('input', () => {
-            pronosticoVisita = parseInt(sliderVisita.value);
-            actualizarPronosticoEnUI();
-        });
-        sliderRealLocal.addEventListener('input', () => {
-            resultadoRealLocal = parseInt(sliderRealLocal.value);
-            actualizarResultadoEnUI();
-            document.querySelectorAll('.btn-resultado').forEach(b => b.classList.remove('activo'));
-        });
-        sliderRealVisita.addEventListener('input', () => {
-            resultadoRealVisita = parseInt(sliderRealVisita.value);
-            actualizarResultadoEnUI();
-            document.querySelectorAll('.btn-resultado').forEach(b => b.classList.remove('activo'));
-        });
 
         // Eventos de botones predefinidos
         const botones = document.querySelectorAll('.btn-resultado');

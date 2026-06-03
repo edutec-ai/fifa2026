@@ -380,6 +380,7 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.simGetFechaStr = simGetFechaStr;
   window.simGetHoraStr = simGetHoraStr;
   window.onSimuladorCambio = onSimuladorCambio;
+  window.labMostrar = labMostrar;
   
   contenedor.innerHTML = `
     <div style="width:100%;">

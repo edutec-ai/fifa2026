@@ -203,6 +203,28 @@ export function cargarFrontpage(datosCuenta) {
         from { opacity: 0; transform: scale(0.98); } 
         to { opacity: 1; transform: scale(1); } 
       }
+
+/* ARREGLAR DROPDOWNS CORTADOS */
+.esp-contenido-ciclo1,
+.esp-grupo-panel,
+.esp-selector,
+.esp-posicion-row,
+.fp-content-body,
+.fp-body-zone-contenido {
+  overflow: visible !important;
+}
+
+.esp-dropdown-menu {
+  position: absolute;
+  z-index: 9999 !important;
+  background: white;
+  border: 1px solid #e5e5ea;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  min-width: 200px;
+}
+
+      
     </style>
     
     <header class="fp-header-premium">

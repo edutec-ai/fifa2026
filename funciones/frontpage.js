@@ -24,14 +24,14 @@ export function cargarFrontpage(datosCuenta) {
     contenidoContainer.style.animation = 'fadeOutContent 0.2s ease-out forwards';
     setTimeout(() => {
       switch(opcion) {
-        case 'partidos': if (adminConfig.habilitarPartidos || esAdmin) renderizarPartidos(contenidoContainer, datosCuenta); break;
-        case 'especiales': if (adminConfig.habilitarEspeciales || esAdmin) renderizarEspeciales(contenidoContainer, datosCuenta); break;
-        case 'tabla': if (adminConfig.habilitarTabla || esAdmin) contenidoContainer.innerHTML = `<div style="text-align:center;color:white;padding:40px;"><h3>📊 Tabla de Posiciones</h3><p>Próximamente...</p></div>`; break;
-        case 'la-polla': if (adminConfig.habilitarLaPolla || esAdmin) renderizarPolla(contenidoContainer, datosCuenta); break;
-        case 'lab': if (adminConfig.habilitarLab || esAdmin) renderizarLab(contenidoContainer, datosCuenta); break;
-        case 'admin': if (esAdmin) renderizarAdmin(contenidoContainer, datosCuenta); break;
-        default: contenidoContainer.innerHTML = `<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;"><p>Selecciona una opción del menú</p></div>`;
-      }
+  case 'partidos': renderizarPartidos(contenidoContainer, datosCuenta); break;
+  case 'especiales': renderizarEspeciales(contenidoContainer, datosCuenta); break;
+  case 'tabla': contenidoContainer.innerHTML = `<div style="text-align:center;color:white;padding:40px;"><h3>📊 Tabla de Posiciones</h3><p>Próximamente...</p></div>`; break;
+  case 'la-polla': renderizarPolla(contenidoContainer, datosCuenta); break;
+  case 'lab': renderizarLab(contenidoContainer, datosCuenta); break;
+  case 'admin': if (esAdmin) renderizarAdmin(contenidoContainer, datosCuenta); break;
+  default: contenidoContainer.innerHTML = `<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;"><p>Selecciona una opción del menú</p></div>`;
+}
       contenidoContainer.style.animation = 'fadeInContent 0.3s ease-out forwards';
     }, 200);
   };

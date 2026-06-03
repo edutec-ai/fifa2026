@@ -419,6 +419,68 @@ export function renderizarLab(contenedor, datosCuenta) {
       </div>
     </div>
   `;
+
+  // ========== CORRECCIÓN DE VISIBILIDAD DEL VISOR ==========
+  const styleVisor = document.createElement('style');
+  styleVisor.textContent = `
+    #lab-resultado {
+      background: #ffffff !important;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 20px;
+      border: 1px solid #e5e5ea;
+    }
+    #lab-titulo {
+      color: #1c1c1e !important;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    #lab-meta {
+      color: #8e8e93 !important;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+    #lab-json {
+      background: #1e1e1e !important;
+      color: #d4d4d4 !important;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 11px;
+      font-family: monospace;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 300px;
+    }
+    #lab-tabla {
+      background: #ffffff !important;
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+    #lab-tabla table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    #lab-tabla th {
+      background: #f2f2f7;
+      color: #3c3c43;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    #lab-tabla td {
+      color: #1c1c1e;
+      padding: 8px;
+      border-bottom: 0.5px solid #f0f0f0;
+    }
+    #lab-paginacion-controls {
+      margin-top: 12px;
+    }
+  `;
+  document.head.appendChild(styleVisor);
   
   initSimulador();
   

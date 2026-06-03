@@ -53,6 +53,7 @@ let estadoVentanas = {
 // ─────────────────────────────────────────────────────────────
 
 function getEquipoIdPorNombre(nombre) {
+  if (!nombre) return null;
   const equipo = equiposCache.find(e => e.name === nombre);
   return equipo ? equipo.id : null;
 }
@@ -106,10 +107,11 @@ function getPtsFinalistas() {
   let total = 0;
   const multiplicador = estadoVentanas.ciclo2Pulso === 100 ? 1 : 0.5;
   
-  if (finalistasSeleccion.campeon === 'Argentina') total += 720 * multiplicador;
-  if (finalistasSeleccion.subcampeon === 'Francia') total += 360 * multiplicador;
-  if (finalistasSeleccion.tercero === 'Brasil') total += 180 * multiplicador;
-  if (finalistasSeleccion.cuarto === 'Alemania') total += 90 * multiplicador;
+  // Puntos según posición (valores fijos por ahora, se actualizarán cuando Velneo tenga los equipos reales)
+  if (finalistasSeleccion.campeon) total += 720 * multiplicador;
+  if (finalistasSeleccion.subcampeon) total += 360 * multiplicador;
+  if (finalistasSeleccion.tercero) total += 180 * multiplicador;
+  if (finalistasSeleccion.cuarto) total += 90 * multiplicador;
   return total;
 }
 
@@ -573,52 +575,99 @@ function setupEventListeners() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 6. GUARDAR EN API (simulado hasta tener endpoint)
+// 6. GUARDAR EN API (REAL - Conexión con Velneo)
 // ─────────────────────────────────────────────────────────────
 
 async function guardarEspeciales() {
   const guardarBtn = document.getElementById('esp-btn-guardar-final');
   const originalText = guardarBtn?.textContent || 'Guardar';
   
+  if (!currentJugadorId) {
+    mostrarToast('❌ Error: No se ha identificado el jugador', 'err');
+    return;
+  }
+  
+  // Validar que haya al menos un pronóstico antes de guardar
+  const hayGrupos = Object.keys(gruposSeleccion).some(g => {
+    const sel = gruposSeleccion[g];
+    return sel && (sel[1] || sel[2]);
+  });
+  const hayFinalistas = Object.values(finalistasSeleccion).some(v => v !== null);
+  
+  if (!hayGrupos && !hayFinalistas) {
+    mostrarToast('⚠️ No hay pronósticos para guardar', 'err');
+    return;
+  }
+  
   if (guardarBtn) {
-    guardarBtn.textContent = '⟳ Guardando...';
+    guardarBtn.textContent = '⟳ Enviando a Velneo...';
     guardarBtn.disabled = true;
   }
   
-  const gruposPayload = {};
-  GRUPOS_LISTA.forEach(grupo => {
-    const sel = gruposSeleccion[grupo] || {};
-    if (sel[1] && sel[2]) {
-      gruposPayload[grupo] = {
-        p1: getEquipoIdPorNombre(sel[1]),
-        p2: getEquipoIdPorNombre(sel[2]),
-        p1_nombre: sel[1],
-        p2_nombre: sel[2]
-      };
-    }
-  });
-  
+  // Construir payload con los 29 campos que espera API_PUT_JUG
   const payload = {
-    jugador_id: currentJugadorId,
-    grupos: gruposPayload,
-    finalistas: finalistasSeleccion,
-    pulsoFinalistas: estadoVentanas.ciclo2Pulso,
-    fechaRegistro: estadoVentanas.fechaActual
+    id: currentJugadorId
   };
   
-  console.log('Guardando especiales:', payload);
+  // Agregar clasificados por grupo (12 grupos × 2 = 24 campos)
+  const gruposOrden = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  gruposOrden.forEach(grupo => {
+    const sel = gruposSeleccion[grupo] || {};
+    const clf1 = sel[1] ? getEquipoIdPorNombre(sel[1]) : null;
+    const clf2 = sel[2] ? getEquipoIdPorNombre(sel[2]) : null;
+    payload[`grp_${grupo.toLowerCase()}_clf1`] = clf1;
+    payload[`grp_${grupo.toLowerCase()}_clf2`] = clf2;
+  });
   
-  setTimeout(() => {
+  // Agregar finalistas
+  payload.cam = finalistasSeleccion.campeon ? getEquipoIdPorNombre(finalistasSeleccion.campeon) : null;
+  payload.sub = finalistasSeleccion.subcampeon ? getEquipoIdPorNombre(finalistasSeleccion.subcampeon) : null;
+  payload.ter = finalistasSeleccion.tercero ? getEquipoIdPorNombre(finalistasSeleccion.tercero) : null;
+  payload.cua = finalistasSeleccion.cuarto ? getEquipoIdPorNombre(finalistasSeleccion.cuarto) : null;
+  
+  console.log('[Especiales] Enviando payload a API_PUT_JUG:', payload);
+  
+  try {
+    // Usamos text/plain como en partidos.js (funciona)
+    const response = await fetch(`${BASE_V2}/_process/API_PUT_JUG?api_key=${KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    
+    const respuesta = await response.json();
+    console.log('[Especiales] Respuesta del servidor:', respuesta);
+    
     datosGuardados = true;
+    
     if (guardarBtn) {
-      guardarBtn.textContent = '✓ Guardado!';
+      guardarBtn.textContent = '✓ Guardado en Velneo!';
       setTimeout(() => {
         guardarBtn.textContent = originalText;
         guardarBtn.disabled = false;
       }, 2000);
     }
+    
     mostrarToast(`✅ Especiales guardados correctamente (PULSO ${estadoVentanas.ciclo2Pulso}%)`, 'ok');
-  }, 800);
+    
+  } catch (error) {
+    console.error('[Especiales] Error al guardar:', error);
+    
+    if (guardarBtn) {
+      guardarBtn.textContent = '❌ Error al guardar';
+      setTimeout(() => {
+        guardarBtn.textContent = originalText;
+        guardarBtn.disabled = false;
+      }, 2000);
+    }
+    
+    mostrarToast(`❌ Error al guardar: ${error.message}`, 'err');
+  }
 }
 
 // ─────────────────────────────────────────────────────────────

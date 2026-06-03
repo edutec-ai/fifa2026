@@ -276,7 +276,14 @@ function labMostrar(api, data) {
   if (tituloEl) tituloEl.textContent = api.icon + ' ' + api.label;
   if (metaEl) metaEl.textContent = count + ' registros · ' + url.replace('?api_key=' + KEY, '?api_key=***');
   if (jsonEl) jsonEl.textContent = JSON.stringify(data, null, 2);
-  if (resultadoEl) resultadoEl.style.display = 'block';
+  
+  if (resultadoEl) {
+      resultadoEl.style.display = 'block';
+      // Hacer scroll hasta el visor para que sea visible
+      setTimeout(() => {
+          resultadoEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+  }
   
   labRenderTablaInterna(registros, campos);
 }
@@ -313,7 +320,7 @@ function labRenderTablaInterna(registros, campos) {
       if (String(val).length > 28) val = String(val).substring(0, 28) + '…';
       t += '<td style="padding:5px 8px;color:#1c1c1e;border-bottom:0.5px solid #f0f0f0;white-space:nowrap;text-align:left;">' + val + '</td>';
     });
-    t += '</tr>';
+    t += '<tr>';
   });
   t += '</tbody></table></div>';
   tablaEl.innerHTML = t;
@@ -383,8 +390,8 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.simGetFechaStr = simGetFechaStr;
   window.simGetHoraStr = simGetHoraStr;
   window.onSimuladorCambio = onSimuladorCambio;
-  window.labMostrar = labMostrar;  // ← Ahora sí existe
-  window.LAB_APIS = LAB_APIS;  // ← AGREGAR ESTA LÍNEA
+  window.labMostrar = labMostrar;
+  window.LAB_APIS = LAB_APIS;
   
   contenedor.innerHTML = `
     <div style="width:100%;">

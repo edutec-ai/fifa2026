@@ -252,6 +252,7 @@ export function labRefrescarTodo(btnElement) {
   LAB_APIS.forEach(api => labFetch(api, true));
 }
 
+// ========== labMostrar DEFINIDA ANTES DE renderizarLab ==========
 function labMostrar(api, data) {
   const key = api.url ? 'fifa_ptd' : api.id;
   const registros = data[key] || data[Object.keys(data).find(k => Array.isArray(data[k]))] || [];
@@ -367,9 +368,11 @@ export function cerrarResultado() {
   visorState.campos = null;
 }
 
+// ========== RENDERIZADO PRINCIPAL ==========
 export function renderizarLab(contenedor, datosCuenta) {
   if (!contenedor) return;
   
+  // Exponer funciones globalmente (labMostrar YA está definida)
   window.labPaginar = labPaginar;
   window.labCambiarPorPagina = labCambiarPorPagina;
   window.cerrarResultado = cerrarResultado;
@@ -380,7 +383,7 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.simGetFechaStr = simGetFechaStr;
   window.simGetHoraStr = simGetHoraStr;
   window.onSimuladorCambio = onSimuladorCambio;
-  window.labMostrar = labMostrar;
+  window.labMostrar = labMostrar;  // ← Ahora sí existe
   
   contenedor.innerHTML = `
     <div style="width:100%;">
@@ -420,7 +423,7 @@ export function renderizarLab(contenedor, datosCuenta) {
       </div>
     </div>
   `;
-
+  
   // ========== CORRECCIÓN DE VISIBILIDAD DEL VISOR ==========
   const styleVisor = document.createElement('style');
   styleVisor.textContent = `

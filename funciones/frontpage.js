@@ -48,7 +48,7 @@ export function cargarFrontpage(datosCuenta) {
   const colorFinal = paletaColoresFijos[hashSuma % paletaColoresFijos.length];
   const inicial = nombreCuenta.charAt(0).toUpperCase();
 
-  frontpageCard.style.cssText = 'max-width:100%;width:calc(100vw - 32px);height:calc(100dvh - 32px);border-radius:20px;background:rgba(255,255,255,0.12);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.18);display:flex;flex-direction:column;padding:0;overflow:hidden;';
+  frontpageCard.style.cssText = 'max-width:100%;width:calc(100vw - 32px);height:calc(100dvh - 32px);border-radius:20px;background:rgba(255,255,255,0.12);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,0.18);display:flex;flex-direction:column;padding:0;overflow:visible;';
   
   frontpageCard.innerHTML = `
     <style>

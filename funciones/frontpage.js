@@ -239,13 +239,14 @@ export function cargarFrontpage(datosCuenta) {
     </div>
   `;
 
-  // Construir lista de opciones del menú según configuración (SIN ADMIN)
-  const opcionesMenu = [];
-  if (adminConfig.habilitarPartidos) opcionesMenu.push({ id: 'partidos', nombre: 'PARTIDOS', color: '#007aff', icono: '⚽' });
-  if (adminConfig.habilitarEspeciales) opcionesMenu.push({ id: 'especiales', nombre: 'ESPECIALES', color: '#af52de', icono: '⭐' });
-  if (adminConfig.habilitarTabla) opcionesMenu.push({ id: 'tabla', nombre: 'TABLA', color: '#34c759', icono: '📊' });
-  if (adminConfig.habilitarLaPolla) opcionesMenu.push({ id: 'la-polla', nombre: 'LA POLLA', color: '#ff9500', icono: '🏆' });
-  if (adminConfig.habilitarLab) opcionesMenu.push({ id: 'lab', nombre: 'LAB', color: '#ff3b30', icono: '🔬' });
+  // Construir lista de opciones del menú - TODAS HABILITADAS
+const opcionesMenu = [
+  { id: 'partidos', nombre: 'PARTIDOS', color: '#007aff', icono: '⚽' },
+  { id: 'especiales', nombre: 'ESPECIALES', color: '#af52de', icono: '⭐' },
+  { id: 'tabla', nombre: 'TABLA', color: '#34c759', icono: '📊' },
+  { id: 'la-polla', nombre: 'LA POLLA', color: '#ff9500', icono: '🏆' },
+  { id: 'lab', nombre: 'LAB', color: '#ff3b30', icono: '🔬' }
+];
   
   // Inicializar menú desktop con opciones filtradas (sin ADMIN)
   inicializarMenu(datosCuenta, manejarSeleccionMenu, opcionesMenu);
@@ -275,12 +276,13 @@ export function cargarFrontpage(datosCuenta) {
   // Construir tab bar para móvil con opciones filtradas (SIN ADMIN)
   const mobileTabBar = document.getElementById('mobile-tab-bar');
   if (mobileTabBar) {
-    const opcionesMovil = [];
-    if (adminConfig.habilitarPartidos) opcionesMovil.push({ id: 'partidos', icono: '⚽', label: 'PART' });
-    if (adminConfig.habilitarEspeciales) opcionesMovil.push({ id: 'especiales', icono: '⭐', label: 'ESP' });
-    if (adminConfig.habilitarTabla) opcionesMovil.push({ id: 'tabla', icono: '📊', label: 'TAB' });
-    if (adminConfig.habilitarLaPolla) opcionesMovil.push({ id: 'la-polla', icono: '🏆', label: 'POL' });
-    if (adminConfig.habilitarLab) opcionesMovil.push({ id: 'lab', icono: '🔬', label: 'LAB' });
+    const opcionesMovil = [
+  { id: 'partidos', icono: '⚽', label: 'PART' },
+  { id: 'especiales', icono: '⭐', label: 'ESP' },
+  { id: 'tabla', icono: '📊', label: 'TAB' },
+  { id: 'la-polla', icono: '🏆', label: 'POL' },
+  { id: 'lab', icono: '🔬', label: 'LAB' }
+];
     
     mobileTabBar.innerHTML = opcionesMovil.map(op => `
       <div class="mobile-tab-item" data-opcion="${op.id}">

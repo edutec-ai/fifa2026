@@ -223,7 +223,12 @@ export function cargarFrontpage(datosCuenta) {
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
   min-width: 200px;
 }
-
+/* CORRECCIÓN PARA LAB - VISOR VISIBLE */
+body, html {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100% !important;
+}
       
     </style>
     

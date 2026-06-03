@@ -370,7 +370,7 @@
 .resultado-controls-sim {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 1px;
 }
 
 .resultado-controls-sim button {

@@ -1,7 +1,7 @@
 // funciones/lab.js
 // Laboratorio de APIs, Simulador de Fecha y Visor JSON
 // Con persistencia de fecha/hora en localStorage y variable global
-// ESTRUCTURA MODIFICADA: igual que partidos.js (contenedor con scroll)
+// ESTRUCTURA CORREGIDA: sin doble scroll, igual que partidos.js
 
 const BASE    = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
 const KEY     = 'SuzvTp4qwXQtAVFJbdzP';
@@ -277,20 +277,7 @@ function labMostrar(api, data) {
   if (tituloEl) tituloEl.textContent = api.icon + ' ' + api.label;
   if (metaEl) metaEl.textContent = count + ' registros · ' + url.replace('?api_key=' + KEY, '?api_key=***');
   if (jsonEl) jsonEl.textContent = JSON.stringify(data, null, 2);
-  
-  if (resultadoEl) {
-      resultadoEl.style.display = 'block';
-      // Hacer scroll hasta el visor dentro del contenedor con scroll
-      setTimeout(() => {
-          const scrollContainer = document.getElementById('lab-contenido-scroll');
-          if (scrollContainer && resultadoEl) {
-              scrollContainer.scrollTo({
-                  top: resultadoEl.offsetTop - 20,
-                  behavior: 'smooth'
-              });
-          }
-      }, 100);
-  }
+  if (resultadoEl) resultadoEl.style.display = 'block';
   
   labRenderTablaInterna(registros, campos);
 }
@@ -327,7 +314,7 @@ function labRenderTablaInterna(registros, campos) {
       if (String(val).length > 28) val = String(val).substring(0, 28) + '…';
       t += '<td style="padding:5px 8px;color:#1c1c1e;border-bottom:0.5px solid #f0f0f0;white-space:nowrap;text-align:left;">' + val + '</td>';
     });
-    t += '<tr>';
+    t += '</tr>';
   });
   t += '</tbody></table></div>';
   tablaEl.innerHTML = t;
@@ -382,7 +369,7 @@ export function cerrarResultado() {
   visorState.campos = null;
 }
 
-// ========== RENDERIZADO PRINCIPAL (con estructura igual a partidos.js) ==========
+// ========== RENDERIZADO PRINCIPAL (sin doble scroll, igual que partidos.js) ==========
 export function renderizarLab(contenedor, datosCuenta) {
   if (!contenedor) return;
   
@@ -400,11 +387,11 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.labMostrar = labMostrar;
   window.LAB_APIS = LAB_APIS;
   
-  // ESTRUCTURA: igual que partidos.js - con flex y overflow-y:auto
+  // ESTRUCTURA: sin div interno con overflow-y:auto (igual que partidos.js)
   contenedor.innerHTML = `
-    <div style="width:100%; height:100%; display:flex; flex-direction:column; background:#fff; border-radius:16px; overflow:hidden;">
-      <!-- CABECERA FIJA (sin scroll) -->
-      <div style="flex-shrink:0; padding:16px;">
+    <div style="width:100%; background:#fff; border-radius:16px; overflow:hidden;">
+      <!-- CABECERA FIJA -->
+      <div style="padding:16px;">
         <button id="btn-refrescar-todo" onclick="labRefrescarTodo(this)"
           style="width:100%; background:#1c1c1e; color:#fff; border:none; border-radius:14px; padding:14px 16px; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;">
           <span style="font-size:18px; display:inline-block;">⚙️</span> Actualizar todas las APIs
@@ -428,20 +415,18 @@ export function renderizarLab(contenedor, datosCuenta) {
         <div id="lab-apis" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
       
-      <!-- CONTENIDO CON SCROLL (igual que partidos.js) -->
-      <div id="lab-contenido-scroll" style="flex:1; overflow-y:auto; padding:0 16px 16px 16px;">
-        <div id="lab-resultado" style="margin-top:20px; display:none; text-align:left;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-            <div id="lab-titulo" style="font-size:14px; font-weight:700; color:#1c1c1e;"></div>
-            <button id="lab-cerrar-resultado" style="background:#f2f2f7; border:none; border-radius:20px; width:28px; height:28px; font-size:16px; color:#8e8e93; cursor:pointer;">✕</button>
-          </div>
-          <div id="lab-meta" style="font-size:11px; color:#8e8e93; margin-bottom:10px;"></div>
-          <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">JSON crudo</div>
-          <pre id="lab-json" style="background:#1e1e1e; color:#d4d4d4; border-radius:12px; padding:12px; font-size:11px; overflow-x:auto; white-space:pre-wrap; max-height:300px; margin:0 0 14px; text-align:left;"></pre>
-          <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">Tabla resumen</div>
-          <div id="lab-tabla" style="overflow-x:auto; border-radius:8px;"></div>
-          <div id="lab-paginacion-controls" style="margin-top:8px;"></div>
+      <!-- VISOR (sin div contenedor con scroll adicional - el scroll lo da frontpage.js) -->
+      <div id="lab-resultado" style="margin:20px 16px; display:none; text-align:left;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div id="lab-titulo" style="font-size:14px; font-weight:700; color:#1c1c1e;"></div>
+          <button id="lab-cerrar-resultado" style="background:#f2f2f7; border:none; border-radius:20px; width:28px; height:28px; font-size:16px; color:#8e8e93; cursor:pointer;">✕</button>
         </div>
+        <div id="lab-meta" style="font-size:11px; color:#8e8e93; margin-bottom:10px;"></div>
+        <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">JSON crudo</div>
+        <pre id="lab-json" style="background:#1e1e1e; color:#d4d4d4; border-radius:12px; padding:12px; font-size:11px; overflow-x:auto; white-space:pre-wrap; max-height:300px; margin:0 0 14px; text-align:left;"></pre>
+        <div style="font-size:10px; font-weight:700; color:#8e8e93; margin-bottom:6px;">Tabla resumen</div>
+        <div id="lab-tabla" style="overflow-x:auto; border-radius:8px;"></div>
+        <div id="lab-paginacion-controls" style="margin-top:8px;"></div>
       </div>
     </div>
   `;

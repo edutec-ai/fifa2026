@@ -229,6 +229,21 @@ body, html {
     height: auto !important;
     min-height: 100% !important;
 }
+
+/* FORZAR SCROLL EN EL CONTENEDOR DE LAB */
+#fp-body-contenido {
+    max-height: calc(100vh - 200px) !important;
+    min-height: 400px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+}
+
+/* Asegurar que el contenido de Lab ocupe todo el ancho */
+#fp-body-contenido > div {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+}
       
     </style>
     

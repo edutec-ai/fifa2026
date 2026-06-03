@@ -384,6 +384,7 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.simGetHoraStr = simGetHoraStr;
   window.onSimuladorCambio = onSimuladorCambio;
   window.labMostrar = labMostrar;  // ← Ahora sí existe
+  window.LAB_APIS = LAB_APIS;  // ← AGREGAR ESTA LÍNEA
   
   contenedor.innerHTML = `
     <div style="width:100%;">

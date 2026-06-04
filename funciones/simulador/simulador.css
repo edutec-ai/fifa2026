@@ -488,3 +488,11 @@
 .total-puntos-sim.acierto {
   color: #ffd700;
 }
+/* ========== TEXTO EQUIPO A y EQUIPO B ========== */
+.resultado-equipo-sim > div:first-child {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}

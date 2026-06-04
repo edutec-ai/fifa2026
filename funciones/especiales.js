@@ -254,24 +254,27 @@ GRUPOS_LISTA.forEach(grupo => {
 });
 gruposHTML += '</div>';
   
-  const finalistasHTML = `
-    <div style="display:flex; justify-content:space-between; padding:6px 0;">
+const finalistasHTML = `
+  <div style="font-size: 11px;">
+    <div style="display:flex; justify-content:space-between; padding:4px 0;">
       <span style="font-weight:700;">🏆 Campeón:</span>
       <span>${finalistasSeleccion.campeon ? getBandera(finalistasSeleccion.campeon) + ' ' + finalistasSeleccion.campeon : '<span style="color:#ff3b30;">❌ Pendiente</span>'}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; padding:6px 0;">
+    <div style="display:flex; justify-content:space-between; padding:4px 0;">
       <span style="font-weight:700;">🥈 Subcampeón:</span>
       <span>${finalistasSeleccion.subcampeon ? getBandera(finalistasSeleccion.subcampeon) + ' ' + finalistasSeleccion.subcampeon : '<span style="color:#ff3b30;">❌ Pendiente</span>'}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; padding:6px 0;">
+    <div style="display:flex; justify-content:space-between; padding:4px 0;">
       <span style="font-weight:700;">🥉 Tercero:</span>
       <span>${finalistasSeleccion.tercero ? getBandera(finalistasSeleccion.tercero) + ' ' + finalistasSeleccion.tercero : '<span style="color:#ff3b30;">❌ Pendiente</span>'}</span>
     </div>
-    <div style="display:flex; justify-content:space-between; padding:6px 0;">
+    <div style="display:flex; justify-content:space-between; padding:4px 0;">
       <span style="font-weight:700;">4° Cuarto:</span>
       <span>${finalistasSeleccion.cuarto ? getBandera(finalistasSeleccion.cuarto) + ' ' + finalistasSeleccion.cuarto : '<span style="color:#ff3b30;">❌ Pendiente</span>'}</span>
     </div>
-  `;
+  </div>
+`;
+  
   
   const pulsoTexto = estadoVentanas.ciclo2Pulso === 100 ? '🟢 PULSO 100% (puntos completos)' : '🟡 PULSO 50% (puntos reducidos a la mitad)';
   

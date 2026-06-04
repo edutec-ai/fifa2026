@@ -290,44 +290,44 @@ function mostrarModalConfirmacion(callback) {
   `;
   
   modal.innerHTML = `
-    <div style="background: white; border-radius: 24px; max-width: 550px; width: 90%; max-height: 85%; overflow: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-      <div style="padding: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #007aff; padding-bottom: 12px;">
-          <h3 style="margin: 0; color: #1c1c1e;">📋 Confirmar Guardado</h3>
-          <button id="esp-modal-cerrar" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #8e8e93;">✕</button>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-          <h4 style="margin: 0 0 10px 0; color: #007aff;">🏆 Clasificados por Grupo</h4>
-          <div style="background: #f9f9fb; border-radius: 12px; padding: 10px; max-height: 300px; overflow-y: auto;">
-            ${gruposHTML}
-          </div>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-          <h4 style="margin: 0 0 10px 0; color: #007aff;">⭐ Finalistas</h4>
-          <div style="background: #f9f9fb; border-radius: 12px; padding: 10px;">
-            ${finalistasHTML}
-          </div>
-        </div>
-        
-        <div style="margin-bottom: 20px; padding: 12px; background: #f0f0f5; border-radius: 12px;">
-          <div style="display: flex; justify-content: space-between;">
-            <span style="font-weight: 700;">📊 Puntos estimados:</span>
-            <span style="color: #ff9500; font-weight: 800;">${getTotalPts()} pts</span>
-          </div>
-          <div style="font-size: 11px; color: #8e8e93; margin-top: 5px;">
-            ${pulsoTexto}
-          </div>
-        </div>
-        
-        <div style="display: flex; gap: 12px;">
-          <button id="esp-modal-confirmar" style="flex:1; background: #34c759; color: white; border: none; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer;">✅ Confirmar y Guardar</button>
-          <button id="esp-modal-cancelar" style="flex:1; background: #f2f2f7; color: #8e8e93; border: none; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer;">✕ Cancelar</button>
+  <div style="background: white; border-radius: 24px; max-width: 550px; width: 90%; max-height: 85%; overflow: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); font-size: 12px;">
+    <div style="padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid #007aff; padding-bottom: 12px;">
+        <h3 style="margin: 0; color: #1c1c1e;">📋 Confirmar Guardado</h3>
+        <button id="esp-modal-cerrar" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #8e8e93;">✕</button>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <h4 style="margin: 0 0 10px 0; color: #007aff;">🏆 Clasificados por Grupo</h4>
+        <div style="background: #f9f9fb; border-radius: 12px; padding: 10px; max-height: 300px; overflow-y: auto;">
+          ${gruposHTML}
         </div>
       </div>
+      
+      <div style="margin-bottom: 20px;">
+        <h4 style="margin: 0 0 10px 0; color: #007aff;">⭐ Finalistas</h4>
+        <div style="background: #f9f9fb; border-radius: 12px; padding: 10px;">
+          ${finalistasHTML}
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 20px; padding: 12px; background: #f0f0f5; border-radius: 12px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="font-weight: 700;">📊 Puntos estimados:</span>
+          <span style="color: #ff9500; font-weight: 800;">${getTotalPts()} pts</span>
+        </div>
+        <div style="font-size: 11px; color: #8e8e93; margin-top: 5px;">
+          ${pulsoTexto}
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 12px;">
+        <button id="esp-modal-confirmar" style="flex:1; background: #34c759; color: white; border: none; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer;">✅ Confirmar y Guardar</button>
+        <button id="esp-modal-cancelar" style="flex:1; background: #f2f2f7; color: #8e8e93; border: none; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer;">✕ Cancelar</button>
+      </div>
     </div>
-  `;
+  </div>
+`;
   
   document.body.appendChild(modal);
   

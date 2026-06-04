@@ -239,19 +239,20 @@ function getBadgePulsoHTML() {
 
 function mostrarModalConfirmacion(callback) {
   // Construir resumen visual
-  let gruposHTML = '';
-  GRUPOS_LISTA.forEach(grupo => {
-    const sel = gruposSeleccion[grupo] || {};
-    const primero = sel[1] ? `${getBandera(sel[1])} ${sel[1]}` : '<span style="color:#ff3b30;">❌ Pendiente</span>';
-    const segundo = sel[2] ? `${getBandera(sel[2])} ${sel[2]}` : '<span style="color:#ff3b30;">❌ Pendiente</span>';
-    gruposHTML += `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:0.5px solid #e5e5ea;">
-        <span style="font-weight:700; width:40px;">Grupo ${grupo}</span>
-        <span style="flex:1;">1°: ${primero}</span>
-        <span style="flex:1;">2°: ${segundo}</span>
-      </div>
-    `;
-  });
+  let gruposHTML = '<div style="font-size: 11px;">';
+GRUPOS_LISTA.forEach(grupo => {
+  const sel = gruposSeleccion[grupo] || {};
+  const primero = sel[1] ? `${getBandera(sel[1])} ${sel[1]}` : '<span style="color:#ff3b30;">❌ Pendiente</span>';
+  const segundo = sel[2] ? `${getBandera(sel[2])} ${sel[2]}` : '<span style="color:#ff3b30;">❌ Pendiente</span>';
+  gruposHTML += `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:0.5px solid #e5e5ea;">
+      <span style="font-weight:700; width:35px; font-size:11px;">Grupo ${grupo}</span>
+      <span style="flex:1; font-size:11px;">1°: ${primero}</span>
+      <span style="flex:1; font-size:11px;">2°: ${segundo}</span>
+    </div>
+  `;
+});
+gruposHTML += '</div>';
   
   const finalistasHTML = `
     <div style="display:flex; justify-content:space-between; padding:6px 0;">

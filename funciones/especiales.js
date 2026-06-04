@@ -870,10 +870,38 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-grupo-panel { background: #f9f9fb; border: 1px solid #e5e5ea; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
         .esp-grupo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
         .esp-grupo-titulo { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-        .esp-equipos-lista { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 20px; }
-        .esp-equipo-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .esp-equipo-item .esp-bandera { font-size: 40px; }
-        .esp-equipo-item .esp-nombre { font-size: 12px; font-weight: 500; color: #1c1c1e; text-align: center; max-width: 70px; word-break: break-word; white-space: normal; line-height: 1.3; }
+        
+        .esp-equipos-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 16px;
+  justify-items: center;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.esp-equipo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.esp-equipo-item .esp-bandera {
+  font-size: clamp(28px, 7vw, 48px);
+}
+
+.esp-equipo-item .esp-nombre {
+  font-size: clamp(10px, 3vw, 13px);
+  font-weight: 500;
+  color: #1c1c1e;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+}
+        
         .esp-posicion-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; width: 100%; overflow: hidden; }
         .esp-posicion-label { width: 32px; font-size: 14px; font-weight: 700; color: #8e8e93; }
         .esp-selector { flex: 1; position: relative; min-width: 0; max-width: 100%; }

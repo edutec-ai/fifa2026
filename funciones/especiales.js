@@ -482,30 +482,30 @@ function renderResumenGuardado() {
   const badgePulso = estadoVentanas.ciclo2Pulso === 100 ? '🟢' : '🟡';
   
   return `
-    <div style="text-align: center; padding: 20px;">
-      <h3 style="color: #1c1c1e; margin-bottom: 8px; font-size: 16px; font-weight: 700;">Guardar Especiales</h3>
-      <p style="color: #8e8e93; margin-bottom: 24px; font-size: 13px;">Revisa tus selecciones antes de guardar</p>
-      
-      <div style="background: #f2f2f7; border-radius: 16px; padding: 16px; margin-bottom: 20px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-          <span style="font-weight: 600; color: #1c1c1e;">📋 Grupos clasificados:</span>
-          <span id="esp-resumen-grupos" style="color: #007aff; font-weight: 700;">${gruposCompletados} / 12</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-          <span style="font-weight: 600; color: #1c1c1e;">🏆 Finalistas seleccionados:</span>
-          <span id="esp-resumen-finalistas" style="color: #007aff; font-weight: 700;">${finalistasCompletados} / 4</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-          <span style="font-weight: 600; color: #1c1c1e;">⚡ PULSO Finalistas:</span>
-          <span style="color: ${estadoVentanas.ciclo2Pulso === 100 ? '#34c759' : '#ff9500'}; font-weight: 700;">${badgePulso} ${pulsoFinalistas}</span>
-        </div>
+  <div style="text-align: center; padding: 20px; font-size: 12px;">
+    <h3 style="color: #1c1c1e; margin-bottom: 8px; font-size: 16px; font-weight: 700;">Guardar Especiales</h3>
+    <p style="color: #8e8e93; margin-bottom: 24px; font-size: 13px;">Revisa tus selecciones antes de guardar</p>
+    
+    <div style="background: #f2f2f7; border-radius: 16px; padding: 16px; margin-bottom: 20px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-weight: 600; color: #1c1c1e;">📋 Grupos clasificados:</span>
+        <span id="esp-resumen-grupos" style="color: #007aff; font-weight: 700;">${gruposCompletados} / 12</span>
       </div>
-      
-      <button id="esp-btn-guardar-final" class="esp-btn-guardar" ${estadoVentanas.ciclo1Bloqueado && estadoVentanas.ciclo2Bloqueado ? 'disabled' : ''}>
-        Confirmar y Guardar Especiales
-      </button>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-weight: 600; color: #1c1c1e;">🏆 Finalistas seleccionados:</span>
+        <span id="esp-resumen-finalistas" style="color: #007aff; font-weight: 700;">${finalistasCompletados} / 4</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+        <span style="font-weight: 600; color: #1c1c1e;">⚡ PULSO Finalistas:</span>
+        <span style="color: ${estadoVentanas.ciclo2Pulso === 100 ? '#34c759' : '#ff9500'}; font-weight: 700;">${badgePulso} ${pulsoFinalistas}</span>
+      </div>
     </div>
-  `;
+    
+    <button id="esp-btn-guardar-final" class="esp-btn-guardar" ${estadoVentanas.ciclo1Bloqueado && estadoVentanas.ciclo2Bloqueado ? 'disabled' : ''}>
+      Confirmar y Guardar Especiales
+    </button>
+  </div>
+`;
 }
 
 // ─────────────────────────────────────────────────────────────

@@ -1,6 +1,8 @@
 // funciones/especiales.js
 // Módulo de Apuestas Especiales: Clasificados por Grupo + Finalistas del Torneo
-// VERSIÓN CON SCROLL CONFINADO A ZONA 3
+// VERSIÓN CON AJUSTES:
+// - Botón K con bandera 🇨🇴
+// - Textos explicativos formateados en lista vertical
 
 import { onSimuladorCambio, simGetFechaStr, simGetHoraStr } from './lab.js';
 import { getBandera, getNombreVisual } from './banderas.js';
@@ -569,7 +571,6 @@ function cambiarTab(tabId) {
     }
   });
   
-  // Actualizar el contenido de Zona 3 según el tab activo
   const zona3Content = document.getElementById('esp-zona3-contenido');
   if (!zona3Content) return;
   
@@ -578,12 +579,15 @@ function cambiarTab(tabId) {
       <div>
         <div class="esp-seccion-titulo"><span>📋</span> Selecciona un grupo</div>
         <div class="esp-grupos-tabs" id="esp-grupos-tabs">
-          ${GRUPOS_LISTA.map(g => `<button class="esp-grupo-tab ${grupoActivo === g ? 'active' : ''}" data-grupo="${g}">${g}</button>`).join('')}
+          ${GRUPOS_LISTA.map(g => {
+            let label = g;
+            if (g === 'K') label = 'K🇨🇴';
+            return `<button class="esp-grupo-tab ${grupoActivo === g ? 'active' : ''}" data-grupo="${g}">${label}</button>`;
+          }).join('')}
         </div>
         <div id="esp-grupo-panel">${GRUPOS_EQUIPOS[grupoActivo] ? renderGrupoSelector(grupoActivo) : '<div class="esp-grupo-panel">Cargando...</div>'}</div>
       </div>
     `;
-    // Re-asignar eventos de grupos
     document.querySelectorAll('.esp-grupo-tab').forEach(tab => {
       tab.onclick = () => {
         document.querySelectorAll('.esp-grupo-tab').forEach(t => t.classList.remove('active'));
@@ -614,11 +618,25 @@ function cambiarTab(tabId) {
   
   if (badgeExplicativo) {
     if (tabId === 'ciclo1') {
-      badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>';
+      badgeExplicativo.innerHTML = `
+        <strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>
+        <div style="text-align:left; margin-top:8px;">
+          • Si acierta en el orden: <strong>60 pts</strong><br>
+          • En desorden: <strong>30 pts</strong>
+        </div>
+      `;
       badgeExplicativo.style.display = 'block';
       if (badgePulso) badgePulso.style.display = 'none';
     } else if (tabId === 'ciclo2') {
-      badgeExplicativo.innerHTML = '<strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS CUATRO FINALISTAS</strong>💡 Pronostique los finalistas del torneo. Puntos según posición: Campeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">720 pts</span> · Subcampeón <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">360 pts</span> · Tercero <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">180 pts</span> · Cuarto <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">90 pts</span>';
+      badgeExplicativo.innerHTML = `
+        <strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS CUATRO FINALISTAS</strong>
+        <div style="text-align:left; margin-top:8px;">
+          • Campeón: <strong>720 pts</strong><br>
+          • Subcampeón: <strong>360 pts</strong><br>
+          • Tercer puesto: <strong>180 pts</strong><br>
+          • Cuarto puesto: <strong>90 pts</strong>
+        </div>
+      `;
       badgeExplicativo.style.display = 'block';
       if (badgePulso) {
         badgePulso.innerHTML = getBadgePulsoHTML();
@@ -687,7 +705,6 @@ function seleccionarFinalista(key, valor) {
   actualizarPuntuacion();
   actualizarLocalStorage();
   
-  // Recargar solo la Zona 3 si estamos en ciclo2
   if (tabActivo === 'ciclo2') {
     const zona3Content = document.getElementById('esp-zona3-contenido');
     if (zona3Content) {
@@ -916,7 +933,6 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
     });
   }
   
-  // ESTRUCTURA NUEVA: Zona 1 (tabs), Zona 2 (badges), Zona 3 (contenido con scroll)
   contenedor.innerHTML = `
     <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;">
       <style>
@@ -966,7 +982,6 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         .esp-btn-guardar:active { transform: scale(0.98); }
         .esp-btn-guardar:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* Zona 3 - scroll independiente */
         .esp-zona3 {
           flex: 1;
           overflow-y: auto;
@@ -975,7 +990,6 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         }
       </style>
       
-      <!-- Zona 1: Tabs (fijos) -->
       <div style="padding: 20px 20px 0 20px; flex-shrink: 0;">
         <div class="esp-tabs-container">
           <button class="esp-tab active" data-tab="ciclo1">CICLO 1</button>
@@ -984,21 +998,27 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
         </div>
       </div>
       
-      <!-- Zona 2: Badges explicativos (fijos) -->
       <div style="padding: 0 20px; flex-shrink: 0;">
         <div id="esp-badge-explicativo" class="esp-badge-explicativo">
-          <strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>💡 Pronostique cuáles serán los mejores equipos de cada grupo. Si acierta en el orden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">60 pts</span> · En desorden: <span style="background:#ffd966; padding:2px 8px; border-radius:12px; font-weight:600; border:1px solid #333;">30 pts</span>
+          <strong style="display:block; margin-bottom:8px; font-size:16px; color:#8B0000;">LOS DOS MEJORES DE CADA GRUPO</strong>
+          <div style="text-align:left; margin-top:8px;">
+            • Si acierta en el orden: <strong>60 pts</strong><br>
+            • En desorden: <strong>30 pts</strong>
+          </div>
         </div>
         <div id="esp-badge-pulso" class="esp-pulso-badge pulso-100" style="display: none;"></div>
       </div>
       
-      <!-- Zona 3: Contenido con scroll independiente -->
       <div id="esp-zona3" class="esp-zona3">
         <div id="esp-zona3-contenido">
           <div>
             <div class="esp-seccion-titulo"><span>📋</span> Selecciona un grupo</div>
             <div class="esp-grupos-tabs" id="esp-grupos-tabs">
-              ${GRUPOS_LISTA.map(g => `<button class="esp-grupo-tab ${grupoActivo === g ? 'active' : ''}" data-grupo="${g}">${g}</button>`).join('')}
+              ${GRUPOS_LISTA.map(g => {
+                let label = g;
+                if (g === 'K') label = 'K🇨🇴';
+                return `<button class="esp-grupo-tab ${grupoActivo === g ? 'active' : ''}" data-grupo="${g}">${label}</button>`;
+              }).join('')}
             </div>
             <div id="esp-grupo-panel">${GRUPOS_EQUIPOS[grupoActivo] ? renderGrupoSelector(grupoActivo) : '<div class="esp-grupo-panel">Cargando...</div>'}</div>
           </div>
@@ -1007,12 +1027,10 @@ export async function renderizarEspeciales(contenedor, datosCuenta) {
     </div>
   `;
   
-  // Asignar eventos de tabs
   document.querySelectorAll('.esp-tab').forEach(tab => {
     tab.onclick = () => cambiarTab(tab.dataset.tab);
   });
   
-  // Asignar eventos de grupos
   document.querySelectorAll('.esp-grupo-tab').forEach(tab => {
     tab.onclick = () => {
       document.querySelectorAll('.esp-grupo-tab').forEach(t => t.classList.remove('active'));

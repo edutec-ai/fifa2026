@@ -1,5 +1,6 @@
 // funciones/menu.js
-// Módulo de menú con cards - VERSIÓN URGENCIA
+// Módulo de menú con cards - recibe opciones dinámicamente
+// SIN CAMBIOS - solo se asegura de que recibe lo que frontpage.js le envía
 
 export function inicializarMenu(datosCuenta, onSeleccionarOpcion, opciones) {
   const menuContainer = document.getElementById('fp-body-menu');
@@ -8,7 +9,7 @@ export function inicializarMenu(datosCuenta, onSeleccionarOpcion, opciones) {
     return;
   }
   
-  // Usar las opciones que vienen de frontpage.js (solo 3)
+  // Usar las opciones que vienen de frontpage.js (solo 3 cards visibles)
   const opcionesMenu = opciones || [
     { id: 'partidos', nombre: 'PARTIDOS', color: '#007aff', icono: '⚽' },
     { id: 'especiales', nombre: 'ESPECIALES', color: '#af52de', icono: '⭐' },

@@ -1,6 +1,8 @@
 // funciones/lab.js
 // Laboratorio de APIs, Simulador de Fecha y Visor JSON
-// VERSIÓN CON TODO EL CONTENIDO CON SCROLL (SIN ZONAS FIJAS)
+// VERSIÓN CON SIMULADOR SIEMPRE SINCRONIZADO CON LA HORA REAL
+// El simulador se actualiza automáticamente cada minuto
+// Los botones "Ahora" y "Aplicar" llevan a la hora real
 
 const BASE    = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
 const BASE_V2 = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
@@ -26,6 +28,7 @@ let datosCache = {};
 let simuladorCallback = null;
 let rotationInterval = null;
 let refreshInProgress = false;
+let autoUpdateInterval = null;
 
 export let fechaSimuladaGlobal = new Date();
 
@@ -49,10 +52,27 @@ function cargarFechaDesdeStorage() {
   return localStorage.getItem(STORAGE_KEY);
 }
 
+function obtenerFechaReal() {
+  return new Date();
+}
+
 function actualizarFechaGlobal() {
   const el = document.getElementById('sim-datetime');
   if (el && el.value) {
     fechaSimuladaGlobal = new Date(el.value);
+  }
+}
+
+// Sincronizar el input con la fecha global
+function sincronizarInputConFecha() {
+  const el = document.getElementById('sim-datetime');
+  if (el && fechaSimuladaGlobal) {
+    const year = fechaSimuladaGlobal.getFullYear();
+    const month = String(fechaSimuladaGlobal.getMonth() + 1).padStart(2, '0');
+    const day = String(fechaSimuladaGlobal.getDate()).padStart(2, '0');
+    const hours = String(fechaSimuladaGlobal.getHours()).padStart(2, '0');
+    const minutes = String(fechaSimuladaGlobal.getMinutes()).padStart(2, '0');
+    el.value = `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }
 
@@ -78,15 +98,7 @@ export function simGetHoraStr() {
 export function simSetFecha(date) {
   if (date instanceof Date) {
     fechaSimuladaGlobal = date;
-    const el = document.getElementById('sim-datetime');
-    if (el) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      el.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-    }
+    sincronizarInputConFecha();
     guardarFechaEnStorage(fechaSimuladaGlobal.toISOString());
     simActualizar();
   }
@@ -103,16 +115,8 @@ export function simSetFechaStr(fechaStr) {
 }
 
 export function simReset() {
-  fechaSimuladaGlobal = new Date();
-  const el = document.getElementById('sim-datetime');
-  if (el) {
-    const year = fechaSimuladaGlobal.getFullYear();
-    const month = String(fechaSimuladaGlobal.getMonth() + 1).padStart(2, '0');
-    const day = String(fechaSimuladaGlobal.getDate()).padStart(2, '0');
-    const hours = String(fechaSimuladaGlobal.getHours()).padStart(2, '0');
-    const minutes = String(fechaSimuladaGlobal.getMinutes()).padStart(2, '0');
-    el.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
+  fechaSimuladaGlobal = obtenerFechaReal();
+  sincronizarInputConFecha();
   guardarFechaEnStorage(fechaSimuladaGlobal.toISOString());
   simActualizar();
 }
@@ -144,18 +148,22 @@ function initSimulador() {
   
   if (fechaGuardada) {
     fechaSimuladaGlobal = new Date(fechaGuardada);
-    if (el) {
-      const year = fechaSimuladaGlobal.getFullYear();
-      const month = String(fechaSimuladaGlobal.getMonth() + 1).padStart(2, '0');
-      const day = String(fechaSimuladaGlobal.getDate()).padStart(2, '0');
-      const hours = String(fechaSimuladaGlobal.getHours()).padStart(2, '0');
-      const minutes = String(fechaSimuladaGlobal.getMinutes()).padStart(2, '0');
-      el.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-    }
+    sincronizarInputConFecha();
     simActualizar();
   } else {
     simReset();
   }
+  
+  // Iniciar actualización automática cada minuto
+  if (autoUpdateInterval) {
+    clearInterval(autoUpdateInterval);
+  }
+  autoUpdateInterval = setInterval(() => {
+    // Sincronizar con la hora real del dispositivo
+    fechaSimuladaGlobal = obtenerFechaReal();
+    sincronizarInputConFecha();
+    simActualizar();
+  }, 60000); // Cada 60 segundos
 }
 
 async function labFetch(api, forceRefresh = false, jugadorId = null) {
@@ -326,9 +334,9 @@ function labRenderTablaInterna(registros, campos) {
       if (String(val).length > 28) val = String(val).substring(0, 28) + '…';
       t += '<td style="padding:5px 8px;color:#1c1c1e;border-bottom:0.5px solid #f0f0f0;white-space:nowrap;text-align:left;">' + val + '</td>';
     });
-    t += '<tr>';
+    t += '</td>';
   });
-  t += '</tbody>追赶</div>';
+  t += '</tbody></table></div>';
   tablaEl.innerHTML = t;
   
   if (controlsEl) {
@@ -397,7 +405,6 @@ export function renderizarLab(contenedor, datosCuenta) {
   window.labMostrar = labMostrar;
   window.LAB_APIS = LAB_APIS;
   
-  // ESTRUCTURA: TODO EL CONTENIDO CON SCROLL (SIN ZONAS FIJAS)
   contenedor.innerHTML = `
     <div style="width:100%; height:100%; background:#fff; border-radius:16px; overflow-y: auto; overflow-x: hidden;">
       <div style="padding:16px;">
@@ -416,7 +423,6 @@ export function renderizarLab(contenedor, datosCuenta) {
             <input type="datetime-local" id="sim-datetime"
               style="flex:1; min-width:180px; padding:8px 12px; border:1.5px solid #e5e5ea; border-radius:10px; font-size:14px; color:#1c1c1e; background:#fff; outline:none;">
             <button id="sim-reset-btn" style="padding:8px 14px; background:#fff; border:1px solid #e5e5ea; border-radius:10px; font-size:12px; font-weight:600; color:#007aff; cursor:pointer;">↺ Ahora</button>
-            <button id="sim-aplicar-btn" style="padding:8px 14px; background:#007aff; color:#fff; border:none; border-radius:10px; font-size:12px; font-weight:600; cursor:pointer;">▶ Aplicar</button>
           </div>
           <div id="sim-status" style="margin-top:8px; font-size:11px; color:#8e8e93;"></div>
         </div>
@@ -442,11 +448,9 @@ export function renderizarLab(contenedor, datosCuenta) {
   initSimulador();
   
   const simResetBtn = document.getElementById('sim-reset-btn');
-  const simAplicarBtn = document.getElementById('sim-aplicar-btn');
   const simDatetime = document.getElementById('sim-datetime');
   
   if (simResetBtn) simResetBtn.onclick = () => simReset();
-  if (simAplicarBtn) simAplicarBtn.onclick = () => simActualizar();
   if (simDatetime) simDatetime.onchange = () => simActualizar();
   
   const cerrarBtn = document.getElementById('lab-cerrar-resultado');

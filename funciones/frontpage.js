@@ -1,28 +1,34 @@
 // funciones/frontpage.js
-// VERSIÓN URGENCIA - Solo 3 cards: PARTIDOS, ESPECIALES, SIMULADOR
+// VERSIÓN CON MENÚ SIMPLIFICADO (solo cards visibles: PARTIDOS, ESPECIALES, SIMULADOR)
+// MÓVIL: 3 cards rectangulares en FILA HORIZONTAL (una al lado de la otra)
+// Las funcionalidades de TABLA, LA POLLA y LAB siguen activas (pueden llamarse por código)
 
 import { inicializarMenu } from './menu.js';
+import { renderizarLab, onSimuladorCambio } from './lab.js';
 import { renderizarEspeciales } from './especiales.js';
 import { renderizarPartidos } from './partidos.js';
+import { renderizarAdmin, getAdminConfig } from './admin.js';
+import { renderizarPolla } from './polla.js';
 import { renderizarSimulador } from './simulador.js';
-import { getAdminConfig } from './admin.js';
 import { 
   guardarPronosticosPartidosLocal, 
   guardarPronosticosEspecialesLocal,
   guardarJugadorIdLocal,
+  limpiarLocalStorage,
   actualizarTimestampSincronizacion
 } from './sync.js';
 
-// Configuración de APIs
+// Configuración de APIs para carga inicial
 const BASE_V2 = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v2';
 const BASE = 'https://server.sion.hysintegrar.com/fifa2026/vERP_2_dat_dat/v1';
 const KEY = 'SuzvTp4qwXQtAVFJbdzP';
 
-// Función para cargar datos iniciales desde API
+// Función para cargar datos iniciales desde API y guardar en localStorage
 async function cargarDatosIniciales(jugadorId) {
-  console.log('[Sync] Cargando datos iniciales para jugador:', jugadorId);
+  console.log('[Sync] Cargando datos iniciales desde API para jugador:', jugadorId);
   
   try {
+    // Cargar pronósticos de partidos
     const responsePartidos = await fetch(`${BASE_V2}/fifa_jug_pro?api_key=${KEY}&filter[id]=${jugadorId}&fields=jug,jug.name,id,ptd,pro_gol_loc,pro_gol_vis,pro_res`);
     const dataPartidos = await responsePartidos.json();
     const pronosticosPartidos = {};
@@ -30,17 +36,26 @@ async function cargarDatosIniciales(jugadorId) {
       pronosticosPartidos[p.ptd] = { s1: p.pro_gol_loc || 0, s2: p.pro_gol_vis || 0 };
     });
     guardarPronosticosPartidosLocal(pronosticosPartidos);
+    console.log(`[Sync] Guardados ${Object.keys(pronosticosPartidos).length} pronósticos de partidos`);
     
+    // Cargar equipos para conversión de IDs a nombres
     const responseEquipos = await fetch(`${BASE}/fifa_equ?api_key=${KEY}`);
     const dataEquipos = await responseEquipos.json();
     const equiposCache = dataEquipos.fifa_equ || [];
     
+    // Cargar pronósticos de especiales
     const responseEspeciales = await fetch(`${BASE}/fifa_jug?api_key=${KEY}&filter[id]=${jugadorId}`);
     const dataEspeciales = await responseEspeciales.json();
     const jugador = dataEspeciales.fifa_jug?.[0];
     if (jugador) {
       const gruposData = {};
-      const finalistasData = { campeon: null, subcampeon: null, tercero: null, cuarto: null };
+      const finalistasData = {
+        campeon: null,
+        subcampeon: null,
+        tercero: null,
+        cuarto: null
+      };
+      
       const gruposLista = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
       
       gruposLista.forEach(grupo => {
@@ -81,13 +96,15 @@ async function cargarDatosIniciales(jugadorId) {
       }
       
       guardarPronosticosEspecialesLocal({ grupos: gruposData, finalistas: finalistasData });
+      console.log('[Sync] Guardados pronósticos de especiales');
     }
     
     guardarJugadorIdLocal(jugadorId);
     actualizarTimestampSincronizacion();
+    console.log('[Sync] Sincronización inicial completada');
     
   } catch (error) {
-    console.error('[Sync] Error cargando datos:', error);
+    console.error('[Sync] Error cargando datos iniciales:', error);
   }
 }
 
@@ -103,6 +120,8 @@ export function cargarFrontpage(datosCuenta) {
   
   const adminConfig = getAdminConfig();
   
+  onSimuladorCambio((fecha, hora) => console.log('📅 Simulador actualizado:', fecha, hora));
+  
   const manejarSeleccionMenu = (opcion, cuenta) => {
     const contenidoContainer = document.getElementById('fp-body-contenido');
     if (!contenidoContainer) return;
@@ -111,7 +130,11 @@ export function cargarFrontpage(datosCuenta) {
       switch(opcion) {
         case 'partidos': renderizarPartidos(contenidoContainer, datosCuenta); break;
         case 'especiales': renderizarEspeciales(contenidoContainer, datosCuenta); break;
+        case 'tabla': contenidoContainer.innerHTML = `<div style="text-align:center;color:white;padding:40px;"><h3>📊 Tabla de Posiciones</h3><p>Próximamente...</p></div>`; break;
+        case 'la-polla': renderizarPolla(contenidoContainer, datosCuenta); break;
         case 'simulador': renderizarSimulador(contenidoContainer, datosCuenta); break;
+        case 'lab': renderizarLab(contenidoContainer, datosCuenta); break;
+        case 'admin': if (esAdmin) renderizarAdmin(contenidoContainer, datosCuenta); break;
         default: contenidoContainer.innerHTML = `<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;"><p>Selecciona una opción del menú</p></div>`;
       }
       contenidoContainer.style.animation = 'fadeInContent 0.3s ease-out forwards';
@@ -184,6 +207,9 @@ export function cargarFrontpage(datosCuenta) {
         background:rgba(255,255,255,0.15); 
         transform:scale(1.02); 
       }
+      .fp-btn-header:active {
+        transform: scale(0.98);
+      }
       
       .fp-content-body { 
         flex: 1; 
@@ -194,6 +220,7 @@ export function cargarFrontpage(datosCuenta) {
         min-height: 0;
       }
       
+      /* DESKTOP: min-width 769px */
       @media (min-width: 769px) {
         .fp-body-zone-menu { 
           width: 280px;
@@ -220,6 +247,7 @@ export function cargarFrontpage(datosCuenta) {
         }
       }
       
+      /* MÓVIL: max-width 768px - 3 CARDS EN FILA HORIZONTAL */
       @media (max-width: 768px) {
         .fp-content-body { 
           flex-direction: column; 
@@ -240,35 +268,50 @@ export function cargarFrontpage(datosCuenta) {
           overflow-y: hidden;
           overflow-x: hidden;
         }
+        
+        /* 3 CARDS EN FILA HORIZONTAL */
         .mobile-tab-bar {
           display: flex !important;
-          justify-content: space-around;
-          align-items: center;
-          background: rgba(0,0,0,0.25);
-          backdrop-filter: blur(10px);
-          padding: 6px 12px;
-          margin: 0 12px 8px 12px;
-          border-radius: 30px;
-          gap: 4px;
-          overflow-x: auto;
-        }
-        .mobile-tab-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+          flex-direction: row !important;
           justify-content: center;
-          padding: 6px 10px;
-          border-radius: 25px;
+          gap: 8px;
+          background: transparent;
+          padding: 0;
+          margin: 0 0 16px 0;
+        }
+        
+        .mobile-tab-item {
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+          background: rgba(0, 0, 0, 0.25);
+          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          padding: 10px 8px;
+          flex: 1;
+          text-align: center;
           cursor: pointer;
           transition: all 0.2s ease;
-          min-width: 55px;
-          gap: 3px;
         }
+        
         .mobile-tab-item.active {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .mobile-tab-icono { font-size: 20px; }
-        .mobile-tab-label { font-size: 9px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; }
+        
+        .mobile-tab-icono {
+          font-size: 22px;
+        }
+        
+        .mobile-tab-label {
+          font-size: 10px;
+          font-weight: 600;
+          color: #fff;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+        }
       }
       
       .fp-body-zone-contenido > div { 
@@ -317,6 +360,7 @@ export function cargarFrontpage(datosCuenta) {
         </div>
       </div>
       <div class="fp-header-actions">
+        ${esAdmin ? `<button class="fp-btn-header" id="btnAdminFrontpage">🔧 Admin</button>` : ''}
         <button class="fp-btn-header" id="btnRegresarFrontpage">Regresar</button>
       </div>
     </header>
@@ -334,7 +378,7 @@ export function cargarFrontpage(datosCuenta) {
     </div>
   `;
 
-  // SOLO 3 OPCIONES: PARTIDOS, ESPECIALES, SIMULADOR
+  // ========== MENÚ DESKTOP - SOLO 3 CARD VISIBLES ==========
   const opcionesMenu = [
     { id: 'partidos', nombre: 'PARTIDOS', color: '#007aff', icono: '⚽' },
     { id: 'especiales', nombre: 'ESPECIALES', color: '#af52de', icono: '⭐' },
@@ -342,6 +386,15 @@ export function cargarFrontpage(datosCuenta) {
   ];
   
   inicializarMenu(datosCuenta, manejarSeleccionMenu, opcionesMenu);
+  
+  if (esAdmin) {
+    const btnAdmin = document.getElementById('btnAdminFrontpage');
+    if (btnAdmin) {
+      btnAdmin.onclick = () => {
+        manejarSeleccionMenu('admin', datosCuenta);
+      };
+    }
+  }
   
   document.getElementById('btnRegresarFrontpage').onclick = () => {
     const cuentasCard = document.getElementById('cuentasForm');
@@ -354,13 +407,13 @@ export function cargarFrontpage(datosCuenta) {
     }, 400);
   };
   
-  // TAB BAR MÓVIL - SOLO 3 OPCIONES
+  // ========== TAB BAR MÓVIL - 3 CARDS EN FILA HORIZONTAL ==========
   const mobileTabBar = document.getElementById('mobile-tab-bar');
   if (mobileTabBar) {
     const opcionesMovil = [
-      { id: 'partidos', icono: '⚽', label: 'PAR' },
-      { id: 'especiales', icono: '⭐', label: 'ESP' },
-      { id: 'simulador', icono: '💻', label: 'SIM' }
+      { id: 'partidos', icono: '⚽', label: 'PARTIDOS' },
+      { id: 'especiales', icono: '⭐', label: 'ESPECIALES' },
+      { id: 'simulador', icono: '💻', label: 'SIMULADOR' }
     ];
     
     mobileTabBar.innerHTML = opcionesMovil.map(op => `
@@ -386,4 +439,10 @@ export function cargarFrontpage(datosCuenta) {
   setTimeout(() => {
     manejarSeleccionMenu('partidos', datosCuenta);
   }, 100);
+  
+  window.addEventListener('admin-config-changed', (e) => {
+    if (esAdmin) {
+      window.location.reload();
+    }
+  });
 }

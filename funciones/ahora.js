@@ -2,6 +2,7 @@
 // Pantalla "AHORA" - Con modal independiente para el Partido Inaugural
 // Actualización periódica: cada 60 segundos verifica cambios en los ciclos
 // CICLO 2: PULSO 100 antes de inauguración, PULSO 50 después
+// FONDO DE ESTADIO: 100% CSS (sin imágenes externas)
 
 import { simGetFechaStr, simGetHoraStr, onSimuladorCambio } from './lab.js';
 import { gruposSeleccion, finalistasSeleccion } from './especiales.js';
@@ -114,75 +115,79 @@ function abrirModalPartidoInaugural() {
     
     overlay.innerHTML = `
         <div style="background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
-        <div style="font-size:17px;font-weight:700;">Grupo A · Partido Inaugural</div>
-        <button id="modal-cerrar-btn" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
-    </div>
-    <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;text-align:center;">11 de junio de 2026 · 2:00 PM</div>
-    
-    <!-- SECCIÓN CON FONDO DE ESTADIO -->
-    <div style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../img/fondoHorizontal.jpg'); background-size: cover; background-position: center bottom; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="text-align:center; flex:1;">
-                <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_loc)}</div>
-                <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_loc}</div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+                <div style="font-size:17px;font-weight:700;">Grupo A · Partido Inaugural</div>
+                <button id="modal-cerrar-btn" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
             </div>
-            <div style="font-size:18px; font-weight:700; color:white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); padding:0 20px;">VS</div>
-            <div style="text-align:center; flex:1;">
-                <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_vis)}</div>
-                <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_vis}</div>
+            <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;text-align:center;">11 de junio de 2026 · 2:00 PM</div>
+            
+            <div style="background: linear-gradient(135deg, #0a2f1f 0%, #1a5a3a 100%); border-radius: 20px; padding: 16px; margin-bottom: 20px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 20px); pointer-events: none;"></div>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 20%; background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%); pointer-events: none;"></div>
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20%; background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%); pointer-events: none;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; width: 120px; height: 120px; border: 2px solid rgba(255,255,255,0.15); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+                <div style="position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background: rgba(255,255,255,0.15); transform: translateX(-50%); pointer-events: none;"></div>
+                <div style="position: relative; z-index: 10; display:flex; justify-content:space-between; align-items:center;">
+                    <div style="text-align:center; flex:1;">
+                        <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_loc)}</div>
+                        <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_loc}</div>
+                    </div>
+                    <div style="font-size:18px; font-weight:700; color:white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); padding:0 20px;">VS</div>
+                    <div style="text-align:center; flex:1;">
+                        <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_vis)}</div>
+                        <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_vis}</div>
+                    </div>
+                </div>
             </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px;">
+                <div style="flex:1; text-align:center;">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:12px; background:#f9f9fb; border-radius:30px; padding:8px 12px;">
+                        <button id="modal-dec-loc" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">−</button>
+                        <input id="modal-s1" type="number" min="0" max="20" value="${pronostico.s1}" style="width:60px;height:44px;text-align:center;font-size:20px;font-weight:700;border:1px solid #e5e5ea;border-radius:12px;">
+                        <button id="modal-inc-loc" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">+</button>
+                    </div>
+                </div>
+                <div style="flex:1; text-align:center;">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:12px; background:#f9f9fb; border-radius:30px; padding:8px 12px;">
+                        <button id="modal-dec-vis" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">−</button>
+                        <input id="modal-s2" type="number" min="0" max="20" value="${pronostico.s2}" style="width:60px;height:44px;text-align:center;font-size:20px;font-weight:700;border:1px solid #e5e5ea;border-radius:12px;">
+                        <button id="modal-inc-vis" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background:#f2f2f7;border-radius:12px;padding:12px;margin-bottom:16px;">
+                <div style="font-size:14px;font-weight:700;margin-bottom:12px;">📋 PUNTOS POTENCIALES</div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span>🏆 Ganador / Empate</span>
+                    <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.4)} pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span>⚽ Gol local exacto</span>
+                    <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span>⚽ Gol visita exacto</span>
+                    <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span>📊 Diferencia de goles</span>
+                    <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
+                </div>
+                <div style="height:1px;background:#e5e5ea;margin:8px 0;"></div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="font-weight:700;">⭐ BASE</span>
+                    <span style="color:#ff9500;font-weight:800;">${ptsBase} pts</span>
+                </div>
+            </div>
+            
+            <div style="background:#eafaf1;border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;">
+                <span style="color:#1e8449;font-size:13px;font-weight:600;">${mensajePulso}</span>
+            </div>
+            
+            <button id="modal-guardar-btn" style="width:100%;background:#34c759;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;cursor:pointer;">💾 Guardar pronóstico</button>
         </div>
-    </div>
-    
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px;">
-        <div style="flex:1; text-align:center;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px; background:#f9f9fb; border-radius:30px; padding:8px 12px;">
-                <button id="modal-dec-loc" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">−</button>
-                <input id="modal-s1" type="number" min="0" max="20" value="${pronostico.s1}" style="width:60px;height:44px;text-align:center;font-size:20px;font-weight:700;border:1px solid #e5e5ea;border-radius:12px;">
-                <button id="modal-inc-loc" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">+</button>
-            </div>
-        </div>
-        <div style="flex:1; text-align:center;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px; background:#f9f9fb; border-radius:30px; padding:8px 12px;">
-                <button id="modal-dec-vis" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">−</button>
-                <input id="modal-s2" type="number" min="0" max="20" value="${pronostico.s2}" style="width:60px;height:44px;text-align:center;font-size:20px;font-weight:700;border:1px solid #e5e5ea;border-radius:12px;">
-                <button id="modal-inc-vis" style="width:44px;height:44px;border-radius:22px;background:#fff;border:1px solid #e5e5ea;font-size:20px;font-weight:700;cursor:pointer;">+</button>
-            </div>
-        </div>
-    </div>
-    
-    <div style="background:#f2f2f7;border-radius:12px;padding:12px;margin-bottom:16px;">
-    <div style="font-size:14px;font-weight:700;margin-bottom:12px;">📋 PUNTOS POTENCIALES</div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-        <span>🏆 Ganador / Empate</span>
-        <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.4)} pts</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-        <span>⚽ Gol local exacto</span>
-        <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-        <span>⚽ Gol visita exacto</span>
-        <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-        <span>📊 Diferencia de goles</span>
-        <span style="color:#34c759;font-weight:700;">${Math.round(ptsBase * 0.2)} pts</span>
-    </div>
-    <div style="height:1px;background:#e5e5ea;margin:8px 0;"></div>
-    <div style="display:flex;justify-content:space-between;">
-        <span style="font-weight:700;">⭐ BASE</span>
-        <span style="color:#ff9500;font-weight:800;">${ptsBase} pts</span>
-    </div>
-</div>
-    
-    <div style="background:#eafaf1;border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;">
-        <span style="color:#1e8449;font-size:13px;font-weight:600;">${mensajePulso}</span>
-    </div>
-    
-    <button id="modal-guardar-btn" style="width:100%;background:#34c759;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;cursor:pointer;">💾 Guardar pronóstico</button>
-</div>
     `;
     
     document.body.appendChild(overlay);
@@ -408,20 +413,132 @@ function renderizarPreInauguracion(contenedor) {
         <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; overflow-y: auto; overflow-x: hidden;">
             <style>
                 .ahora-header { 
-                    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                                url('../img/fondoHorizontal.jpg');
-                    background-size: cover;
-                    background-position: center bottom;
-                    background-repeat: no-repeat;
+                    background: linear-gradient(135deg, #0a2f1f 0%, #1a5a3a 100%);
                     padding: 16px 20px; 
                     text-align: center; 
                     color: white;
                     height: 150px; 
+                    border-radius: 20px 20px 0 0;
+                    position: relative;
+                    overflow: hidden;
                 }
                 
-                .ahora-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: white; }
-                .ahora-header p { font-size: 12px; opacity: 0.9; margin: 0; }
-                .ahora-countdown { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; }
+                /* Textura de césped (rayas) */
+                .ahora-header::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 20px);
+                    pointer-events: none;
+                }
+                
+                /* Gradas superiores */
+                .ahora-header .gradas-top {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 25%;
+                    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+                    pointer-events: none;
+                }
+                
+                /* Gradas inferiores */
+                .ahora-header .gradas-bottom {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 25%;
+                    background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+                    pointer-events: none;
+                }
+                
+                /* Círculo central */
+                .ahora-header .circulo-central {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 100px;
+                    height: 100px;
+                    border: 2px solid rgba(255,255,255,0.15);
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                }
+                
+                /* Línea de medio campo */
+                .ahora-header .linea-medio {
+                    position: absolute;
+                    top: 0;
+                    left: 50%;
+                    width: 2px;
+                    height: 100%;
+                    background: rgba(255,255,255,0.15);
+                    transform: translateX(-50%);
+                    pointer-events: none;
+                }
+                
+                /* Punto central */
+                .ahora-header .punto-central {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 6px;
+                    height: 6px;
+                    background: rgba(255,255,255,0.3);
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                }
+                
+                /* Textura de puntos en el césped */
+                .ahora-header .textura-puntos {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+                    background-size: 25px 25px;
+                    pointer-events: none;
+                }
+                
+                .ahora-header h2 { 
+                    font-size: 18px; 
+                    font-weight: 700; 
+                    margin: 0 0 4px 0; 
+                    color: white; 
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                    position: relative;
+                    z-index: 5;
+                }
+                
+                .ahora-header p { 
+                    font-size: 12px; 
+                    opacity: 0.95; 
+                    margin: 0;
+                    position: relative;
+                    z-index: 5;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                }
+                
+                .ahora-countdown { 
+                    background: rgba(0,0,0,0.5); 
+                    backdrop-filter: blur(4px);
+                    border-radius: 20px; 
+                    padding: 4px 12px; 
+                    display: inline-block; 
+                    margin-top: 8px; 
+                    font-size: 11px; 
+                    font-weight: 600;
+                    position: relative;
+                    z-index: 5;
+                }
+                
                 .ahora-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
                 
                 .ahora-card { 
@@ -455,6 +572,12 @@ function renderizarPreInauguracion(contenedor) {
             </style>
             
             <div class="ahora-header">
+                <div class="gradas-top"></div>
+                <div class="gradas-bottom"></div>
+                <div class="circulo-central"></div>
+                <div class="linea-medio"></div>
+                <div class="punto-central"></div>
+                <div class="textura-puntos"></div>
                 <h2>🏆 La Polla Mundialista 2026</h2>
                 <p>¡Bienvenido, ${currentDatosCuenta?.name || currentDatosCuenta?.nombre || 'Participante'}!</p>
                 ${tiempoRestante ? `<div class="ahora-countdown" id="ahora-countdown">⏱️ Faltan ${tiempoRestante} para la inauguración</div>` : ''}

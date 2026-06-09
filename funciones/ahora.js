@@ -513,7 +513,7 @@ function renderizarPreInauguracion(contenedor) {
             // Usar la misma ruta que funcionó en prueba.html
             // Como prueba.html estaba en la carpeta funciones/, la ruta es 'fondoHorizontal.jpg'
             // En la asignación con JavaScript:
-            headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/fifa2026/img/fondoHorizontal.jpg')";
+            headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../img/fondoHorizontal.jpg')";
             headerBg.style.backgroundSize = "cover";
             headerBg.style.backgroundPosition = "center bottom";
             headerBg.style.backgroundRepeat = "no-repeat";
@@ -544,7 +544,7 @@ setTimeout(() => {
         left: 20px;
         width: 200px;
         height: 150px;
-        background: url('fondoHorizontal.jpg') center/cover no-repeat;
+        background: url('../../img/fondoHorizontal.jpg') center/cover no-repeat;
         border: 3px solid yellow;
         z-index: 10000;
         border-radius: 10px;

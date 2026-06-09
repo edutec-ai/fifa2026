@@ -507,7 +507,32 @@ function renderizarPreInauguracion(contenedor) {
             <div class="ahora-footer-text">💡 Completa los CICLOS 1 y 2 antes del inicio del mundial para obtener la máxima puntuación</div>
         </div>
     </div>
+`
+
+// ========== PRUEBA DEFINITIVA ==========
+const testDiv = document.createElement('div');
+testDiv.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    background: url('../img/fondoHorizontal.jpg') center/cover no-repeat;
+    border: 2px solid red;
+    z-index: 9999;
+    border-radius: 10px;
 `;
+document.body.appendChild(testDiv);
+console.log('[AHORA] Div de prueba agregado', testDiv.style.background);
+
+setTimeout(() => {
+    console.log('[AHORA] Background del div de prueba:', window.getComputedStyle(testDiv).backgroundImage);
+}, 500);
+
+
+        
+
+;
 
 // ========== ASIGNAR LA IMAGEN DE FONDO CON JAVASCRIPT (FUERZA LA CARGA) ==========
 const headerBg = document.getElementById('ahora-header-bg');

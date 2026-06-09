@@ -405,106 +405,128 @@ function renderizarPreInauguracion(contenedor) {
         : 'Pronostica quiénes serán: Campeón, Subcampeón, Tercer y Cuarto puesto.';
     
     contenedor.innerHTML = `
-        <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; overflow-y: auto; overflow-x: hidden;">
-            <style>
-                .ahora-header { 
-                    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                                url('https://img.magnific.com/vector-gratis/estadio-futbol_1284-22432.jpg?semt=ais_hybrid&w=740&q=80');
-                    background-size: cover;
-                    background-position: center bottom;
-                    background-repeat: no-repeat;
-                    padding: 16px 20px; 
-                    text-align: center; 
-                    color: white;
-                    height: 150px; 
-                }
-                
-                .ahora-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: white; }
-                .ahora-header p { font-size: 12px; opacity: 0.9; margin: 0; }
-                .ahora-countdown { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; }
-                .ahora-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-                
-                .ahora-card { 
-                    background: #f9f9fb; 
-                    border: 3px solid #e5e5ea; 
-                    border-radius: 14px; 
-                    padding: 12px 16px; 
-                    cursor: pointer; 
-                    transition: all 0.2s ease; 
-                    display: flex; 
-                    align-items: center; 
-                    gap: 12px; 
-                }
-                
-                .ahora-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-                .ahora-card:active { transform: scale(0.98); }
-                .ahora-card.completado { opacity: 0.7; }
-                .ahora-card-icono { font-size: 32px; flex-shrink: 0; }
-                .ahora-card-info { flex: 1; }
-                .ahora-card-titulo { font-size: 14px; font-weight: 700; color: #1c1c1e; margin-bottom: 2px; }
-                .ahora-card-desc { font-size: 11px; color: #8e8e93; line-height: 1.3; }
-                .ahora-card-badge { background: #ff9500; color: white; padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; flex-shrink: 0; white-space: nowrap; }
-                .ahora-card-badge.pulso50 { background: #ff9500; }
-                .ahora-card-badge.completado { background: #34c759; }
-                .ahora-card-badge.pendiente { background: #8e8e93; }
-                .ahora-card-flecha { font-size: 14px; color: #c7c7cc; flex-shrink: 0; }
-                .ahora-footer { padding: 10px 16px; text-align: center; border-top: 1px solid #e5e5ea; margin-top: 4px; }
-                .ahora-footer-text { font-size: 10px; color: #8e8e93; }
-                @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-                .ahora-card-urgente { border: 1.5px solid #ff3b30; animation: pulse 1.5s ease-in-out infinite; }
-            </style>
+    <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; overflow-y: auto; overflow-x: hidden;">
+        <style>
+            .ahora-header { 
+                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+                background-size: cover;
+                background-position: center bottom;
+                background-repeat: no-repeat;
+                padding: 16px 20px; 
+                text-align: center; 
+                color: white;
+                height: 150px; 
+            }
             
-            <div class="ahora-header">
-                <h2>🏆 La Polla Mundialista 2026</h2>
-                <p>¡Bienvenido, ${currentDatosCuenta?.name || currentDatosCuenta?.nombre || 'Participante'}!</p>
-                ${tiempoRestante ? `<div class="ahora-countdown" id="ahora-countdown">⏱️ Faltan ${tiempoRestante} para la inauguración</div>` : ''}
+            .ahora-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: white; }
+            .ahora-header p { font-size: 12px; opacity: 0.9; margin: 0; }
+            .ahora-countdown { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; }
+            .ahora-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+            
+            .ahora-card { 
+                background: #f9f9fb; 
+                border: 3px solid #e5e5ea; 
+                border-radius: 14px; 
+                padding: 12px 16px; 
+                cursor: pointer; 
+                transition: all 0.2s ease; 
+                display: flex; 
+                align-items: center; 
+                gap: 12px; 
+            }
+            
+            .ahora-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+            .ahora-card:active { transform: scale(0.98); }
+            .ahora-card.completado { opacity: 0.7; }
+            .ahora-card-icono { font-size: 32px; flex-shrink: 0; }
+            .ahora-card-info { flex: 1; }
+            .ahora-card-titulo { font-size: 14px; font-weight: 700; color: #1c1c1e; margin-bottom: 2px; }
+            .ahora-card-desc { font-size: 11px; color: #8e8e93; line-height: 1.3; }
+            .ahora-card-badge { background: #ff9500; color: white; padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 700; flex-shrink: 0; white-space: nowrap; }
+            .ahora-card-badge.pulso50 { background: #ff9500; }
+            .ahora-card-badge.completado { background: #34c759; }
+            .ahora-card-badge.pendiente { background: #8e8e93; }
+            .ahora-card-flecha { font-size: 14px; color: #c7c7cc; flex-shrink: 0; }
+            .ahora-footer { padding: 10px 16px; text-align: center; border-top: 1px solid #e5e5ea; margin-top: 4px; }
+            .ahora-footer-text { font-size: 10px; color: #8e8e93; }
+            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+            .ahora-card-urgente { border: 1.5px solid #ff3b30; animation: pulse 1.5s ease-in-out infinite; }
+        </style>
+        
+        <div class="ahora-header" id="ahora-header-bg">
+            <h2>🏆 La Polla Mundialista 2026</h2>
+            <p>¡Bienvenido, ${currentDatosCuenta?.name || currentDatosCuenta?.nombre || 'Participante'}!</p>
+            ${tiempoRestante ? `<div class="ahora-countdown" id="ahora-countdown">⏱️ Faltan ${tiempoRestante} para la inauguración</div>` : ''}
+        </div>
+        
+        <div class="ahora-cards">
+            <!-- CICLO 1 -->
+            <div class="ahora-card ${ciclo1Completo ? 'completado' : ''}" data-accion="ciclo1">
+                <div class="ahora-card-icono">📋</div>
+                <div class="ahora-card-info">
+                    <div class="ahora-card-titulo">CICLO 1 · Los dos mejores de cada grupo</div>
+                    <div class="ahora-card-desc">Selecciona los dos equipos que avanzarán a octavos de final en cada uno de los 12 grupos. ${!ciclo1Completo ? '<strong style="color:#007aff;">🔴 Cierra el 11/06 2:00 PM</strong>' : ''}</div>
+                </div>
+                ${ciclo1Completo ? '<div class="ahora-card-badge completado">✅ COMPLETADO</div>' : '<div class="ahora-card-badge pendiente">⚠️ PENDIENTE</div>'}
+                <div class="ahora-card-flecha">→</div>
             </div>
             
-            <div class="ahora-cards">
-                <div class="ahora-card ${ciclo1Completo ? 'completado' : ''}" data-accion="ciclo1">
-                    <div class="ahora-card-icono">📋</div>
-                    <div class="ahora-card-info">
-                        <div class="ahora-card-titulo">CICLO 1 · Los dos mejores de cada grupo</div>
-                        <div class="ahora-card-desc">Selecciona los dos equipos que avanzarán a octavos de final en cada uno de los 12 grupos. ${!ciclo1Completo ? '<strong style="color:#007aff;">🔴 Cierra el 11/06 2:00 PM</strong>' : ''}</div>
-                    </div>
-                    ${ciclo1Completo ? '<div class="ahora-card-badge completado">✅ COMPLETADO</div>' : '<div class="ahora-card-badge pendiente">⚠️ PENDIENTE</div>'}
-                    <div class="ahora-card-flecha">→</div>
+            <!-- CICLO 2 -->
+            <div class="ahora-card ${ciclo2Completo ? 'completado' : ''}" data-accion="ciclo2">
+                <div class="ahora-card-icono">🏆</div>
+                <div class="ahora-card-info">
+                    <div class="ahora-card-titulo">CICLO 2 · Los cuatro finalistas del torneo</div>
+                    <div class="ahora-card-desc">${ciclo2Desc}</div>
                 </div>
-                
-                <div class="ahora-card ${ciclo2Completo ? 'completado' : ''}" data-accion="ciclo2">
-                    <div class="ahora-card-icono">🏆</div>
-                    <div class="ahora-card-info">
-                        <div class="ahora-card-titulo">CICLO 2 · Los cuatro finalistas del torneo</div>
-                        <div class="ahora-card-desc">${ciclo2Desc}</div>
-                    </div>
-                    ${ciclo2Badge}
-                    <div class="ahora-card-flecha">→</div>
-                </div>
-                
-                <div class="ahora-card" data-accion="partido-inaugural">
-                    <div class="ahora-card-icono">⚽</div>
-                    <div class="ahora-card-info">
-                        <div class="ahora-card-titulo">Partido Inaugural</div>
-                        <div class="ahora-card-desc">🇲🇽 México vs Sudáfrica 🇿🇦 · 11 de junio, 2:00 PM</div>
-                    </div>
-                    <div class="ahora-card-flecha">→</div>
-                </div>
-                
-                <div class="ahora-card" data-accion="reglas">
-                    <div class="ahora-card-icono">📖</div>
-                    <div class="ahora-card-info">
-                        <div class="ahora-card-titulo">Reglas del juego</div>
-                        <div class="ahora-card-desc">Aprende cómo funciona La Polla, los ciclos y el sistema de puntos</div>
-                    </div>
-                    <div class="ahora-card-flecha">→</div>
-                </div>
+                ${ciclo2Badge}
+                <div class="ahora-card-flecha">→</div>
             </div>
             
-            <div class="ahora-footer">
-                <div class="ahora-footer-text">💡 Completa los CICLOS 1 y 2 antes del inicio del mundial para obtener la máxima puntuación</div>
+            <!-- Partido Inaugural -->
+            <div class="ahora-card" data-accion="partido-inaugural">
+                <div class="ahora-card-icono">⚽</div>
+                <div class="ahora-card-info">
+                    <div class="ahora-card-titulo">Partido Inaugural</div>
+                    <div class="ahora-card-desc">🇲🇽 México vs Sudáfrica 🇿🇦 · 11 de junio, 2:00 PM</div>
+                </div>
+                <div class="ahora-card-flecha">→</div>
+            </div>
+            
+            <!-- Reglas del juego -->
+            <div class="ahora-card" data-accion="reglas">
+                <div class="ahora-card-icono">📖</div>
+                <div class="ahora-card-info">
+                    <div class="ahora-card-titulo">Reglas del juego</div>
+                    <div class="ahora-card-desc">Aprende cómo funciona La Polla, los ciclos y el sistema de puntos</div>
+                </div>
+                <div class="ahora-card-flecha">→</div>
             </div>
         </div>
-    `;
+        
+        <div class="ahora-footer">
+            <div class="ahora-footer-text">💡 Completa los CICLOS 1 y 2 antes del inicio del mundial para obtener la máxima puntuación</div>
+        </div>
+    </div>
+`;
+
+// ========== ASIGNAR LA IMAGEN DE FONDO CON JAVASCRIPT (FUERZA LA CARGA) ==========
+const headerBg = document.getElementById('ahora-header-bg');
+if (headerBg) {
+    // Intenta con la ruta local primero
+    headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/fondoHorizontal.jpg')";
+    headerBg.style.backgroundSize = "cover";
+    headerBg.style.backgroundPosition = "center bottom";
+    headerBg.style.backgroundRepeat = "no-repeat";
+    
+    // Si no funciona, intenta con la ruta alternativa después de un breve retraso
+    setTimeout(() => {
+        const computedBg = window.getComputedStyle(headerBg).backgroundImage;
+        if (computedBg === 'none' || computedBg === '' || computedBg.includes('null')) {
+            console.log('[AHORA] Imagen local no cargada, intentando con URL alternativa');
+            headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://picsum.photos/id/104/800/400')";
+        }
+    }, 100);
+}
     
     const cardCiclo1 = contenedor.querySelector('.ahora-card[data-accion="ciclo1"]');
     const cardCiclo2 = contenedor.querySelector('.ahora-card[data-accion="ciclo2"]');

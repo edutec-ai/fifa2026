@@ -532,6 +532,33 @@ function renderizarPreInauguracion(contenedor) {
         if (cardPartido) cardPartido.addEventListener('click', () => abrirModalPartidoInaugural());
         if (cardReglas) cardReglas.addEventListener('click', () => navegarAReglas());
     }, 50);
+
+// ========== PRUEBA EXTREMA: AGREGAR IMAGEN DIRECTAMENTE AL BODY ==========
+setTimeout(() => {
+    // Crear un div completamente nuevo y agregarlo al final del body
+    const ultraTest = document.createElement('div');
+    ultraTest.style.cssText = `
+        position: fixed;
+        bottom: 100px;
+        left: 20px;
+        width: 200px;
+        height: 150px;
+        background: url('fondoHorizontal.jpg') center/cover no-repeat;
+        border: 3px solid yellow;
+        z-index: 10000;
+        border-radius: 10px;
+    `;
+    ultraTest.innerHTML = '<div style="color:white; background:rgba(0,0,0,0.7); padding:4px; font-size:10px;">¿Ves esta imagen?</div>';
+    document.body.appendChild(ultraTest);
+    
+    console.log('[PRUEBA] Div agregado al final del body');
+    console.log('[PRUEBA] Estilo background:', ultraTest.style.background);
+    
+    // Verificar si el div existe en el DOM
+    const checkDiv = document.querySelector('div[style*="z-index: 10000"]');
+    console.log('[PRUEBA] Div encontrado en DOM:', checkDiv);
+}, 500);
+    
 }
 
 

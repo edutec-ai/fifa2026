@@ -507,61 +507,51 @@ function renderizarPreInauguracion(contenedor) {
             <div class="ahora-footer-text">💡 Completa los CICLOS 1 y 2 antes del inicio del mundial para obtener la máxima puntuación</div>
         </div>
     </div>
-`
-
-// ========== PRUEBA DEFINITIVA ==========
-const testDiv = document.createElement('div');
-testDiv.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 100px;
-    height: 100px;
-    background: url('../img/fondoHorizontal.jpg') center/cover no-repeat;
-    border: 2px solid red;
-    z-index: 9999;
-    border-radius: 10px;
-`;
-document.body.appendChild(testDiv);
-console.log('[AHORA] Div de prueba agregado', testDiv.style.background);
-
-setTimeout(() => {
-    console.log('[AHORA] Background del div de prueba:', window.getComputedStyle(testDiv).backgroundImage);
-}, 500);
-
-
-        
-
-;
-
-// ========== ASIGNAR LA IMAGEN DE FONDO CON JAVASCRIPT (FUERZA LA CARGA) ==========
-const headerBg = document.getElementById('ahora-header-bg');
-if (headerBg) {
-    // Intenta con la ruta local primero
-    headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/fondoHorizontal.jpg')";
-    headerBg.style.backgroundSize = "cover";
-    headerBg.style.backgroundPosition = "center bottom";
-    headerBg.style.backgroundRepeat = "no-repeat";
+    `;
     
-    // Si no funciona, intenta con la ruta alternativa después de un breve retraso
+    // ========== ESPERAR A QUE EL DOM SE ACTUALICE Y LUEGO ASIGNAR LA IMAGEN ==========
     setTimeout(() => {
-        const computedBg = window.getComputedStyle(headerBg).backgroundImage;
-        if (computedBg === 'none' || computedBg === '' || computedBg.includes('null')) {
-            console.log('[AHORA] Imagen local no cargada, intentando con URL alternativa');
+        const headerBg = document.getElementById('ahora-header-bg');
+        if (headerBg) {
+            // Usar una imagen de internet que SÍ funciona
             headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://picsum.photos/id/104/800/400')";
+            headerBg.style.backgroundSize = "cover";
+            headerBg.style.backgroundPosition = "center bottom";
+            headerBg.style.backgroundRepeat = "no-repeat";
+            console.log('[AHORA] Imagen asignada al header');
+        } else {
+            console.error('[AHORA] No se encontró el elemento #ahora-header-bg');
         }
+        
+        // ========== PRUEBA DEFINITIVA ==========
+        const testDiv = document.createElement('div');
+        testDiv.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: url('https://picsum.photos/id/104/800/400') center/cover no-repeat;
+            border: 2px solid red;
+            z-index: 9999;
+            border-radius: 10px;
+        `;
+        document.body.appendChild(testDiv);
+        console.log('[AHORA] Div de prueba agregado con imagen de internet');
     }, 100);
-}
     
-    const cardCiclo1 = contenedor.querySelector('.ahora-card[data-accion="ciclo1"]');
-    const cardCiclo2 = contenedor.querySelector('.ahora-card[data-accion="ciclo2"]');
-    const cardPartido = contenedor.querySelector('.ahora-card[data-accion="partido-inaugural"]');
-    const cardReglas = contenedor.querySelector('.ahora-card[data-accion="reglas"]');
-    
-    if (cardCiclo1) cardCiclo1.addEventListener('click', () => navegarACiclo1());
-    if (cardCiclo2) cardCiclo2.addEventListener('click', () => navegarACiclo2());
-    if (cardPartido) cardPartido.addEventListener('click', () => abrirModalPartidoInaugural());
-    if (cardReglas) cardReglas.addEventListener('click', () => navegarAReglas());
+    // Event listeners
+    setTimeout(() => {
+        const cardCiclo1 = contenedor.querySelector('.ahora-card[data-accion="ciclo1"]');
+        const cardCiclo2 = contenedor.querySelector('.ahora-card[data-accion="ciclo2"]');
+        const cardPartido = contenedor.querySelector('.ahora-card[data-accion="partido-inaugural"]');
+        const cardReglas = contenedor.querySelector('.ahora-card[data-accion="reglas"]');
+        
+        if (cardCiclo1) cardCiclo1.addEventListener('click', () => navegarACiclo1());
+        if (cardCiclo2) cardCiclo2.addEventListener('click', () => navegarACiclo2());
+        if (cardPartido) cardPartido.addEventListener('click', () => abrirModalPartidoInaugural());
+        if (cardReglas) cardReglas.addEventListener('click', () => navegarAReglas());
+    }, 50);
 }
 
 function renderizarDuranteMundial(contenedor) {

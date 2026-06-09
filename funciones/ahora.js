@@ -121,7 +121,7 @@ function abrirModalPartidoInaugural() {
     <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;text-align:center;">11 de junio de 2026 · 2:00 PM</div>
     
     <!-- SECCIÓN CON FONDO DE ESTADIO -->
-    <div style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('img/fondoHorizontal.jpg'); background-size: cover; background-position: center bottom; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
+    <div style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../img/fondoHorizontal.jpg'); background-size: cover; background-position: center bottom; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div style="text-align:center; flex:1;">
                 <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_loc)}</div>
@@ -409,7 +409,7 @@ function renderizarPreInauguracion(contenedor) {
             <style>
                 .ahora-header { 
                     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                                url('img/fondoHorizontal.jpg');
+                                url('../img/fondoHorizontal.jpg');
                     background-size: cover;
                     background-position: center bottom;
                     background-repeat: no-repeat;

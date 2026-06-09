@@ -8,6 +8,7 @@
 // - Mapeo hardcodeado de grupos (48 equipos)
 // - Scroll inteligente solo en pestaña TODOS
 // - Botón K con bandera 🇨🇴
+// - Modal con fondo de estadio CSS puro (sin imágenes)
 
 import { onSimuladorCambio, simGetFechaStr, simGetHoraStr } from './lab.js';
 import { gruposSeleccion } from './especiales.js';
@@ -381,7 +382,7 @@ function renderTablaPosiciones(grupo) {
         <table style="width:100%;border-collapse:collapse;font-size:12px;">
             <thead><tr style="background:#f2f2f7;">
                 <th>Pos</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th>
-            </tr></thead>
+            </table></thead>
             <tbody>${
                 equiposGrupo.map((eq, idx) => {
                     const esClasificado1 = eq.name === clasificados[1];
@@ -798,16 +799,23 @@ function abrirModal(partido, fechaSim, horaSim) {
         </div>
         <div style="font-size:12px;color:#8e8e93;margin-bottom:20px;text-align:center;">${formatearFecha(partido.fch)} · ${formatearHora12h(partido.hor)}</div>
         
-        <div style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../img/fondoHorizontal.jpg'); background-size: cover; background-position: center bottom; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+        <!-- SECCIÓN CON FONDO DE ESTADIO (CSS PURO) -->
+        <div style="background: linear-gradient(135deg, #0a2f1f 0%, #1a5a3a 100%); border-radius: 20px; padding: 16px; margin-bottom: 20px; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 20px); pointer-events: none;"></div>
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 20%; background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 20%; background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 100%); pointer-events: none;"></div>
+            <div style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.15); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+            <div style="position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background: rgba(255,255,255,0.15); transform: translateX(-50%); pointer-events: none;"></div>
+            <div style="position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none;"></div>
+            <div style="position: relative; z-index: 10; display:flex; justify-content:space-between; align-items:center;">
                 <div style="text-align:center; flex:1;">
                     <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_loc)}</div>
-                    <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_loc}</div>
+                    <div style="font-size:15px; font-weight:700; color:white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${partido.nom_loc}</div>
                 </div>
                 <div style="font-size:18px; font-weight:700; color:white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); padding:0 20px;">VS</div>
                 <div style="text-align:center; flex:1;">
                     <div style="font-size:56px; margin-bottom:8px;">${getBandera(partido.nom_vis)}</div>
-                    <div style="font-size:15px; font-weight:700; color:white;">${partido.nom_vis}</div>
+                    <div style="font-size:15px; font-weight:700; color:white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${partido.nom_vis}</div>
                 </div>
             </div>
         </div>

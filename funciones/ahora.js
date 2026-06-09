@@ -386,6 +386,7 @@ function actualizarCountdownTexto() {
     }
 }
 
+
 function renderizarPreInauguracion(contenedor) {
     const ciclo1Completo = tieneCiclo1Completo();
     const ciclo2Completo = tieneCiclo2Completo();
@@ -408,10 +409,6 @@ function renderizarPreInauguracion(contenedor) {
     <div style="width:100%; height:100%; background: #ffffff; border-radius: 20px; overflow-y: auto; overflow-x: hidden;">
         <style>
             .ahora-header { 
-                background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
-                background-size: cover;
-                background-position: center bottom;
-                background-repeat: no-repeat;
                 padding: 16px 20px; 
                 text-align: center; 
                 color: white;
@@ -420,7 +417,7 @@ function renderizarPreInauguracion(contenedor) {
             
             .ahora-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: white; }
             .ahora-header p { font-size: 12px; opacity: 0.9; margin: 0; }
-            .ahora-countdown { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; }
+            .ahora-countdown { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; }
             .ahora-cards { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
             
             .ahora-card { 
@@ -509,35 +506,18 @@ function renderizarPreInauguracion(contenedor) {
     </div>
     `;
     
-    // ========== ESPERAR A QUE EL DOM SE ACTUALICE Y LUEGO ASIGNAR LA IMAGEN ==========
+    // ========== ASIGNAR LA IMAGEN CON JAVASCRIPT (USANDO LA RUTA QUE FUNCIONA) ==========
     setTimeout(() => {
         const headerBg = document.getElementById('ahora-header-bg');
         if (headerBg) {
-            // Usar una imagen de internet que SÍ funciona
-            headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://picsum.photos/id/104/800/400')";
+            // Usar la misma ruta que funcionó en prueba.html
+            // Como prueba.html estaba en la carpeta funciones/, la ruta es 'fondoHorizontal.jpg'
+            headerBg.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('fondoHorizontal.jpg')";
             headerBg.style.backgroundSize = "cover";
             headerBg.style.backgroundPosition = "center bottom";
             headerBg.style.backgroundRepeat = "no-repeat";
             console.log('[AHORA] Imagen asignada al header');
-        } else {
-            console.error('[AHORA] No se encontró el elemento #ahora-header-bg');
         }
-        
-        // ========== PRUEBA DEFINITIVA ==========
-        const testDiv = document.createElement('div');
-        testDiv.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 100px;
-            height: 100px;
-            background: url('https://picsum.photos/id/104/800/400') center/cover no-repeat;
-            border: 2px solid red;
-            z-index: 9999;
-            border-radius: 10px;
-        `;
-        document.body.appendChild(testDiv);
-        console.log('[AHORA] Div de prueba agregado con imagen de internet');
     }, 100);
     
     // Event listeners
@@ -553,6 +533,7 @@ function renderizarPreInauguracion(contenedor) {
         if (cardReglas) cardReglas.addEventListener('click', () => navegarAReglas());
     }, 50);
 }
+
 
 function renderizarDuranteMundial(contenedor) {
     if (actualizacionPeriodicaInterval) {

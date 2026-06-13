@@ -4,6 +4,7 @@
 // - Muestra TODOS los partidos del día (terminados, en vivo, pendientes)
 // - NO muestra pronóstico ni puntos en las tarjetas
 // - Al hacer clic → redirige a partidos.js con tab "TODOS"
+// - SIN HARDCODES - 100% depende del campo 'est' de la API de Velneo
 
 import { cargarPartidos, getBandera, formatearHora12h } from './partidos.js';
 
@@ -56,23 +57,6 @@ function getLocalDateTime() {
     return { fecha: `${year}-${month}-${day}`, hora: `${hours}:${minutes}` };
 }
 
-// ========== CORRECCIÓN DE FECHAS SEGÚN VELNEO ==========
-function corregirFechasSegunVelneo(partidos) {
-    return partidos.map(p => {
-        // Canadá vs Bosnia → 12/06/2026 14:00
-        if ((p.nom_loc === 'Canadá' && p.nom_vis === 'Bosnia') ||
-            (p.nom_loc === 'Bosnia' && p.nom_vis === 'Canadá')) {
-            return { ...p, fch: '2026-06-12', hor: '14:00:00', est: 4 }; // HARDCODE est=4
-        }
-        // EE.UU. vs Paraguay → 12/06/2026 20:00
-        if ((p.nom_loc === 'EE. UU.' && p.nom_vis === 'Paraguay') ||
-            (p.nom_loc === 'Paraguay' && p.nom_vis === 'EE. UU.')) {
-            return { ...p, fch: '2026-06-12', hor: '20:00:00', est: 2 }; // EN VIVO
-        }
-        return p;
-    });
-}
-
 // ========== FILTRAR PARTIDOS DE HOY (FECHA LOCAL) ==========
 function obtenerPartidosDeHoy(partidos) {
     const hoy = getLocalDate();
@@ -82,7 +66,7 @@ function obtenerPartidosDeHoy(partidos) {
     });
 }
 
-// ========== OBTENER ESTADO DEL PARTIDO ==========
+// ========== OBTENER ESTADO DEL PARTIDO DESDE API ==========
 function getEstadoPartido(partido) {
     const est = Number(partido.est);
     
@@ -95,7 +79,7 @@ function getEstadoPartido(partido) {
     return { texto: 'PENDIENTE', color: '#ff9500', icono: '⏱️', editable: true };
 }
 
-// ========== OBTENER MARCADOR ==========
+// ========== OBTENER MARCADOR DESDE API ==========
 function getMarcador(partido) {
     const est = Number(partido.est);
     
@@ -141,7 +125,6 @@ async function renderizarAhora(contenedor, datosCuenta) {
     }
     
     let partidos = await cargarPartidos();
-    partidos = corregirFechasSegunVelneo(partidos);
     const partidosHoy = obtenerPartidosDeHoy(partidos);
     
     // Ordenar por hora

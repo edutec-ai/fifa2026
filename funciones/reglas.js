@@ -209,7 +209,7 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>Informe de Auditoría - Polla Mundialista 2026</title>
+            <title>Informe de Pronósticos - Polla Mundialista 2026</title>
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: white; color: black; }

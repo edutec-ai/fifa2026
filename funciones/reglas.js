@@ -1,8 +1,6 @@
 // funciones/reglas.js
 // Módulo "REGLAS" - Tutorial interactivo de La Polla Mundialista 2026
-// CON BOTÓN PDF - Genera informe con todos los pronósticos
-// - Descarga automática usando window.print() + estilos print.css
-// - Columnas de tabla de partidos con anchos específicos (28% para Partido, 30% para Detalle)
+// CON INFORME EN VENTANA EXTERNA + BOTÓN DE DESCARGA
 
 import { getBandera } from './banderas.js';
 import { cargarPronosticosPartidosLocal, cargarPronosticosEspecialesLocal } from './sync.js';
@@ -132,13 +130,7 @@ function calcularPuntosDetalle(pronostico, resultadoReal, fase, pul) {
     return { ganador, golLocal, golVisita, diferencia, inverso, total, multiplicador };
 }
 
-function getPulsoBadge(pul) {
-    if (pul === '1') return { texto: 'PULSO 100', clase: 'badge-pulso-100', icono: '🟢' };
-    if (pul === '2') return { texto: 'PULSO 50', clase: 'badge-pulso-50', icono: '🟡' };
-    return { texto: 'PULSO 0', clase: 'badge-pulso-0', icono: '🔴' };
-}
-
-// ========== GENERACIÓN DEL CONTENIDO PARA PDF ==========
+// ========== GENERACIÓN DEL CONTENIDO PARA EL INFORME ==========
 
 function generarHTMLPDF(datosCuenta, puntosReales) {
     const fechaGeneracion = new Date();
@@ -168,7 +160,11 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
         const pronostico = currentPronosticosPartidos[p.id];
         const resultadoReal = (Number(p.est) === 4) ? { gol_loc: p.t90_gol_loc || 0, gol_vis: p.t90_gol_vis || 0 } : null;
         const pulso = pronostico?.pul || '0';
-        const pulsoBadge = getPulsoBadge(pulso);
+        let pulsoTexto = '';
+        let pulsoColor = '';
+        if (pulso === '1') { pulsoTexto = '🟢 PULSO 100'; pulsoColor = '#1e8449'; }
+        else if (pulso === '2') { pulsoTexto = '🟡 PULSO 50'; pulsoColor = '#c05a00'; }
+        else { pulsoTexto = '🔴 PULSO 0'; pulsoColor = '#c0392b'; }
         
         const fechaPartido = p.fch ? p.fch.split('T')[0] : '';
         const horaPartido = p.hor ? p.hor.substring(0, 5) : '';
@@ -188,7 +184,7 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
                     ${getBandera(p.nom_loc)} ${p.nom_loc} vs ${getBandera(p.nom_vis)} ${p.nom_vis}
                 </td>
                 <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">
-                    <span class="${pulsoBadge.clase}">${pulsoBadge.icono} ${pulsoBadge.texto}</span>
+                    <span style="color: ${pulsoColor}; font-weight: bold;">${pulsoTexto}</span>
                 </td>
                 <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${resultadoRealText}</td>
                 <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${pronosticoText}</td>
@@ -199,7 +195,7 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
                         <div>⚽ Gol visita exacto= ${puntosDetalle.golVisita}</div>
                         <div>📊 Diferencia de goles= ${puntosDetalle.diferencia}</div>
                         <div>🔄 Marcador inverso= ${puntosDetalle.inverso}</div>
-                        <div class="total-puntos">⭐ TOTAL= ${puntosDetalle.total}</div>
+                        <div class="total-puntos" style="font-weight: bold; color: #007aff; margin-top: 4px;">⭐ TOTAL= ${puntosDetalle.total}</div>
                     ` : '<span style="color:#999;">—</span>'}
                 </td>
             </tr>
@@ -214,122 +210,36 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
         <head>
             <meta charset="UTF-8">
             <title>Informe de Auditoría - Polla Mundialista 2026</title>
-            <link rel="stylesheet" href="css/print.css" media="print">
             <style>
-                body {
-                    font-family: 'Segoe UI', Arial, sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                    background: white;
-                    color: black;
-                }
-                .print-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                }
-                .print-header {
-                    text-align: center;
-                    margin-bottom: 20px;
-                    border-bottom: 2px solid #333;
-                    padding-bottom: 10px;
-                }
-                .print-header h1 {
-                    font-size: 18px;
-                    margin: 0;
-                }
-                .print-header h2 {
-                    font-size: 14px;
-                    margin: 5px 0 0;
-                    color: #555;
-                    font-weight: normal;
-                }
-                .print-header .participante {
-                    font-size: 12px;
-                    margin-top: 8px;
-                }
-                .print-section {
-                    margin-bottom: 25px;
-                }
-                .print-section-title {
-                    font-size: 14px;
-                    font-weight: bold;
-                    background: #f0f0f0;
-                    padding: 6px 10px;
-                    margin-bottom: 10px;
-                    border-left: 4px solid #007aff;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-size: 10px;
-                    margin-bottom: 15px;
-                }
-                th, td {
-                    border: 1px solid #ccc;
-                    padding: 6px;
-                    vertical-align: top;
-                }
-                th {
-                    background: #f5f5f5;
-                    font-weight: bold;
-                    text-align: center;
-                }
-                /* Anchos específicos para la tabla de partidos */
-                .partidos-table {
-                    table-layout: fixed;
-                }
-                .partidos-table th:nth-child(1),
-                .partidos-table td:nth-child(1) {
-                    width: 10%;
-                }
-                .partidos-table th:nth-child(2),
-                .partidos-table td:nth-child(2) {
-                    width: 30%;
-                }
-                .partidos-table th:nth-child(3),
-                .partidos-table td:nth-child(3) {
-                    width: 10%;
-                }
-                .partidos-table th:nth-child(4),
-                .partidos-table td:nth-child(4) {
-                    width: 10%;
-                }
-                .partidos-table th:nth-child(5),
-                .partidos-table td:nth-child(5) {
-                    width: 10%;
-                }
-                .partidos-table th:nth-child(6),
-                .partidos-table td:nth-child(6) {
-                    width: 30%;
-                }
-                .partido-equipos {
-                    word-break: break-word;
-                }
-                .finalistas-list {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 15px;
-                }
-                .finalista-item {
-                    flex: 1;
-                    min-width: 150px;
-                    padding: 10px;
-                    background: #f9f9f9;
-                    border: 1px solid #ddd;
-                    border-radius: 6px;
-                }
-                .print-footer {
-                    margin-top: 20px;
-                    padding-top: 10px;
-                    border-top: 1px solid #ccc;
-                    font-size: 8px;
-                    text-align: center;
-                    color: #777;
-                }
-                .badge-pulso-100 { color: #1e8449; font-weight: bold; }
-                .badge-pulso-50 { color: #c05a00; font-weight: bold; }
-                .badge-pulso-0 { color: #c0392b; font-weight: bold; }
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: white; color: black; }
+                .print-container { max-width: 1200px; margin: 0 auto; }
+                .print-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                .print-header h1 { font-size: 18px; margin: 0; }
+                .print-header h2 { font-size: 14px; margin: 5px 0 0; color: #555; font-weight: normal; }
+                .print-header .participante { font-size: 12px; margin-top: 8px; }
+                .print-section { margin-bottom: 25px; }
+                .print-section-title { font-size: 14px; font-weight: bold; background: #f0f0f0; padding: 6px 10px; margin-bottom: 10px; border-left: 4px solid #007aff; }
+                table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 15px; }
+                th, td { border: 1px solid #ccc; padding: 6px; vertical-align: top; }
+                th { background: #f5f5f5; font-weight: bold; text-align: center; }
+                .partidos-table { table-layout: fixed; }
+                .partidos-table th:nth-child(1), .partidos-table td:nth-child(1) { width: 10%; }
+                .partidos-table th:nth-child(2), .partidos-table td:nth-child(2) { width: 30%; }
+                .partidos-table th:nth-child(3), .partidos-table td:nth-child(3) { width: 10%; }
+                .partidos-table th:nth-child(4), .partidos-table td:nth-child(4) { width: 10%; }
+                .partidos-table th:nth-child(5), .partidos-table td:nth-child(5) { width: 10%; }
+                .partidos-table th:nth-child(6), .partidos-table td:nth-child(6) { width: 30%; }
+                .partido-equipos { word-break: break-word; }
+                .finalistas-list { display: flex; flex-wrap: wrap; gap: 15px; }
+                .finalista-item { flex: 1; min-width: 150px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; }
+                .print-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc; font-size: 8px; text-align: center; color: #777; }
                 .total-puntos { font-weight: bold; color: #007aff; margin-top: 4px; }
+                .download-btn-container { text-align: center; margin: 30px 0 20px; padding: 10px; }
+                .download-btn { background: #007aff; color: white; border: none; padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 30px; cursor: pointer; transition: background 0.2s; }
+                .download-btn:hover { background: #005fc4; }
+                .download-hint { font-size: 11px; color: #777; margin-top: 8px; }
+                @media print { .download-btn-container { display: none; } }
             </style>
         </head>
         <body>
@@ -349,25 +259,14 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
                 
                 <div class="print-section">
                     <div class="print-section-title">📋 CICLO 1: CLASIFICADOS POR GRUPO</div>
-                    <table>
-                        <thead><tr><th>Grupo</th><th>1° Clasificado</th><th>2° Clasificado</th></tr></thead>
-                        <tbody>${gruposHTML}</tbody>
-                    </table>
+                    <table><thead><tr><th>Grupo</th><th>1° Clasificado</th><th>2° Clasificado</th></tr></thead>
+                    <tbody>${gruposHTML}</tbody></table>
                 </div>
                 
                 <div class="print-section">
                     <div class="print-section-title">⚽ CICLO 1: PARTIDOS - FASE DE GRUPOS</div>
                     <table class="partidos-table" style="font-size: 9px;">
-                        <thead>
-                            <tr>
-                                <th>Fecha/Hora</th>
-                                <th>Partido</th>
-                                <th>Pulso</th>
-                                <th>Resultado Real</th>
-                                <th>Pronóstico</th>
-                                <th>Detalle Puntos</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Fecha/Hora</th><th>Partido</th><th>Pulso</th><th>Resultado Real</th><th>Pronóstico</th><th>Detalle Puntos</th></tr></thead>
                         <tbody>${partidosHTML}</tbody>
                     </table>
                 </div>
@@ -382,6 +281,11 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
                     </div>
                 </div>
                 
+                <div class="download-btn-container">
+                    <button class="download-btn" onclick="window.print();">📥 Descargar / Guardar como PDF</button>
+                    <div class="download-hint">💡 También puedes usar Ctrl+P (Windows) o Cmd+P (Mac)</div>
+                </div>
+                
                 <div class="print-footer">
                     Documento generado automáticamente el ${fechaStr} a las ${horaStr}.<br>
                     Este informe es una verificación de los pronósticos registrados en La Polla Mundialista 2026.
@@ -392,7 +296,7 @@ function generarHTMLPDF(datosCuenta, puntosReales) {
     `;
 }
 
-// ========== FUNCIÓN PARA GENERAR PDF (EXPORTADA) ==========
+// ========== FUNCIÓN PARA GENERAR Y ABRIR INFORME EN VENTANA EXTERNA ==========
 
 export async function generarPDF(datosCuenta) {
     mostrarToast('📄 Generando informe...', 'info');
@@ -420,26 +324,12 @@ export async function generarPDF(datosCuenta) {
     
     const htmlContent = generarHTMLPDF(datosCuenta, puntosReales);
     
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'absolute';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = 'none';
-    document.body.appendChild(iframe);
+    // Abrir el informe en una nueva ventana
+    const ventana = window.open('', '_blank');
+    ventana.document.write(htmlContent);
+    ventana.document.close();
     
-    iframe.contentDocument.open();
-    iframe.contentDocument.write(htmlContent);
-    iframe.contentDocument.close();
-    
-    iframe.onload = () => {
-        setTimeout(() => {
-            iframe.contentWindow.print();
-            setTimeout(() => {
-                document.body.removeChild(iframe);
-                mostrarToast('✅ Informe generado', 'ok');
-            }, 1000);
-        }, 500);
-    };
+    mostrarToast('✅ Informe abierto en nueva ventana', 'ok');
 }
 
 // ========== MODALES ==========
@@ -695,21 +585,18 @@ export async function renderizarReglas(contenedor, datosCuenta) {
                 .btn-pdf:active {
                     transform: scale(0.98);
                 }
-                
                 .reglas-cards {
                     padding: 16px;
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     gap: 12px;
                 }
-                
                 @media (min-width: 769px) {
                     .reglas-cards {
                         grid-template-columns: repeat(3, 1fr);
                         gap: 16px;
                     }
                 }
-                
                 .reglas-card {
                     background: #f9f9fb;
                     border: 1px solid #e5e5ea;
